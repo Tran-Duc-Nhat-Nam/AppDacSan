@@ -1,11 +1,14 @@
 package com.example.appcsn.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import retrofit2.Response
 import retrofit2.http.GET
 
-class HinhAnh(val id: Int, val ten: String, val moTa: String?, val url: String) {
+@Parcelize
+class HinhAnh(val id: Int, val ten: String, val moTa: String?, val url: String) : Parcelable {
     interface Doc {
         @GET("/hinhanh")
-        suspend fun getGenres(): Response<List<HinhAnh>>
+        suspend fun docDanhSach(): Response<List<HinhAnh>>
     }
 }

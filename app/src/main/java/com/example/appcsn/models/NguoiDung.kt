@@ -1,19 +1,22 @@
 package com.example.appcsn.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import java.util.Date
 
+@Parcelize
 class NguoiDung(
-    val id: Int,
+    val id: String,
     val email: String,
     var ten: String,
     var so_dien_thoai: String,
     var is_nam: Boolean,
     var dia_chi: DiaChi,
     var ngay_sinh: Date
-) {
+) : Parcelable {
     interface doc {
         @GET("/nguoidung")
         suspend fun doc(): Response<List<NguoiDung>>

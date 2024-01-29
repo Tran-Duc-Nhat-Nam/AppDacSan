@@ -10,14 +10,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import com.example.appcsn.models.NoiBan
+import com.example.appcsn.screens.destinations.TrangChiTietNoiBanDestination
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Destination
 @Composable
 fun TrangTimKiemNoiBan(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     dsNoiBan: List<NoiBan>
 ) {
     Column(
@@ -32,7 +33,7 @@ fun TrangTimKiemNoiBan(
             items(items = dsNoiBan)
             {
                 Button(onClick = {
-                    navController.navigate("${Screen.TrangNoiBan.route}/${it.id}")
+                    navigator.navigate(TrangChiTietNoiBanDestination(noiBan = it))
                 }) {
                     Text(text = it.ten)
                 }

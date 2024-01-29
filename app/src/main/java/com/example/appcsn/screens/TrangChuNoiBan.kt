@@ -20,14 +20,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.appcsn.models.NoiBan
+import com.example.appcsn.screens.destinations.TrangChiTietNoiBanDestination
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Destination
 @Composable
-fun TrangNoiBan(
-    navController: NavController,
+fun TrangChuNoiBan(
+//    navController: NavController,
+    navigator: DestinationsNavigator,
     dsNoiBan: List<NoiBan>
 ) {
     Column(
@@ -44,7 +46,8 @@ fun TrangNoiBan(
                 }
                 Button(
                     onClick = {
-                        navController.navigate("${Screen.TrangNoiBan.TrangChiTietNoiBan.route}/${it.id}")
+//                        navController.navigate("${Screen.TrangNoiBan.TrangChiTietNoiBan.route}/${it.id}")
+                        navigator.navigate(TrangChiTietNoiBanDestination(noiBan = it))
                     },
                     colors = ButtonDefaults.buttonColors(Color.DarkGray),
                     modifier = Modifier

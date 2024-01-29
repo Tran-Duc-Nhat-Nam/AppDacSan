@@ -1,9 +1,12 @@
 package com.example.appcsn.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 
+@Parcelize
 class DacSan(
     val id: Int,
     val ten: String,
@@ -13,29 +16,22 @@ class DacSan(
     val mua_dac_san: List<MuaDacSan>,
     val thanh_phan: List<ThanhPhan>,
     val hinh_dai_dien: HinhAnh,
-) {
+    val diem_danh_gia: Double = 0.0,
+) : Parcelable {
     interface doc {
         @GET("/dacsan")
         suspend fun doc(): Response<List<DacSan>>
-    }
 
-    interface docTheoID {
         @GET("/dacsan/{id}")
-        suspend fun doc(@Path("id") id: Int): Response<DacSan>
-    }
+        suspend fun docTheoID(@Path("id") id: Int): Response<DacSan>
 
-    interface docTheoTen {
         @GET("/dacsan/ten={ten}")
-        suspend fun doc(@Path("ten") ten: String): Response<List<DacSan>>
-    }
+        suspend fun docTheoTen(@Path("ten") ten: String): Response<List<DacSan>>
 
-    interface docTheoMoTa {
         @GET("/dacsan/mota={mota}")
-        suspend fun doc(@Path("mota") moTa: String): Response<List<DacSan>>
-    }
+        suspend fun docTheoMoTa(@Path("mota") moTa: String): Response<List<DacSan>>
 
-    interface docTheoCachCheBien {
         @GET("/dacsan/cachchebien={cachchebien}")
-        suspend fun doc(@Path("cachchebien") cachCheBien: String): Response<List<DacSan>>
+        suspend fun docTheoCachCheBien(@Path("cachchebien") cachCheBien: String): Response<List<DacSan>>
     }
 }

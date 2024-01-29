@@ -7,13 +7,15 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
@@ -33,20 +35,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.appcsn.screens.Screen
-import com.example.appcsn.screens.TrangChiTietDacSan
-import com.example.appcsn.screens.TrangChiTietNoiBan
+import com.example.appcsn.models.DanhSachVungMien
+import com.example.appcsn.models.VungMien
+import com.example.appcsn.screens.NavGraphs
 import com.example.appcsn.screens.TrangChuDacSan
-import com.example.appcsn.screens.TrangNoiBan
+import com.example.appcsn.screens.TrangChuNoiBan
+import com.example.appcsn.screens.destinations.Destination
+import com.example.appcsn.screens.destinations.TrangChuDacSanDestination
+import com.example.appcsn.screens.destinations.TrangChuNoiBanDestination
+import com.example.appcsn.screens.destinations.TrangNguoiDungDestination
+import com.example.appcsn.screens.destinations.TrangTimKiemDacSanDestination
 import com.example.appcsn.ui.theme.AppĐặcSảnTheme
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.manualcomposablecalls.composable
+import com.ramcosta.composedestinations.navigation.navigate
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
     private val mainViewModel by viewModels<MainViewModel>()
@@ -54,6 +63,22 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        mainViewModel.initAuth()
+
+        val startDes: Destination
+
+        runBlocking {
+            val connected = mainViewModel.checkConnect()
+
+            if (connected)
+            {
+                startDes = TrangChuDacSanDestination
+            } else {
+                startDes = TrangNguoiDungDestination
+            }
+        }
+
         enableEdgeToEdge()
         setContent {
             AppĐặcSảnTheme {
@@ -69,36 +94,41 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 Scaffold(
                     topBar = {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.fillMaxWidth(),
+                        SearchBar(
+                            query = searchText,
+                            onQueryChange = { searchText = it },
+                            onSearch = {
+                                navController.navigate(TrangTimKiemDacSanDestination(it, dsVungMien = DanhSachVungMien()))
+                                active = false
+                            },
+                            active = active,
+                            onActiveChange = {
+                                active = it
+                            },
+                            placeholder = { Text("Tìm kiếm") },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.Search,
+                                    contentDescription = null
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    Icons.Default.MoreVert,
+                                    contentDescription = null
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
                         ) {
-                            SearchBar(
-                                query = searchText,
-                                onQueryChange = { searchText = it },
-                                onSearch = {
-
-                                    active = false
-                                },
-                                active = active,
-                                onActiveChange = {
-                                    active = it
-                                },
-                                placeholder = { Text("Tìm kiếm") },
-                                leadingIcon = {
-                                    Icon(
-                                        Icons.Default.Search,
-                                        contentDescription = null
-                                    )
-                                },
-                                trailingIcon = {
-                                    Icon(
-                                        Icons.Default.MoreVert,
-                                        contentDescription = null
-                                    )
-                                },
+                            LazyColumn (
+                                Modifier.padding(horizontal = 15.dp, vertical = 10.dp)
                             ) {
-
+                                items(mainViewModel.dsDacSan.filter { it.ten.contains(searchText) }) { dacSan ->
+                                    Text(
+                                        text = dacSan.ten,
+                                    )
+                                }
                             }
                         }
                     },
@@ -106,13 +136,13 @@ class MainActivity : ComponentActivity() {
                         Row(
                             horizontalArrangement = Arrangement.SpaceEvenly,
                             modifier = Modifier
-                                .height(80.dp)
+                                .height(100.dp)
                                 .fillMaxWidth()
                                 .background(Color(30, 144, 255))
                         ) {
                             IconButton(
                                 onClick = {
-                                    navController.navigate(Screen.TrangDacSan.TrangChuDacSan.route)
+                                    navController.navigate(TrangChuDacSanDestination)
                                 }
                             ) {
                                 Icon(
@@ -123,7 +153,8 @@ class MainActivity : ComponentActivity() {
                             }
                             IconButton(
                                 onClick = {
-                                    navController.navigate(Screen.TrangNoiBan.TrangChuNoiBan.route)
+                                    print(TrangChuNoiBanDestination.arguments.size)
+                                    navController.navigate(TrangChuNoiBanDestination)
                                 },
                             ) {
                                 Icon(
@@ -134,9 +165,7 @@ class MainActivity : ComponentActivity() {
                             }
                             IconButton(
                                 onClick = {
-                                    navController.navigate(
-                                        Screen.TrangNguoiDung.route
-                                    )
+                                    navController.navigate(TrangNguoiDungDestination(nguoiDung = null))
                                 }
                             ) {
                                 Icon(
@@ -149,63 +178,81 @@ class MainActivity : ComponentActivity() {
                     },
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
-                    Box(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = innerPadding.calculateBottomPadding())
                     ) {
-                        NavHost(
+//                        NavHost(
+//                            navController = navController,
+//                            startDestination = Screen.TrangDacSan.route
+//                        ) {
+//                            navigation(
+//                                route = Screen.TrangDacSan.route,
+//                                startDestination = Screen.TrangDacSan.TrangChuDacSan.route
+//                            ) {
+//                                composable(route = Screen.TrangDacSan.TrangChuDacSan.route) {
+//                                    TrangChuDacSan(
+//                                        navController = navController,
+//                                        dsDacSan = mainViewModel.dsDacSan
+//                                    )
+//                                }
+//                                composable(
+//                                    route = "${Screen.TrangDacSan.TrangChiTietDacSan.route}/{id}",
+//                                    arguments = listOf(navArgument("id") {
+//                                        type = NavType.IntType
+//                                        nullable = false
+//                                    })
+//                                ) {
+//                                    TrangChiTietDacSan(
+//                                        idDacSan = it.arguments?.getInt("userId")!!
+//                                    )
+//                                }
+//                            }
+//                            navigation(
+//                                route = Screen.TrangNoiBan.route,
+//                                startDestination = Screen.TrangNoiBan.TrangChuNoiBan.route
+//                            ) {
+//                                composable(route = Screen.TrangNoiBan.TrangChuNoiBan.route) {
+//                                    TrangNoiBan(
+//                                        navController = navController,
+//                                        dsNoiBan = mainViewModel.dsNoiBan
+//                                    )
+//                                }
+//                                composable(
+//                                    route = "${Screen.TrangNoiBan.TrangChiTietNoiBan.route}/{id}",
+//                                    arguments = listOf(navArgument("id") {
+//                                        type = NavType.IntType
+//                                        nullable = false
+//                                    })
+//                                ) {
+//                                    TrangChiTietNoiBan(
+//                                        idNoiBan = it.arguments?.getInt("userId")!!
+//                                    )
+//                                }
+//                            }
+//                            composable(route = Screen.TrangDacSan.TrangChuDacSan.route) {
+//                                TrangChuDacSan(
+//                                    navController = navController,
+//                                    dsDacSan = mainViewModel.dsDacSan
+//                                )
+//                            }
+//                        }
+                        DestinationsNavHost(
                             navController = navController,
-                            startDestination = Screen.TrangDacSan.route
+                            navGraph = NavGraphs.root,
+                            startRoute = startDes
                         ) {
-                            navigation(
-                                route = Screen.TrangDacSan.route,
-                                startDestination = Screen.TrangDacSan.TrangChuDacSan.route
-                            ) {
-                                composable(route = Screen.TrangDacSan.TrangChuDacSan.route) {
-                                    TrangChuDacSan(
-                                        navController = navController,
-                                        dsDacSan = mainViewModel.dsDacSan
-                                    )
-                                }
-                                composable(
-                                    route = "${Screen.TrangDacSan.TrangChiTietDacSan.route}/{id}",
-                                    arguments = listOf(navArgument("id") {
-                                        type = NavType.IntType
-                                        nullable = false
-                                    })
-                                ) {
-                                    TrangChiTietDacSan(
-                                        idDacSan = it.arguments?.getInt("userId")!!
-                                    )
-                                }
-                            }
-                            navigation(
-                                route = Screen.TrangNoiBan.route,
-                                startDestination = Screen.TrangNoiBan.TrangChuNoiBan.route
-                            ) {
-                                composable(route = Screen.TrangNoiBan.TrangChuNoiBan.route) {
-                                    TrangNoiBan(
-                                        navController = navController,
-                                        dsNoiBan = mainViewModel.dsNoiBan
-                                    )
-                                }
-                                composable(
-                                    route = "${Screen.TrangNoiBan.TrangChiTietNoiBan.route}/{id}",
-                                    arguments = listOf(navArgument("id") {
-                                        type = NavType.IntType
-                                        nullable = false
-                                    })
-                                ) {
-                                    TrangChiTietNoiBan(
-                                        idNoiBan = it.arguments?.getInt("userId")!!
-                                    )
-                                }
-                            }
-                            composable(route = Screen.TrangDacSan.TrangChuDacSan.route) {
+                            composable(TrangChuDacSanDestination) {
                                 TrangChuDacSan(
-                                    navController = navController,
+                                    navigator = this.destinationsNavigator,
                                     dsDacSan = mainViewModel.dsDacSan
+                                )
+                            }
+                            composable(TrangChuNoiBanDestination) {
+                                TrangChuNoiBan(
+                                    navigator = this.destinationsNavigator,
+                                    dsNoiBan = mainViewModel.dsNoiBan
                                 )
                             }
                         }
