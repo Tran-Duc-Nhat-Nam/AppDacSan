@@ -4,6 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 
 @Parcelize
@@ -22,8 +23,20 @@ class DacSan(
         @GET("/dacsan")
         suspend fun doc(): Response<List<DacSan>>
 
+        @GET("/dacsan/size={size}/index={index}")
+        suspend fun docTheoTrang(
+            @Path("size") size: Int,
+            @Path("index") index: Int
+        ): Response<List<DacSan>>
+
         @GET("/dacsan/{id}")
         suspend fun docTheoID(@Path("id") id: Int): Response<DacSan>
+
+        @GET("/dacsan/{id}/nguoidung={idNguoiDung}")
+        suspend fun xem(
+            @Path("id") id: Int,
+            @Path("idNguoiDung") idNguoiDung: String
+        ): Response<DacSan>
 
         @GET("/dacsan/ten={ten}")
         suspend fun docTheoTen(@Path("ten") ten: String): Response<List<DacSan>>
@@ -33,5 +46,11 @@ class DacSan(
 
         @GET("/dacsan/cachchebien={cachchebien}")
         suspend fun docTheoCachCheBien(@Path("cachchebien") cachCheBien: String): Response<List<DacSan>>
+
+        @POST("/dacsan/{id}/nguoidung={idNguoiDung}")
+        suspend fun like(
+            @Path("id") id: Int,
+            @Path("idNguoiDung") idNguoiDung: String
+        ): Response<String>
     }
 }

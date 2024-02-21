@@ -3,13 +3,11 @@ package com.example.appcsn.screens
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,15 +35,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.appcsn.HttpHelper
 import com.example.appcsn.R
-import com.example.appcsn.models.DacSan
 import com.example.appcsn.models.DanhSachVungMien
 import com.example.appcsn.models.MuaDacSan
 import com.example.appcsn.models.NguyenLieu
-import com.example.appcsn.models.VungMien
 import com.example.appcsn.screens.destinations.TrangChiTietDacSanDestination
+import com.example.appcsn.viewmodels.TrangTimKiemDacSanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -59,68 +55,15 @@ fun TrangTimKiemDacSan(
     dsMuaDacSan: List<MuaDacSan> = listOf(),
     dsNguyenLieu: List<NguyenLieu> = listOf(),
 ) {
-    var dsDacSan = remember { mutableStateListOf<DacSan>() }
-    if (ten != null) {
-        val apiDacSan =
-            HttpHelper.DacSanAPI.getInstance().create(DacSan.doc::class.java)
+    val viewModel = viewModel<TrangTimKiemDacSanViewModel>()
+    viewModel.ten = ten ?: ""
+    viewModel.dsVungMien = dsVungMien
+    viewModel.dsMuaDacSan = dsMuaDacSan
+    viewModel.dsNguyenLieu = dsNguyenLieu
 
-        LaunchedEffect(Unit) {
-            val kq = apiDacSan.docTheoTen(ten)
-            var temp = listOf<DacSan>()
-
-            if (kq.body() != null) {
-                temp = kq.body()!!
-            }
-
-            for (vungMien in dsVungMien.ds) {
-                dsDacSan.addAll(temp.filter { e -> e.vung_mien.any { x -> x.id == vungMien.id } })
-            }
-
-            for (muaDacSan in dsMuaDacSan) {
-                dsDacSan.addAll(temp.filter { e -> e.mua_dac_san.any { x -> x.id == muaDacSan.id } })
-            }
-
-            for (nguyenLieu in dsNguyenLieu) {
-                dsDacSan.addAll(temp.filter { e -> e.thanh_phan.any { x -> x.nguyen_lieu.id == nguyenLieu.id } })
-            }
-
-            if (dsVungMien.ds.isEmpty() && dsMuaDacSan.isEmpty() && dsNguyenLieu.isEmpty())
-            {
-                dsDacSan.addAll(temp)
-            }
-        }
-    } else {
-        val apiDacSan =
-            HttpHelper.DacSanAPI.getInstance().create(DacSan.doc::class.java)
-
-        LaunchedEffect(Unit) {
-            val kq = apiDacSan.doc()
-            var temp = listOf<DacSan>()
-
-            if (kq.body() != null) {
-                temp = kq.body()!!
-            }
-
-            for (vungMien in dsVungMien.ds) {
-                dsDacSan.addAll(temp.filter { e -> e.vung_mien.any { x -> x.id == vungMien.id } })
-            }
-
-            for (muaDacSan in dsMuaDacSan) {
-                dsDacSan.addAll(temp.filter { e -> e.mua_dac_san.any { x -> x.id == muaDacSan.id } })
-            }
-
-            for (nguyenLieu in dsNguyenLieu) {
-                dsDacSan.addAll(temp.filter { e -> e.thanh_phan.any { x -> x.nguyen_lieu.id == nguyenLieu.id } })
-            }
-
-            if (dsVungMien.ds.isEmpty() && dsMuaDacSan.isEmpty() && dsNguyenLieu.isEmpty())
-            {
-                dsDacSan.addAll(temp)
-            }
-        }
+    LaunchedEffect(key1 = true) {
+        viewModel.docDuLieu()
     }
-
-
 
     Column(
         Modifier
@@ -129,15 +72,8 @@ fun TrangTimKiemDacSan(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
         ) {
-            items(items = dsDacSan)
+            items(items = viewModel.dsDacSan)
             {
-                if (dsDacSan.indexOf(it) == 0) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(90.dp)
-                    )
-                }
                 Surface(
                     shadowElevation = 3.dp,
                     shape = RoundedCornerShape(15.dp),
@@ -150,7 +86,12 @@ fun TrangTimKiemDacSan(
                             .background(Color(65, 105, 225))
                             .clickable {
 //                            navController.navigate("${Screen.TrangDacSan.TrangChiTietDacSan.route}/${it.id}")
-                                navigator.navigate(TrangChiTietDacSanDestination(dacSan = it))
+                                navigator.navigate(
+                                    TrangChiTietDacSanDestination(
+                                        dacSan = it,
+                                        nguoiDung = null
+                                    )
+                                )
                             },
                     ) {
                         var checked by remember {
@@ -162,7 +103,7 @@ fun TrangTimKiemDacSan(
                             model = it.hinh_dai_dien.url,
                             contentDescription = it.ten,
                             error = painterResource(id = R.drawable.image_not_found_128),
-                            modifier = Modifier.size(100.dp)
+                            modifier = Modifier.size(115.dp)
                         )
                         Column(modifier = Modifier.padding(8.dp)) {
                             Text(
@@ -172,7 +113,7 @@ fun TrangTimKiemDacSan(
                                 color = Color.White,
                                 maxLines = 1
                             )
-                            Row() {
+                            Row {
                                 Text(
                                     text = it.diem_danh_gia.toString(),
                                     fontSize = 12.sp,

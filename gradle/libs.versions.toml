@@ -3,6 +3,9 @@ agp = "8.2.2"
 coilCompose = "2.5.0"
 converterGson = "2.9.0"
 core = "1.9.62"
+desugar_jdk_libs = "2.0.4"
+googleServices = "4.4.1"
+hiltAndroid = "2.44"
 kotlin = "1.9.22"
 coreKtx = "1.12.0"
 junit = "4.13.2"
@@ -12,9 +15,9 @@ kotlinxCoroutinesAndroid = "1.7.3"
 kotlinxCoroutinesCore = "1.7.3"
 lifecycleRuntimeKtx = "2.7.0"
 activityCompose = "1.8.2"
-composeBom = "2024.01.00"
+composeBom = "2024.02.00"
 retrofit = "2.9.0"
-navigationCompose = "2.7.6"
+navigationCompose = "2.7.7"
 firebase-auth = "22.3.1"
 appcompat = "1.6.1"
 
@@ -23,6 +26,11 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 core = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "core" }
+animations = { module = "io.github.raamcosta.compose-destinations:animations-core", version.ref = "core" }
+desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
+google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -47,4 +55,3 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-

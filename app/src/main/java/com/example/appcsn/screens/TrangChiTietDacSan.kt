@@ -1,7 +1,9 @@
 package com.example.appcsn.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,8 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.ChipColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,15 +29,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.appcsn.HttpHelper
 import com.example.appcsn.R
 import com.example.appcsn.models.DacSan
+import com.example.appcsn.models.DanhSachVungMien
+import com.example.appcsn.models.NguoiDung
+import com.example.appcsn.screens.destinations.TrangTimKiemDacSanDestination
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@OptIn(ExperimentalLayoutApi::class)
 @Destination
 @Composable
-fun TrangChiTietDacSan(dacSan: DacSan) {
+fun TrangChiTietDacSan(
+    navigator: DestinationsNavigator,
+    dacSan: DacSan,
+    nguoiDung: NguoiDung?,
+) {
     var nlOpen = remember {
         mutableStateOf(true)
+    }
+    LaunchedEffect(key1 = true) {
+        if (nguoiDung != null) {
+            val apiDacSan =
+                HttpHelper.DacSanAPI.getInstance().create(DacSan.doc::class.java)
+
+            val kq = apiDacSan.xem(dacSan.id, nguoiDung.id)
+        }
     }
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -104,19 +127,33 @@ fun TrangChiTietDacSan(dacSan: DacSan) {
                 fontSize = 16.sp,
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Column(
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(7.dp),
+                verticalArrangement = Arrangement.spacedBy(7.dp),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(shape = RoundedCornerShape(corner = CornerSize(10.dp)))
-                    .background(Color.DarkGray)
-                    .padding(10.dp)
+                    .padding(7.dp)
             ) {
-                dacSan.vung_mien.map {
-                    Text(
-                        text = it.ten,
-                        fontSize = 16.sp,
-                        color = Color.White,
-                    )
+                dacSan.vung_mien.forEach { vungMien ->
+                    AssistChip(
+                        colors = ChipColors(
+                            containerColor = Color.Blue,
+                            labelColor = Color.White,
+                            leadingIconContentColor = Color.Cyan,
+                            trailingIconContentColor = Color.Magenta,
+                            disabledContainerColor = Color.Gray,
+                            disabledLabelColor = Color.Gray,
+                            disabledLeadingIconContentColor = Color.Gray,
+                            disabledTrailingIconContentColor = Color.Gray,
+                        ),
+                        onClick = {
+                            navigator.navigate(
+                                TrangTimKiemDacSanDestination(
+                                    ten = null,
+                                    dsVungMien = DanhSachVungMien(listOf(vungMien))
+                                )
+                            )
+                        },
+                        label = { Text(text = vungMien.ten) })
                 }
             }
         }

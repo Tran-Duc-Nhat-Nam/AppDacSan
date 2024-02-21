@@ -4,6 +4,7 @@ plugins {
     id("com.google.devtools.ksp") version "1.9.22-1.0.17"
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
+    id("com.google.dagger.hilt.android") version "2.44" apply false
 }
 
 android {
@@ -35,6 +36,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -87,5 +89,12 @@ dependencies {
     implementation(libs.coil.compose)
 
     implementation(libs.core)
+    implementation(libs.animations)
+    implementation(("androidx.compose.material3:material3:1.2.0-beta02"))
     ksp(libs.ksp)
+
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }

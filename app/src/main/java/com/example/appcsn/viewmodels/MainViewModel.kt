@@ -1,23 +1,30 @@
-package com.example.appcsn
+package com.example.appcsn.viewmodels
 
 import androidx.compose.runtime.mutableStateListOf
-import androidx.lifecycle.ViewModel
+import androidx.compose.runtime.mutableStateOf
+import com.example.appcsn.HttpHelper
 import com.example.appcsn.models.DacSan
 import com.example.appcsn.models.NoiBan
 import com.example.appcsn.models.TinhThanh
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import java.lang.Exception
 
-class MainViewModel : ViewModel() {
-    lateinit var auth: FirebaseAuth
+class MainViewModel : BaseViewModel() {
+    private lateinit var auth: FirebaseAuth
+    var loading = mutableStateOf(true)
     val dsDacSan = mutableStateListOf<DacSan>()
     val dsNoiBan = mutableStateListOf<NoiBan>()
     private val apiDacSan: DacSan.doc =
         HttpHelper.DacSanAPI.getInstance().create(DacSan.doc::class.java)
     private val apiNoiBan: NoiBan.doc =
         HttpHelper.DacSanAPI.getInstance().create(NoiBan.doc::class.java)
+
+    init {
+//        viewModelScope.launch {
+//            docDuLieu()
+//        }
+    }
 
     suspend fun docDuLieu() {
         val kq = apiDacSan.doc()

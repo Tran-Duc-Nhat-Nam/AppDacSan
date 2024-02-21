@@ -14,6 +14,4 @@ class VungMien(val id: Int, val ten: String) : Parcelable {
 }
 
 @Parcelize
-data class DanhSachVungMien(val ds: List<VungMien> = listOf()) : Parcelable {
-
-}
+data class DanhSachVungMien(val ds: List<VungMien> = mutableListOf()) : Parcelable

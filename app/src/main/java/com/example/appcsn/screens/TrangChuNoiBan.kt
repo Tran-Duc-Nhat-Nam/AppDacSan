@@ -1,11 +1,9 @@
 package com.example.appcsn.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -41,9 +39,6 @@ fun TrangChuNoiBan(
         ) {
             items(items = dsNoiBan)
             {
-                if (dsNoiBan.indexOf(it) == 0) {
-                    Box(modifier = Modifier.height(100.dp))
-                }
                 Button(
                     onClick = {
 //                        navController.navigate("${Screen.TrangNoiBan.TrangChiTietNoiBan.route}/${it.id}")
