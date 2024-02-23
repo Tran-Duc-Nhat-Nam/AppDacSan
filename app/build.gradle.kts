@@ -4,7 +4,8 @@ plugins {
     id("com.google.devtools.ksp") version "1.9.22-1.0.17"
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
-    id("com.google.dagger.hilt.android") version "2.44" apply false
+    kotlin("jvm") apply false
+    id("com.google.dagger.hilt.android") version "2.50" apply true
 }
 
 android {
@@ -45,7 +46,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
     packaging {
         resources {
@@ -75,6 +76,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.javapoet)
 
     // retrofit
     implementation(libs.retrofit)
@@ -94,7 +96,10 @@ dependencies {
     ksp(libs.ksp)
 
     implementation(libs.hilt.android)
-    ksp(libs.hilt.android.compiler)
+    ksp(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.fragment)
+    implementation(libs.androidx.hilt.navigation.compose)
+
 
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 }
