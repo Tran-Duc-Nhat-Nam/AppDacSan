@@ -1,14 +1,15 @@
 package com.example.appcsn.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.example.appcsn.data.model.DacSan
 import com.example.appcsn.data.model.DanhSachMuaDacSan
 import com.example.appcsn.data.model.DanhSachNguyenLieu
 import com.example.appcsn.data.model.DanhSachVungMien
+import com.example.appcsn.data.model.dacsan.DacSan
 import com.example.appcsn.data.repository.DacSanRepository
 import com.example.appcsn.domain.repository.BasePaginationRepository
 import com.example.appcsn.ui.ScreenState
@@ -27,7 +28,11 @@ class TrangTimKiemDacSanViewModel @Inject constructor(
             state = state.copy(isLoading = it)
         },
         onRequest = { nextPage: Int ->
-            repository.docTheoTrang(2, nextPage)
+            try {
+                Result.success(dsDacSan.subList(nextPage, nextPage + 1))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
         },
         getNextKey = {
             state.pageIndex + 1
@@ -49,8 +54,27 @@ class TrangTimKiemDacSanViewModel @Inject constructor(
 //        loadNext()
 //    }
 
-    suspend fun docDuLieu() {
-        dsDacSan.addAll(locKetQua(repository.docTheoTen(ten).getOrNull() ?: emptyList()))
+    fun docDuLieu() {
+        viewModelScope.launch {
+            loading.value = true
+            val job = viewModelScope.launch {
+                if (ten.isEmpty()) {
+                    dsDacSan.addAll(locKetQua(repository.docDanhSach().getOrNull() ?: emptyList()))
+                    Log.d("Load data", "${dsDacSan.size}")
+                    paginator.loadNext()
+                } else {
+                    dsDacSan.addAll(
+                        locKetQua(
+                            repository.docTheoTen(ten).getOrNull() ?: emptyList()
+                        )
+                    )
+                    Log.d("Load data", "${dsDacSan.size}")
+                    paginator.loadNext()
+                }
+            }
+            job.join()
+            loading.value = false
+        }
     }
 
     fun loadNext() {
@@ -64,25 +88,34 @@ class TrangTimKiemDacSanViewModel @Inject constructor(
     ): MutableList<DacSan> {
         val dsDacSanDaLoc = mutableListOf<DacSan>()
 
-        if (dsVungMien.ds.isEmpty() && dsMuaDacSan.ds.isEmpty() && dsNguyenLieu.ds.isEmpty()) {
-            dsDacSanDaLoc.addAll(ds)
-        }
-
-        if (dsVungMien.ds.isNotEmpty()) {
+        for (dacSan in ds) {
+            var isValid = true
             for (vungMien in dsVungMien.ds) {
-                dsDacSanDaLoc.addAll(ds.filter { e -> e.vung_mien.any { x -> x.id == vungMien.id } })
+                if (!dacSan.vung_mien.any { x -> x.id == vungMien.id }) {
+                    isValid = false
+                    break
+                }
             }
-        }
-
-        if (dsMuaDacSan.ds.isNotEmpty()) {
+            if (!isValid) {
+                continue
+            }
             for (muaDacSan in dsMuaDacSan.ds) {
-                dsDacSanDaLoc.addAll(ds.filter { e -> e.mua_dac_san.any { x -> x.id == muaDacSan.id } })
+                if (!dacSan.mua_dac_san.any { x -> x.id == muaDacSan.id }) {
+                    isValid = false
+                    break
+                }
             }
-        }
-
-        if (dsNguyenLieu.ds.isNotEmpty()) {
+            if (!isValid) {
+                continue
+            }
             for (nguyenLieu in dsNguyenLieu.ds) {
-                dsDacSanDaLoc.addAll(ds.filter { e -> e.thanh_phan.any { x -> x.nguyen_lieu.id == nguyenLieu.id } })
+                if (!dacSan.thanh_phan.any { x -> x.nguyen_lieu.id == nguyenLieu.id }) {
+                    isValid = false
+                    break
+                }
+            }
+            if (isValid) {
+                dsDacSanDaLoc.add(dacSan)
             }
         }
 

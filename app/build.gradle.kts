@@ -100,6 +100,15 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.fragment)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    implementation(libs.font.awesome)
+    implementation(libs.simple.icons)
+    implementation(libs.feather)
+    implementation(libs.css.gg)
+    implementation(libs.tabler.icons)
+    implementation(libs.eva.icons)
+    implementation(libs.octicons)
+    implementation(libs.linea)
+    implementation(libs.line.awesome)
 
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 }

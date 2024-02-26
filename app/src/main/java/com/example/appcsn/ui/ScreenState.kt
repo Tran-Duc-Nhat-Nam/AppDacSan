@@ -1,6 +1,6 @@
 package com.example.appcsn.ui
 
-import com.example.appcsn.data.model.DacSan
+import com.example.appcsn.data.model.dacsan.DacSan
 
 data class ScreenState(
     val isLoading: Boolean = false,

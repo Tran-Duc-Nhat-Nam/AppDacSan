@@ -3,8 +3,8 @@ package com.example.appcsn.viewmodel
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
-import com.example.appcsn.data.model.DacSan
 import com.example.appcsn.data.model.VungMien
+import com.example.appcsn.data.model.dacsan.DacSan
 import com.example.appcsn.data.repository.DacSanRepository
 import com.example.appcsn.data.repository.VungMienRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,6 +54,18 @@ class TrangChuDacSanViewModel @Inject constructor(
 
         try {
             kq = dacSanRepository.like(id, nguoiDung!!.id)
+        } catch (_: Exception) {
+            return false
+        }
+
+        return kq.getOrNull() ?: false
+    }
+
+    suspend fun unlike(id: Int): Boolean {
+        val kq: Result<Boolean>
+
+        try {
+            kq = dacSanRepository.unlike(id, nguoiDung!!.id)
         } catch (_: Exception) {
             return false
         }

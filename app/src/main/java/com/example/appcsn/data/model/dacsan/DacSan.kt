@@ -1,6 +1,10 @@
-package com.example.appcsn.data.model
+package com.example.appcsn.data.model.dacsan
 
 import android.os.Parcelable
+import com.example.appcsn.data.model.HinhAnh
+import com.example.appcsn.data.model.MuaDacSan
+import com.example.appcsn.data.model.ThanhPhan
+import com.example.appcsn.data.model.VungMien
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

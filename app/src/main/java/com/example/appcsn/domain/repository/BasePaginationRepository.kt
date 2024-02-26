@@ -40,6 +40,8 @@ class BasePaginationRepository<Key, Item>(
         currentKey = getNextKey(ds)
         // Chạy hàm onSuccess và chuyền ds cùng key hiện tại vào
         onSuccess(ds, currentKey)
+        // Truyền giá trị false vào hàm để cho biết đang không load dữ liệu
+        onLoading(false)
     }
 
     // Hàm reset key hiện tại thành yêu ban đầu (từ đó hàm loadNext sẽ bắt đầu lại từ đầu)

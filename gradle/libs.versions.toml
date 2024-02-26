@@ -4,6 +4,7 @@ coilCompose = "2.5.0"
 converterGson = "2.9.0"
 core = "1.9.62"
 desugar_jdk_libs = "2.0.4"
+fontAwesome = "1.1.0"
 googleServices = "4.4.1"
 hiltCompiler = "2.50"
 hiltAndroid = "2.50"
@@ -18,7 +19,7 @@ kotlinxCoroutinesAndroid = "1.7.3"
 kotlinxCoroutinesCore = "1.7.3"
 lifecycleRuntimeKtx = "2.7.0"
 activityCompose = "1.8.2"
-composeBom = "2024.02.00"
+composeBom = "2024.02.01"
 retrofit = "2.9.0"
 navigationCompose = "2.7.7"
 firebase-auth = "22.3.1"
@@ -32,7 +33,11 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose"
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 core = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "core" }
 animations = { module = "io.github.raamcosta.compose-destinations:animations-core", version.ref = "core" }
+css-gg = { module = "br.com.devsrsouza.compose.icons:css-gg", version.ref = "fontAwesome" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
+eva-icons = { module = "br.com.devsrsouza.compose.icons:eva-icons", version.ref = "fontAwesome" }
+feather = { module = "br.com.devsrsouza.compose.icons:feather", version.ref = "fontAwesome" }
+font-awesome = { module = "br.com.devsrsouza.compose.icons:font-awesome", version.ref = "fontAwesome" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltCompiler" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
@@ -53,10 +58,15 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "core" }
+line-awesome = { module = "br.com.devsrsouza.compose.icons:line-awesome", version.ref = "fontAwesome" }
+linea = { module = "br.com.devsrsouza.compose.icons:linea", version.ref = "fontAwesome" }
+octicons = { module = "br.com.devsrsouza.compose.icons:octicons", version.ref = "fontAwesome" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebase-auth" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+simple-icons = { module = "br.com.devsrsouza.compose.icons:simple-icons", version.ref = "fontAwesome" }
+tabler-icons = { module = "br.com.devsrsouza.compose.icons:tabler-icons", version.ref = "fontAwesome" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

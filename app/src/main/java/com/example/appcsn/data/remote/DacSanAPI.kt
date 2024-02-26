@@ -1,10 +1,13 @@
 package com.example.appcsn.data.remote
 
-import com.example.appcsn.data.model.DacSan
+import com.example.appcsn.data.model.dacsan.DacSan
+import com.example.appcsn.data.model.dacsan.LuotYeuThichDacSan
 import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
-import retrofit2.http.OPTIONS
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface DacSanAPI {
@@ -20,7 +23,7 @@ interface DacSanAPI {
     @GET("/dacsan/{id}")
     suspend fun docTheoID(@Path("id") id: Int): Response<DacSan>
 
-    @GET("/dacsan/{id}/nguoidung={idNguoiDung}")
+    @GET("/dacsan/{id}/xem")
     suspend fun xem(
         @Path("id") id: Int,
         @Path("idNguoiDung") idNguoiDung: String
@@ -35,15 +38,12 @@ interface DacSanAPI {
     @GET("/dacsan/cachchebien={cachchebien}")
     suspend fun docTheoCachCheBien(@Path("cachchebien") cachCheBien: String): Response<List<DacSan>>
 
-    @OPTIONS("/dacsan/{id}/nguoidung={idNguoiDung}")
-    suspend fun checkLike(
-        @Path("id") id: Int,
-        @Path("idNguoiDung") idNguoiDung: String
-    ): Response<Int>
+    @PUT("/dacsan/yeuthich")
+    suspend fun checkLike(@Body yeuThich: LuotYeuThichDacSan): Response<Boolean>
 
-    @POST("/dacsan/{id}/nguoidung={idNguoiDung}")
-    suspend fun like(
-        @Path("id") id: Int,
-        @Path("idNguoiDung") idNguoiDung: String
-    ): Response<Boolean>
+    @POST("/dacsan/yeuthich")
+    suspend fun like(@Body yeuThich: LuotYeuThichDacSan): Response<Boolean>
+
+    @DELETE("/dacsan/yeuthich")
+    suspend fun unlike(@Body yeuThich: LuotYeuThichDacSan): Response<Boolean>
 }

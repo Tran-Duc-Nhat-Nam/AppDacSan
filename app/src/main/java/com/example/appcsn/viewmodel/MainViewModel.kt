@@ -2,7 +2,7 @@ package com.example.appcsn.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
-import com.example.appcsn.data.model.DacSan
+import com.example.appcsn.data.model.dacsan.DacSan
 import com.example.appcsn.data.repository.DacSanRepository
 import com.example.appcsn.data.repository.TinhThanhRepository
 import com.google.firebase.Firebase

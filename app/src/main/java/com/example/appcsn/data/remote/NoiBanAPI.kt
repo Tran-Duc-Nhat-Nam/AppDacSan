@@ -1,7 +1,7 @@
 package com.example.appcsn.data.remote
 
-import com.example.appcsn.data.model.DacSan
 import com.example.appcsn.data.model.NoiBan
+import com.example.appcsn.data.model.dacsan.DacSan
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

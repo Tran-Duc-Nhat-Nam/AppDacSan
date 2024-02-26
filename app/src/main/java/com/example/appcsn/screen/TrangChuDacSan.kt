@@ -20,8 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.twotone.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +43,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -51,12 +52,14 @@ import com.example.appcsn.data.model.DanhSachMuaDacSan
 import com.example.appcsn.data.model.DanhSachNguyenLieu
 import com.example.appcsn.data.model.DanhSachVungMien
 import com.example.appcsn.screen.destinations.TrangTimKiemDacSanDestination
+import com.example.appcsn.ui.CircleProgressIndicator
 import com.example.appcsn.viewmodel.BaseViewModel
 import com.example.appcsn.viewmodel.TrangChuDacSanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
+import kotlin.math.ceil
 
 @RootNavGraph(start = true)
 @Destination
@@ -68,16 +71,7 @@ fun TrangChuDacSan(
     val coroutineScope = rememberCoroutineScope()
 
     if (dacSanViewModel.loading.value) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(
-                strokeWidth = 6.dp,
-                modifier = Modifier.size(85.dp)
-            )
-        }
+        CircleProgressIndicator()
     } else {
         Box(modifier = Modifier.padding(horizontal = 10.dp)) {
             Column {
@@ -148,10 +142,6 @@ fun TrangChuDacSan(
                                     items(dsDacSanTheoVung)
                                     {
                                         Row {
-                                            HorizontalDivider(
-                                                thickness = 10.dp,
-                                                color = Color.Black
-                                            )
                                             Column(
                                                 modifier = Modifier
                                                     .width(100.dp)
@@ -176,29 +166,41 @@ fun TrangChuDacSan(
                                                     modifier = Modifier
                                                         .size(100.dp)
                                                         .padding(top = 6.dp)
-                                                        .clip(shape = RoundedCornerShape(5.dp))
+                                                        .clip(shape = RoundedCornerShape(10.dp))
                                                 )
                                                 Text(
                                                     text = it.ten,
-                                                    fontWeight = FontWeight.W500,
-                                                    fontSize = 14.sp,
+                                                    fontSize = 11.sp,
                                                     maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    fontWeight = FontWeight.Medium
                                                 )
                                                 Row(
                                                     verticalAlignment = Alignment.CenterVertically,
                                                 ) {
-                                                    Text(
-                                                        text = it.diem_danh_gia.toString(),
-                                                        fontSize = 12.sp,
-                                                        maxLines = 1
-                                                    )
+                                                    for (index in 1..5) {
+                                                        if (ceil(it.diem_danh_gia) >= index) {
+                                                            Icon(
+                                                                imageVector = Icons.Default.Star,
+                                                                contentDescription = null,
+                                                                tint = Color.Yellow,
+                                                                modifier = Modifier.size(12.dp)
+                                                            )
+                                                        } else {
+                                                            Icon(
+                                                                imageVector = Icons.TwoTone.Star,
+                                                                contentDescription = null,
+                                                                modifier = Modifier.size(12.dp)
+                                                            )
+                                                        }
+                                                    }
                                                     Spacer(modifier = Modifier.weight(1F))
                                                     IconToggleButton(
                                                         checked = checked,
                                                         onCheckedChange = { isChecked ->
                                                             if (BaseViewModel.nguoiDung != null) {
-                                                                if (isChecked) {
-                                                                    coroutineScope.launch {
+                                                                coroutineScope.launch {
+                                                                    if (!isChecked) {
                                                                         val kq =
                                                                             dacSanViewModel.like(it.id)
                                                                         if (kq) {
@@ -208,15 +210,21 @@ fun TrangChuDacSan(
                                                                                 Toast.LENGTH_SHORT
                                                                             ).show()
                                                                         }
+                                                                    } else {
+                                                                        val kq =
+                                                                            dacSanViewModel.unlike(
+                                                                                it.id
+                                                                            )
+                                                                        if (kq) {
+                                                                            Toast.makeText(
+                                                                                context,
+                                                                                "Đã hủy yêu thích ${it.ten}.",
+                                                                                Toast.LENGTH_SHORT
+                                                                            ).show()
+                                                                        }
                                                                     }
-                                                                } else {
-                                                                    Toast.makeText(
-                                                                        context,
-                                                                        "Đã hủy yêu thích ${it.ten}.",
-                                                                        Toast.LENGTH_SHORT
-                                                                    ).show()
+                                                                    checked = isChecked
                                                                 }
-                                                                checked = isChecked
                                                             } else {
                                                                 Toast.makeText(
                                                                     context,
@@ -224,7 +232,7 @@ fun TrangChuDacSan(
                                                                     Toast.LENGTH_SHORT
                                                                 ).show()
                                                             }
-                                                        }, modifier = Modifier.size(14.dp)
+                                                        }, modifier = Modifier.size(12.dp)
                                                     ) {
                                                         if (checked) {
                                                             Icon(

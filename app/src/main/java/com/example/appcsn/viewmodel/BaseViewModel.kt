@@ -4,8 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.appcsn.data.model.DacSan
 import com.example.appcsn.data.model.NguoiDung
+import com.example.appcsn.data.model.dacsan.DacSan
 import com.example.appcsn.screen.destinations.TrangChiTietDacSanDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 

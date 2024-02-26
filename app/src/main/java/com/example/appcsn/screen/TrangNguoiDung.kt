@@ -45,6 +45,9 @@ import androidx.compose.ui.unit.dp
 import com.example.appcsn.viewmodel.BaseViewModel
 import com.example.appcsn.viewmodel.TrangNguoiDungViewModel
 import com.ramcosta.composedestinations.annotation.Destination
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Eye
+import compose.icons.feathericons.EyeOff
 import kotlinx.coroutines.DelicateCoroutinesApi
 import java.time.Instant
 import java.time.ZoneId
@@ -115,8 +118,8 @@ fun TrangNguoiDung(
                         visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         trailingIcon = {
                             val image = if (isVisible)
-                                Icons.Default.Warning
-                            else Icons.Default.Lock
+                                FeatherIcons.Eye
+                            else FeatherIcons.EyeOff
 
                             // Please provide localized description for accessibility services
                             val description =
