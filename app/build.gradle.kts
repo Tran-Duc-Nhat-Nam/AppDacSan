@@ -93,6 +93,7 @@ dependencies {
     implementation(libs.core)
     implementation(libs.animations)
     implementation(("androidx.compose.material3:material3:1.2.0-beta02"))
+    implementation(libs.androidx.material)
     ksp(libs.ksp)
 
     implementation(libs.hilt.android)

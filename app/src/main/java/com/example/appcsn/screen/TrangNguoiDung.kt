@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,9 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
@@ -48,12 +46,12 @@ import com.ramcosta.composedestinations.annotation.Destination
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Eye
 import compose.icons.feathericons.EyeOff
-import kotlinx.coroutines.DelicateCoroutinesApi
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 
 @OptIn(
-    ExperimentalMaterial3Api::class, DelicateCoroutinesApi::class,
+    ExperimentalMaterial3Api::class,
     ExperimentalAnimationApi::class
 )
 @Destination
@@ -109,7 +107,7 @@ fun TrangNguoiDung(
                         shape = RoundedCornerShape(35.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(10.dp)
+                            .padding(5.dp)
                     )
                     OutlinedTextField(
                         value = nguoiDungViewModel.pass.value,
@@ -117,22 +115,19 @@ fun TrangNguoiDung(
                         label = { Text(text = "Mật khẩu") },
                         visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         trailingIcon = {
-                            val image = if (isVisible)
-                                FeatherIcons.Eye
-                            else FeatherIcons.EyeOff
-
-                            // Please provide localized description for accessibility services
-                            val description =
-                                if (isVisible) "Hide password" else "Show password"
-
                             IconButton(onClick = { isVisible = !isVisible }) {
-                                Icon(imageVector = image, description)
+                                Icon(
+                                    imageVector = if (isVisible)
+                                        FeatherIcons.Eye
+                                    else FeatherIcons.EyeOff,
+                                    if (isVisible) "Hide password" else "Show password"
+                                )
                             }
                         },
                         shape = RoundedCornerShape(35.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(10.dp)
+                            .padding(5.dp)
                     )
                     transition.AnimatedVisibility(
                         visible = { isDangKy },
@@ -146,22 +141,19 @@ fun TrangNguoiDung(
                                 label = { Text(text = "Xác nhận mật khẩu") },
                                 visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
                                 trailingIcon = {
-                                    val image = if (isVisible)
-                                        Icons.Default.Warning
-                                    else Icons.Default.Lock
-
-                                    // Please provide localized description for accessibility services
-                                    val description =
-                                        if (isVisible) "Hide password" else "Show password"
-
                                     IconButton(onClick = { isVisible = !isVisible }) {
-                                        Icon(imageVector = image, description)
+                                        Icon(
+                                            imageVector = if (isVisible)
+                                                FeatherIcons.Eye
+                                            else FeatherIcons.EyeOff,
+                                            if (isVisible) "Hide password" else "Show password"
+                                        )
                                     }
                                 },
                                 shape = RoundedCornerShape(35.dp),
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(10.dp)
+                                    .padding(5.dp)
                             )
                             OutlinedTextField(
                                 value = nguoiDungViewModel.ten.value,
@@ -170,7 +162,7 @@ fun TrangNguoiDung(
                                 shape = RoundedCornerShape(35.dp),
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(10.dp)
+                                    .padding(5.dp)
                             )
                             OutlinedTextField(
                                 value = nguoiDungViewModel.sdt.value,
@@ -179,15 +171,19 @@ fun TrangNguoiDung(
                                 shape = RoundedCornerShape(35.dp),
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(10.dp)
+                                    .padding(5.dp)
                             )
-                            Text(text = "Ngày sinh")
+                            Text(
+                                text = "Ngày sinh", modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 5.dp, horizontal = 15.dp)
+                            )
                             OutlinedButton(
                                 onClick = { isDatePicking = !isDatePicking },
                                 shape = RoundedCornerShape(35.dp),
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(10.dp)
+                                    .padding(5.dp)
                             ) {
                                 Text(text = nguoiDungViewModel.date.value.toString())
                             }
@@ -197,11 +193,12 @@ fun TrangNguoiDung(
                                     confirmButton = {
                                         TextButton(onClick = {
                                             nguoiDungViewModel.date.value =
-                                                dateState.selectedDateMillis?.let {
-                                                    Instant.ofEpochMilli(it).atZone(
-                                                        ZoneId.systemDefault()
-                                                    ).toLocalDate()
-                                                }
+                                                if (dateState.selectedDateMillis != null)
+                                                    Instant.ofEpochMilli(dateState.selectedDateMillis!!)
+                                                        .atZone(
+                                                            ZoneId.systemDefault()
+                                                        ).toLocalDate() else LocalDate.now()
+
                                             isDatePicking = !isDatePicking
                                         }) {
                                             Text(text = "Chọn")
@@ -210,18 +207,29 @@ fun TrangNguoiDung(
                                     DatePicker(state = dateState)
                                 }
                             }
-                            Text(text = "Giới tính")
-                            Row {
-                                RadioButton(
-                                    selected = nguoiDungViewModel.isNam.value,
-                                    onClick = { nguoiDungViewModel.isNam.value = true }
-                                )
-                                Text(text = "Nam")
-                                RadioButton(
-                                    selected = !nguoiDungViewModel.isNam.value,
-                                    onClick = { nguoiDungViewModel.isNam.value = false }
-                                )
-                                Text(text = "Nữ")
+                            Text(
+                                text = "Giới tính", modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 5.dp, horizontal = 15.dp)
+                            )
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    RadioButton(
+                                        selected = nguoiDungViewModel.isNam.value,
+                                        onClick = { nguoiDungViewModel.isNam.value = true }
+                                    )
+                                    Text(text = "Nam")
+                                }
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    RadioButton(
+                                        selected = !nguoiDungViewModel.isNam.value,
+                                        onClick = { nguoiDungViewModel.isNam.value = false }
+                                    )
+                                    Text(text = "Nữ")
+                                }
                             }
                             ExposedDropdownMenuBox(
                                 expanded = isChonTinhThanh,
@@ -242,7 +250,7 @@ fun TrangNguoiDung(
                                     shape = RoundedCornerShape(35.dp),
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(10.dp)
+                                        .padding(5.dp)
                                         .menuAnchor()
                                 )
                                 ExposedDropdownMenu(
@@ -252,7 +260,7 @@ fun TrangNguoiDung(
                                     },
                                     modifier = Modifier
                                         .clip(shape = RoundedCornerShape(35.dp))
-                                        .padding(10.dp)
+                                        .padding(5.dp)
                                 ) {
                                     nguoiDungViewModel.dsTinhThanh.forEach { tinhThanh ->
                                         DropdownMenuItem(
@@ -329,7 +337,7 @@ fun TrangNguoiDung(
                                         shape = RoundedCornerShape(35.dp),
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(10.dp)
+                                            .padding(5.dp)
                                             .menuAnchor()
                                     )
                                     ExposedDropdownMenu(
@@ -339,7 +347,7 @@ fun TrangNguoiDung(
                                         },
                                         modifier = Modifier
                                             .clip(shape = RoundedCornerShape(35.dp))
-                                            .padding(10.dp)
+                                            .padding(5.dp)
                                     ) {
                                         nguoiDungViewModel.dsPhuongXa.forEach { phuongXa ->
                                             DropdownMenuItem(
@@ -357,7 +365,7 @@ fun TrangNguoiDung(
                     ElevatedButton(
                         onClick = { nguoiDungViewModel.dangNhap(context) }, modifier = Modifier
                             .fillMaxWidth()
-                            .padding(10.dp)
+                            .padding(5.dp)
                     ) {
                         Text(text = "Đăng nhập")
                     }
@@ -372,7 +380,7 @@ fun TrangNguoiDung(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 10.dp)
+                            .padding(5.dp)
                     ) {
                         Text(text = "Đăng ký")
                     }

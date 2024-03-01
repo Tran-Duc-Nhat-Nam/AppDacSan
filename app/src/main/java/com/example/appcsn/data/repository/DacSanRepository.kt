@@ -1,7 +1,6 @@
 package com.example.appcsn.data.repository
 
 import com.example.appcsn.data.model.dacsan.DacSan
-import com.example.appcsn.data.model.dacsan.LuotYeuThichDacSan
 import com.example.appcsn.data.remote.DacSanAPI
 
 class DacSanRepository(
@@ -37,8 +36,17 @@ class DacSanRepository(
         }
     }
 
+    suspend fun docTrangTheoTen(ten: String, pageSize: Int, pageIndex: Int): Result<List<DacSan>> {
+        val kq = api.docTrangTheoTen(ten, pageSize, pageIndex)
+        return if (kq.body() == null) {
+            Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
+        } else {
+            Result.success(kq.body()!!)
+        }
+    }
+
     suspend fun like(idDacSan: Int, idNguoiDung: String): Result<Boolean> {
-        val kq = api.like(LuotYeuThichDacSan(idDacSan, idNguoiDung))
+        val kq = api.like(idDacSan, idNguoiDung)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Yêu thích thất bại"))
         } else {
@@ -47,7 +55,7 @@ class DacSanRepository(
     }
 
     suspend fun unlike(idDacSan: Int, idNguoiDung: String): Result<Boolean> {
-        val kq = api.like(LuotYeuThichDacSan(idDacSan, idNguoiDung))
+        val kq = api.unlike(idDacSan, idNguoiDung)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Bỏ yêu thích thất bại"))
         } else {
@@ -56,7 +64,7 @@ class DacSanRepository(
     }
 
     suspend fun checkLike(idDacSan: Int, idNguoiDung: String): Result<Boolean> {
-        val kq = api.checkLike(LuotYeuThichDacSan(idDacSan, idNguoiDung))
+        val kq = api.checkLike(idDacSan, idNguoiDung)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Kiểm tra yêu thích thất bại"))
         } else {

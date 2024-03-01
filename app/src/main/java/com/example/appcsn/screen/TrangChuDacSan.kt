@@ -28,12 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -73,7 +68,7 @@ fun TrangChuDacSan(
     if (dacSanViewModel.loading.value) {
         CircleProgressIndicator()
     } else {
-        Box(modifier = Modifier.padding(horizontal = 10.dp)) {
+        Box(modifier = Modifier.padding(10.dp)) {
             Column {
                 Surface(shape = RoundedCornerShape(5.dp), shadowElevation = 3.dp) {
                     Text(
@@ -86,7 +81,7 @@ fun TrangChuDacSan(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(shape = RoundedCornerShape(5.dp))
-                            .background(Color(10, 124, 235))
+                            .background(MaterialTheme.colorScheme.primary)
                             .padding(vertical = 10.dp)
                     )
                 }
@@ -151,13 +146,8 @@ fun TrangChuDacSan(
                                                         dacSanViewModel.xemDacSan(navigator, it)
                                                     },
                                             ) {
-                                                var checked by remember { mutableStateOf(false) }
                                                 val context = LocalContext.current
-                                                if (BaseViewModel.nguoiDung != null) {
-                                                    LaunchedEffect(key1 = true) {
-                                                        checked = dacSanViewModel.checkLike(it.id)
-                                                    }
-                                                }
+
                                                 AsyncImage(
                                                     contentScale = ContentScale.Crop,
                                                     model = it.hinh_dai_dien.url,
@@ -196,11 +186,11 @@ fun TrangChuDacSan(
                                                     }
                                                     Spacer(modifier = Modifier.weight(1F))
                                                     IconToggleButton(
-                                                        checked = checked,
+                                                        checked = dacSanViewModel.dsYeuThichDacSan[it.id]!!,
                                                         onCheckedChange = { isChecked ->
                                                             if (BaseViewModel.nguoiDung != null) {
                                                                 coroutineScope.launch {
-                                                                    if (!isChecked) {
+                                                                    if (isChecked) {
                                                                         val kq =
                                                                             dacSanViewModel.like(it.id)
                                                                         if (kq) {
@@ -223,7 +213,6 @@ fun TrangChuDacSan(
                                                                             ).show()
                                                                         }
                                                                     }
-                                                                    checked = isChecked
                                                                 }
                                                             } else {
                                                                 Toast.makeText(
@@ -234,7 +223,7 @@ fun TrangChuDacSan(
                                                             }
                                                         }, modifier = Modifier.size(12.dp)
                                                     ) {
-                                                        if (checked) {
+                                                        if (dacSanViewModel.dsYeuThichDacSan[it.id]!!) {
                                                             Icon(
                                                                 imageVector = Icons.Default.Favorite,
                                                                 contentDescription = "Đã yêu thích",

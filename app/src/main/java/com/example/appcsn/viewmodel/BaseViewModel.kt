@@ -14,9 +14,6 @@ open class BaseViewModel : ViewModel() {
 
     companion object {
         var nguoiDung by mutableStateOf<NguoiDung?>(null)
-        fun signIn(nd: NguoiDung) {
-            nguoiDung = nd
-        }
     }
 
     fun xemDacSan(

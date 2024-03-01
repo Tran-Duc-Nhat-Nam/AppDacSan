@@ -16,7 +16,6 @@ import com.example.appcsn.data.repository.PhuongXaRepository
 import com.example.appcsn.data.repository.QuanHuyenRepository
 import com.example.appcsn.data.repository.TinhThanhRepository
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -66,6 +65,18 @@ class TrangNguoiDungViewModel @Inject constructor(
         }
     }
 
+    suspend fun docNguoiDungFirebase() {
+        loading.value = true
+        val user = Firebase.auth.currentUser
+        if (user != null) {
+            val job = viewModelScope.launch {
+                nguoiDung = nguoiDungRepository.docTheoID(user.uid).getOrNull()
+            }
+            job.join()
+        }
+        loading.value = false
+    }
+
     private suspend fun docTinhThanh() {
         val kq = tinhThanhRepository.docDanhSach()
 
@@ -94,9 +105,9 @@ class TrangNguoiDungViewModel @Inject constructor(
         }
     }
 
-    fun dangNhap(context: Context): FirebaseUser? {
+    fun dangNhap(context: Context) {
         if (email.value.isEmpty() || pass.value.isEmpty()) {
-            return null
+            return
         }
         auth.signInWithEmailAndPassword(email.value, pass.value)
             .addOnCompleteListener(context as Activity) { task ->
@@ -105,7 +116,7 @@ class TrangNguoiDungViewModel @Inject constructor(
                     viewModelScope.launch {
                         val kq = nguoiDungRepository.docTheoID(task.result.user!!.uid)
                         if (kq.getOrNull() != null) {
-                            signIn(kq.getOrNull()!!)
+                            nguoiDung = kq.getOrNull()!!
                         } else {
                             Toast.makeText(context, "Lấy thông tin thất bại", Toast.LENGTH_SHORT)
                                 .show()
@@ -119,11 +130,12 @@ class TrangNguoiDungViewModel @Inject constructor(
                     ).show()
                 }
             }
-
-        return auth.currentUser
     }
 
     fun dangKy(context: Context) {
+        if (email.value.isEmpty() || pass.value.isEmpty()) {
+            return
+        }
         auth.createUserWithEmailAndPassword(
             email.value,
             pass.value

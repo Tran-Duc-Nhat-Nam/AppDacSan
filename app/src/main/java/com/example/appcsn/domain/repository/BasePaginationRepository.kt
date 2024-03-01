@@ -36,7 +36,7 @@ class BasePaginationRepository<Key, Item>(
             onLoading(false)
             return
         }
-        // Gán key tiếp theo  cho biến currentKey
+        // Gán key tiếp theo cho biến currentKey
         currentKey = getNextKey(ds)
         // Chạy hàm onSuccess và chuyền ds cùng key hiện tại vào
         onSuccess(ds, currentKey)

@@ -2,6 +2,7 @@ package com.example.appcsn.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.viewModelScope
 import com.example.appcsn.data.model.VungMien
 import com.example.appcsn.data.model.dacsan.DacSan
@@ -18,6 +19,7 @@ class TrangChuDacSanViewModel @Inject constructor(
 ) : BaseViewModel() {
     var dsDacSan = mutableStateListOf<DacSan>()
     var dsVungMien = mutableStateListOf<VungMien>()
+    val dsYeuThichDacSan = mutableStateMapOf<Int, Boolean>()
 
     init {
         viewModelScope.launch {
@@ -37,6 +39,9 @@ class TrangChuDacSanViewModel @Inject constructor(
         if (kq.getOrNull() != null) {
             dsDacSan.addAll(kq.getOrNull()!!)
             Log.d("Data", "Đặc sản: ${dsDacSan.size}")
+            for (dacSan in dsDacSan) {
+                checkLike(dacSan.id)
+            }
         }
     }
 
@@ -53,12 +58,13 @@ class TrangChuDacSanViewModel @Inject constructor(
         val kq: Result<Boolean>
 
         try {
-            kq = dacSanRepository.like(id, nguoiDung!!.id)
+            kq = dacSanRepository.unlike(id, nguoiDung!!.id)
+            dsYeuThichDacSan[id] = kq.getOrNull() == true
         } catch (_: Exception) {
-            return false
+            dsYeuThichDacSan[id] = false
         }
 
-        return kq.getOrNull() ?: false
+        return dsYeuThichDacSan[id]!!
     }
 
     suspend fun unlike(id: Int): Boolean {
@@ -66,22 +72,28 @@ class TrangChuDacSanViewModel @Inject constructor(
 
         try {
             kq = dacSanRepository.unlike(id, nguoiDung!!.id)
+            dsYeuThichDacSan[id] = kq.getOrNull() == false
         } catch (_: Exception) {
-            return false
+            dsYeuThichDacSan[id] = true
         }
 
-        return kq.getOrNull() ?: false
+        return dsYeuThichDacSan[id]!!
     }
 
-    suspend fun checkLike(id: Int): Boolean {
-        val kq: Result<Boolean>
+    private suspend fun checkLike(id: Int): Boolean {
+        return if (dsYeuThichDacSan[id] != null) {
+            dsYeuThichDacSan[id]!!
+        } else {
+            val kq: Result<Boolean>
 
-        try {
-            kq = dacSanRepository.checkLike(id, nguoiDung!!.id)
-        } catch (_: Exception) {
-            return false
+            try {
+                kq = dacSanRepository.checkLike(id, nguoiDung!!.id)
+                dsYeuThichDacSan[id] = kq.getOrNull() == true
+            } catch (_: Exception) {
+                dsYeuThichDacSan[id] = false
+            }
+
+            dsYeuThichDacSan[id]!!
         }
-
-        return kq.getOrNull() ?: false
     }
 }

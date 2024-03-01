@@ -28,10 +28,10 @@ class TrangTimKiemDacSanViewModel @Inject constructor(
             state = state.copy(isLoading = it)
         },
         onRequest = { nextPage: Int ->
-            try {
-                Result.success(dsDacSan.subList(nextPage, nextPage + 1))
-            } catch (e: Exception) {
-                Result.failure(e)
+            if (ten.isNotEmpty()) {
+                repository.docTrangTheoTen(ten, 2, nextPage)
+            } else {
+                repository.docTheoTrang(2, nextPage)
             }
         },
         getNextKey = {
@@ -80,7 +80,14 @@ class TrangTimKiemDacSanViewModel @Inject constructor(
     fun loadNext() {
         viewModelScope.launch {
             paginator.loadNext()
+            Log.d("Paging", "State: ${state.ds.size}")
         }
+    }
+
+    fun reset() {
+        state = state.copy(pageIndex = 0, ds = emptyList(), isEnd = false)
+        paginator.reset()
+        loadNext()
     }
 
     private fun locKetQua(

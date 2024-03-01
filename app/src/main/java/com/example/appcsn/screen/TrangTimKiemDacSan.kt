@@ -15,9 +15,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.twotone.Star
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
@@ -37,6 +43,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -50,7 +57,9 @@ import com.example.appcsn.ui.CircleProgressIndicator
 import com.example.appcsn.viewmodel.TrangTimKiemDacSanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlin.math.ceil
 
+@OptIn(ExperimentalMaterialApi::class)
 @Destination
 @Composable
 fun TrangTimKiemDacSan(
@@ -67,19 +76,28 @@ fun TrangTimKiemDacSan(
     viewModel.dsNguyenLieu = dsNguyenLieu
     val state = viewModel.state
 
+    val isRefreshing by remember {
+        mutableStateOf(false)
+    }
+
+    val refreshState =
+        rememberPullRefreshState(refreshing = isRefreshing, onRefresh = { viewModel.reset() })
+
     LaunchedEffect(true) {
-        viewModel.docDuLieu()
+        viewModel.loadNext()
     }
 
     if (viewModel.loading.value) {
         CircleProgressIndicator()
     } else {
-        Column(
+        Box(
             Modifier
-                .fillMaxSize()
+                .pullRefresh(refreshState),
         ) {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp)
             ) {
                 items(items = state.ds)
                 {
@@ -90,15 +108,15 @@ fun TrangTimKiemDacSan(
                     Surface(
                         shadowElevation = 3.dp,
                         shape = RoundedCornerShape(15.dp),
-                        modifier = Modifier.padding(10.dp)
+                        modifier = Modifier.padding(5.dp)
                     ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(shape = RoundedCornerShape(15.dp))
-                                .background(Color(65, 105, 225))
+                                .background(Color(30, 144, 255))
                                 .clickable {
-//                            navController.navigate("${Screen.TrangDacSan.TrangChiTietDacSan.route}/${it.id}")
+                                    //                            navController.navigate("${Screen.TrangDacSan.TrangChiTietDacSan.route}/${it.id}")
                                     navigator.navigate(
                                         TrangChiTietDacSanDestination(
                                             dacSan = it
@@ -115,23 +133,39 @@ fun TrangTimKiemDacSan(
                                 model = it.hinh_dai_dien.url,
                                 contentDescription = it.ten,
                                 error = painterResource(id = R.drawable.image_not_found_128),
-                                modifier = Modifier.size(115.dp)
+                                modifier = Modifier.size(100.dp)
                             )
-                            Column(modifier = Modifier.padding(8.dp)) {
+                            Column(
+                                modifier = Modifier.padding(
+                                    horizontal = 8.dp,
+                                    vertical = 4.dp
+                                )
+                            ) {
                                 Text(
                                     text = it.ten,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 14.sp,
+                                    fontSize = 12.sp,
                                     color = Color.White,
                                     maxLines = 1
                                 )
-                                Row {
-                                    Text(
-                                        text = it.diem_danh_gia.toString(),
-                                        fontSize = 12.sp,
-                                        color = Color.White,
-                                        maxLines = 1
-                                    )
+                                Row(Modifier.padding(vertical = 4.dp)) {
+                                    for (index in 1..5) {
+                                        if (ceil(it.diem_danh_gia) >= index) {
+                                            Icon(
+                                                imageVector = Icons.Default.Star,
+                                                contentDescription = null,
+                                                tint = Color.Yellow,
+                                                modifier = Modifier.size(12.dp)
+                                            )
+                                        } else {
+                                            Icon(
+                                                imageVector = Icons.TwoTone.Star,
+                                                contentDescription = null,
+                                                tint = Color.White,
+                                                modifier = Modifier.size(12.dp)
+                                            )
+                                        }
+                                    }
                                     Spacer(modifier = Modifier.weight(1F))
                                     IconToggleButton(
                                         checked = checked,
@@ -150,7 +184,7 @@ fun TrangTimKiemDacSan(
                                                 ).show()
                                             }
                                             checked = isChecked
-                                        }, modifier = Modifier.size(14.dp)
+                                        }, modifier = Modifier.size(12.dp)
                                     ) {
                                         if (checked) {
                                             Icon(
@@ -167,15 +201,13 @@ fun TrangTimKiemDacSan(
                                         }
                                     }
                                 }
-                                var moTa = "Chưa có thông tin"
-                                if (it.mo_ta != null) {
-                                    moTa = it.mo_ta
-                                }
                                 Text(
-                                    text = "Mô tả: $moTa",
-                                    fontSize = 13.sp,
+                                    text = "Mô tả: ${it.mo_ta ?: "Chưa có thông tin"}",
+                                    fontSize = 11.sp,
                                     color = Color.White,
-                                    maxLines = 2
+                                    maxLines = 3,
+                                    lineHeight = 15.sp,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
                         }
@@ -189,13 +221,16 @@ fun TrangTimKiemDacSan(
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator(
-                                strokeWidth = 2.dp,
-                                modifier = Modifier.size(35.dp)
+                                strokeWidth = 3.dp,
+                                modifier = Modifier
+                                    .size(35.dp)
+                                    .padding(5.dp)
                             )
                         }
                     }
                 }
             }
+            PullRefreshIndicator(isRefreshing, refreshState, Modifier.align(Alignment.TopCenter))
         }
     }
 }

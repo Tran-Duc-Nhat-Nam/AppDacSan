@@ -9,6 +9,7 @@ data class NavItem(
     val index: Int,
     val name: String,
     val icon: ImageVector,
+    val selectedIcon: ImageVector,
     val isNew: Boolean = false,
     val updateNews: Int = 0,
 )

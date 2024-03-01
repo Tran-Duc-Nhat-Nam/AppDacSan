@@ -18,4 +18,6 @@ data class DacSan(
     val thanh_phan: List<ThanhPhan>,
     val hinh_dai_dien: HinhAnh,
     val diem_danh_gia: Double = 0.0,
+    val luot_danh_gia: Int = 0,
+    val luot_xem: Int = 0,
 ) : Parcelable

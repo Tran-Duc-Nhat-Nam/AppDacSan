@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -23,10 +25,12 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconToggleButtonColors
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -40,7 +44,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
@@ -53,6 +56,7 @@ import com.example.appcsn.screen.destinations.TrangChuDacSanDestination
 import com.example.appcsn.screen.destinations.TrangChuNoiBanDestination
 import com.example.appcsn.screen.destinations.TrangNguoiDungDestination
 import com.example.appcsn.screen.destinations.TrangTimKiemDacSanDestination
+import com.example.appcsn.ui.CircleProgressIndicator
 import com.example.appcsn.ui.NavItem
 import com.example.appcsn.ui.theme.AppTheme
 import com.example.appcsn.viewmodel.MainViewModel
@@ -75,19 +79,22 @@ class MainActivity : ComponentActivity() {
             destination = TrangChuDacSanDestination,
             index = 1,
             name = "Đặc sản",
-            icon = Icons.Default.Home
+            icon = Icons.Outlined.Home,
+            selectedIcon = Icons.Default.Home
         ),
         NavItem(
             destination = TrangChuNoiBanDestination,
             index = 2,
             name = "Nơi bán",
-            icon = Icons.Default.LocationOn
+            icon = Icons.Outlined.LocationOn,
+            selectedIcon = Icons.Default.LocationOn
         ),
         NavItem(
             destination = TrangNguoiDungDestination,
             index = 3,
             name = "Người dùng",
-            icon = Icons.Default.Person
+            icon = Icons.Outlined.Person,
+            selectedIcon = Icons.Default.Person
         )
     )
 
@@ -113,140 +120,146 @@ class MainActivity : ComponentActivity() {
                 var pos by remember {
                     mutableIntStateOf(1)
                 }
-                val navColor = IconToggleButtonColors(
-                    checkedContainerColor = Color(65, 105, 225),
-                    checkedContentColor = Color(0, 191, 255),
-                    containerColor = Color(65, 105, 225),
-                    contentColor = Color.White,
-                    disabledContainerColor = Color(65, 105, 225),
-                    disabledContentColor = Color.Gray
-                )
                 LaunchedEffect(key1 = true) {
                     connected = mainViewModel.checkConnect()
+                    nguoiDungViewModel.docNguoiDungFirebase()
                 }
                 val navController = rememberNavController()
-                Scaffold(
-                    topBar = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
+                if (nguoiDungViewModel.loading.value) {
+                    Scaffold(Modifier.fillMaxSize()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(it)
                         ) {
-                            SearchBar(
-                                query = searchText,
-                                onQueryChange = {
-                                    searchText = it
-                                    mainViewModel.docDuLieu(it)
-                                },
-                                onSearch = {
-                                    navController.navigate(
-                                        TrangTimKiemDacSanDestination(
-                                            it,
-                                            DanhSachVungMien(),
-                                            DanhSachMuaDacSan(),
-                                            DanhSachNguyenLieu()
+                            CircleProgressIndicator()
+                        }
+                    }
+                } else {
+                    Scaffold(
+                        topBar = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                SearchBar(
+                                    query = searchText,
+                                    onQueryChange = {
+                                        searchText = it
+                                        mainViewModel.docDuLieu(it)
+                                    },
+                                    onSearch = {
+                                        navController.navigate(
+                                            TrangTimKiemDacSanDestination(
+                                                it,
+                                                DanhSachVungMien(),
+                                                DanhSachMuaDacSan(),
+                                                DanhSachNguyenLieu()
+                                            )
                                         )
-                                    )
-                                    active = false
-                                },
-                                active = active,
-                                onActiveChange = {
-                                    active = it
-                                },
-                                placeholder = { Text("Tìm kiếm") },
-                                leadingIcon = {
-                                    if (active) {
-                                        IconButton(onClick = { active = false }) {
+                                        active = false
+                                    },
+                                    active = active,
+                                    onActiveChange = {
+                                        active = it
+                                    },
+                                    placeholder = { Text("Tìm kiếm") },
+                                    leadingIcon = {
+                                        if (active) {
+                                            IconButton(onClick = { active = false }) {
+                                                Icon(
+                                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                                    contentDescription = null,
+                                                )
+                                            }
+                                        } else {
                                             Icon(
-                                                Icons.AutoMirrored.Filled.ArrowBack,
+                                                Icons.Default.Search,
                                                 contentDescription = null,
                                             )
                                         }
-                                    } else {
+                                    },
+                                    trailingIcon = {
                                         Icon(
-                                            Icons.Default.Search,
+                                            Icons.Default.MoreVert,
                                             contentDescription = null,
                                         )
-                                    }
-                                },
-                                trailingIcon = {
-                                    Icon(
-                                        Icons.Default.MoreVert,
-                                        contentDescription = null,
-                                    )
-                                },
-                            ) {
-                                LazyColumn(
-                                    Modifier
-                                        .padding(horizontal = 15.dp, vertical = 10.dp)
+                                    },
                                 ) {
-                                    items(mainViewModel.dsDacSan) { dacSan ->
-                                        Text(
-                                            text = dacSan.ten,
-                                            modifier = Modifier.clickable {
-                                                navController.navigate(
-                                                    TrangChiTietDacSanDestination(
-                                                        dacSan
+                                    LazyColumn(
+                                        Modifier
+                                            .padding(horizontal = 15.dp, vertical = 10.dp)
+                                    ) {
+                                        items(mainViewModel.dsDacSan) { dacSan ->
+                                            Text(
+                                                text = dacSan.ten,
+                                                modifier = Modifier.clickable {
+                                                    navController.navigate(
+                                                        TrangChiTietDacSanDestination(
+                                                            dacSan
+                                                        )
                                                     )
-                                                )
-                                                active = false
-                                            }
-                                        )
+                                                    active = false
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             }
-                        }
-                    },
-                    bottomBar = {
-                        NavigationBar(Modifier.height(115.dp)) {
-                            dsNavItem.forEach { navItem ->
-                                NavigationBarItem(
-                                    selected = pos == navItem.index,
-                                    onClick = {
-                                        navController.navigate(navItem.destination.route)
-                                        pos = navItem.index
-                                    },
-                                    icon = {
-                                        Icon(
-                                            imageVector = navItem.icon,
-                                            contentDescription = navItem.name,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    },
-                                    label = { Text(text = navItem.name, fontSize = 12.sp) })
+                        },
+                        bottomBar = {
+                            NavigationBar(Modifier.wrapContentHeight()) {
+                                dsNavItem.forEach { navItem ->
+                                    NavigationBarItem(
+                                        selected = pos == navItem.index,
+                                        onClick = {
+                                            navController.navigate(navItem.destination.route)
+                                            pos = navItem.index
+                                        },
+                                        icon = {
+                                            Icon(
+                                                imageVector = if (pos == navItem.index) navItem.selectedIcon else navItem.icon,
+                                                contentDescription = navItem.name,
+                                                modifier = Modifier
+                                                    .size(18.dp)
+                                            )
+                                        },
+                                        label = { Text(text = navItem.name, fontSize = 12.sp) },
+                                        modifier = Modifier
+                                            .height(25.dp)
+                                    )
+                                }
                             }
-                        }
-                    },
-                    modifier = Modifier.fillMaxSize()
-                ) { innerPadding ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                top = innerPadding.calculateTopPadding() + 10.dp,
-                                bottom = innerPadding.calculateBottomPadding()
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    ) { innerPadding ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(innerPadding)
+                        ) {
+                            DestinationsNavHost(
+                                navController = navController,
+                                navGraph = NavGraphs.root,
+                                startRoute = if (connected) {
+                                    TrangChuDacSanDestination
+                                } else {
+                                    TrangNguoiDungDestination
+                                },
+                                dependenciesContainerBuilder = {
+                                    dependency(TrangChuDacSanDestination) {
+                                        dacSanViewModel
+                                    }
+                                    dependency(TrangChuNoiBanDestination) {
+                                        noiBanViewModel
+                                    }
+                                    dependency(TrangNguoiDungDestination) {
+                                        nguoiDungViewModel
+                                    }
+                                }
                             )
-                    ) {
-                        DestinationsNavHost(
-                            navController = navController,
-                            navGraph = NavGraphs.root,
-                            startRoute = if (connected) {
-                                TrangChuDacSanDestination
-                            } else {
-                                TrangNguoiDungDestination
-                            },
-                            dependenciesContainerBuilder = {
-                                dependency(TrangChuDacSanDestination) {
-                                    dacSanViewModel
-                                }
-                                dependency(TrangChuNoiBanDestination) {
-                                    noiBanViewModel
-                                }
-                                dependency(TrangNguoiDungDestination) {
-                                    nguoiDungViewModel
-                                }
-                            }
-                        )
+                        }
                     }
                 }
             }
