@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.appcsn.screen.destinations.TrangChiTietNoiBanDestination
 import com.example.appcsn.ui.CircleProgressIndicator
+import com.example.appcsn.ui.PageHeader
 import com.example.appcsn.viewmodel.TrangChuNoiBanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -35,10 +36,10 @@ fun TrangChuNoiBan(
             Modifier
                 .fillMaxSize()
         ) {
+            PageHeader(text = "Nơi bán")
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(5.dp),
             ) {
                 items(items = noiBanViewModel.dsNoiBan)
                 {
@@ -46,7 +47,7 @@ fun TrangChuNoiBan(
                         shape = RoundedCornerShape(10.dp),
                         color = Color(10, 124, 235),
                         modifier = Modifier
-                            .padding(5.dp)
+                            .padding(10.dp)
                             .clickable {
                                 navigator.navigate(TrangChiTietNoiBanDestination(noiBan = it))
                             }
@@ -59,7 +60,7 @@ fun TrangChuNoiBan(
                             Text(
                                 text = it.ten,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 12.sp,
+                                fontSize = 15.sp,
                                 color = Color.White,
                                 maxLines = 1
                             )
@@ -69,7 +70,7 @@ fun TrangChuNoiBan(
                             }
                             Text(
                                 text = "Mô tả: $moTa",
-                                fontSize = 10.sp,
+                                fontSize = 13.sp,
                                 color = Color.White,
                                 maxLines = 2
                             )

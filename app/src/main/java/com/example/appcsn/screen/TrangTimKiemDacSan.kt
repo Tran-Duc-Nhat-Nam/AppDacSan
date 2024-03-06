@@ -27,6 +27,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -97,7 +98,7 @@ fun TrangTimKiemDacSan(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(10.dp)
+                    .padding(8.dp)
             ) {
                 items(items = state.ds)
                 {
@@ -106,17 +107,16 @@ fun TrangTimKiemDacSan(
                         Log.d("Paging", "Load next")
                     }
                     Surface(
-                        shadowElevation = 3.dp,
-                        shape = RoundedCornerShape(15.dp),
-                        modifier = Modifier.padding(5.dp)
+                        shadowElevation = 2.dp,
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier.padding(6.dp)
                     ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(shape = RoundedCornerShape(15.dp))
-                                .background(Color(30, 144, 255))
+                                .clip(shape = RoundedCornerShape(10.dp))
+                                .background(MaterialTheme.colorScheme.primaryContainer)
                                 .clickable {
-                                    //                            navController.navigate("${Screen.TrangDacSan.TrangChiTietDacSan.route}/${it.id}")
                                     navigator.navigate(
                                         TrangChiTietDacSanDestination(
                                             dacSan = it
@@ -133,7 +133,7 @@ fun TrangTimKiemDacSan(
                                 model = it.hinh_dai_dien.url,
                                 contentDescription = it.ten,
                                 error = painterResource(id = R.drawable.image_not_found_128),
-                                modifier = Modifier.size(100.dp)
+                                modifier = Modifier.size(115.dp)
                             )
                             Column(
                                 modifier = Modifier.padding(
@@ -144,25 +144,23 @@ fun TrangTimKiemDacSan(
                                 Text(
                                     text = it.ten,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp,
-                                    color = Color.White,
+                                    fontSize = 14.sp,
                                     maxLines = 1
                                 )
-                                Row(Modifier.padding(vertical = 4.dp)) {
+                                Row(Modifier.padding(vertical = 8.dp)) {
                                     for (index in 1..5) {
                                         if (ceil(it.diem_danh_gia) >= index) {
                                             Icon(
                                                 imageVector = Icons.Default.Star,
                                                 contentDescription = null,
                                                 tint = Color.Yellow,
-                                                modifier = Modifier.size(12.dp)
+                                                modifier = Modifier.size(13.dp)
                                             )
                                         } else {
                                             Icon(
                                                 imageVector = Icons.TwoTone.Star,
                                                 contentDescription = null,
-                                                tint = Color.White,
-                                                modifier = Modifier.size(12.dp)
+                                                modifier = Modifier.size(13.dp)
                                             )
                                         }
                                     }
@@ -184,7 +182,7 @@ fun TrangTimKiemDacSan(
                                                 ).show()
                                             }
                                             checked = isChecked
-                                        }, modifier = Modifier.size(12.dp)
+                                        }, modifier = Modifier.size(16.dp)
                                     ) {
                                         if (checked) {
                                             Icon(
@@ -196,18 +194,15 @@ fun TrangTimKiemDacSan(
                                             Icon(
                                                 imageVector = Icons.Default.FavoriteBorder,
                                                 contentDescription = "Chưa yêu thích",
-                                                tint = Color.White
                                             )
                                         }
                                     }
                                 }
                                 Text(
-                                    text = "Mô tả: ${it.mo_ta ?: "Chưa có thông tin"}",
-                                    fontSize = 11.sp,
-                                    color = Color.White,
-                                    maxLines = 3,
-                                    lineHeight = 15.sp,
-                                    overflow = TextOverflow.Ellipsis
+                                    text = it.mo_ta ?: "Chưa có thông tin",
+                                    fontSize = 12.sp,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
                                 )
                             }
                         }

@@ -58,7 +58,7 @@ class TrangChuDacSanViewModel @Inject constructor(
         val kq: Result<Boolean>
 
         try {
-            kq = dacSanRepository.unlike(id, nguoiDung!!.id)
+            kq = dacSanRepository.like(id, nguoiDung!!.id)
             dsYeuThichDacSan[id] = kq.getOrNull() == true
         } catch (_: Exception) {
             dsYeuThichDacSan[id] = false

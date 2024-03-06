@@ -1,7 +1,9 @@
 package com.example.appcsn.data.remote
 
 import com.example.appcsn.data.model.dacsan.DacSan
+import com.example.appcsn.data.model.dacsan.LuotDanhGiaDacSan
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -12,20 +14,20 @@ interface DacSanAPI {
     suspend fun doc(): Response<List<DacSan>>
 
     @GET("/dacsan/size={size}/index={index}")
-    suspend fun docTheoTrang(
+    suspend fun doc(
         @Path("size") size: Int,
         @Path("index") index: Int
     ): Response<List<DacSan>>
 
     @GET("/dacsan/ten={ten}/size={size}/index={index}")
-    suspend fun docTrangTheoTen(
+    suspend fun doc(
         @Path("ten") ten: String,
         @Path("size") size: Int,
         @Path("index") index: Int
     ): Response<List<DacSan>>
 
     @GET("/dacsan/{id}")
-    suspend fun docTheoID(@Path("id") id: Int): Response<DacSan>
+    suspend fun doc(@Path("id") id: Int): Response<DacSan>
 
     @GET("/dacsan/{id}/xem")
     suspend fun xem(
@@ -59,4 +61,13 @@ interface DacSanAPI {
         @Path("idDacSan") idDacSan: Int,
         @Path("idNguoiDung") idNguoiDung: String
     ): Response<Boolean>
+
+    @GET("/danhgia/dacsan={idDacSan}/nguoidung={idNguoiDung}")
+    suspend fun docDanhGia(
+        @Path("idDacSan") idDacSan: Int,
+        @Path("idNguoiDung") idNguoiDung: String
+    ): Response<LuotDanhGiaDacSan>
+
+    @POST("/danhgia")
+    suspend fun danhGia(@Body luotDanhGiaDacSan: LuotDanhGiaDacSan): Response<Boolean>
 }

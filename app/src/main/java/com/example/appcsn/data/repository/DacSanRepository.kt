@@ -1,6 +1,7 @@
 package com.example.appcsn.data.repository
 
 import com.example.appcsn.data.model.dacsan.DacSan
+import com.example.appcsn.data.model.dacsan.LuotDanhGiaDacSan
 import com.example.appcsn.data.remote.DacSanAPI
 
 class DacSanRepository(
@@ -28,7 +29,7 @@ class DacSanRepository(
     }
 
     suspend fun docTheoTrang(pageSize: Int, pageIndex: Int): Result<List<DacSan>> {
-        val kq = api.docTheoTrang(pageSize, pageIndex)
+        val kq = api.doc(pageSize, pageIndex)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
         } else {
@@ -37,7 +38,7 @@ class DacSanRepository(
     }
 
     suspend fun docTrangTheoTen(ten: String, pageSize: Int, pageIndex: Int): Result<List<DacSan>> {
-        val kq = api.docTrangTheoTen(ten, pageSize, pageIndex)
+        val kq = api.doc(ten, pageSize, pageIndex)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
         } else {
@@ -67,6 +68,24 @@ class DacSanRepository(
         val kq = api.checkLike(idDacSan, idNguoiDung)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Kiểm tra yêu thích thất bại"))
+        } else {
+            Result.success(kq.body()!!)
+        }
+    }
+
+    suspend fun rate(luotDanhGiaDacSan: LuotDanhGiaDacSan): Result<Boolean> {
+        val kq = api.danhGia(luotDanhGiaDacSan)
+        return if (kq.body() == null) {
+            Result.failure(Throwable(message = "Đánh giá thất bại"))
+        } else {
+            Result.success(kq.body()!!)
+        }
+    }
+
+    suspend fun checkRate(idDacSan: Int, idNguoiDung: String): Result<LuotDanhGiaDacSan> {
+        val kq = api.docDanhGia(idDacSan, idNguoiDung)
+        return if (kq.body() == null) {
+            Result.failure(Throwable(message = "Kiểm tra đánh giá thất bại"))
         } else {
             Result.success(kq.body()!!)
         }

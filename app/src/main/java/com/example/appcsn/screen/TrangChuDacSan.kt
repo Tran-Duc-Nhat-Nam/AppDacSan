@@ -3,10 +3,10 @@ package com.example.appcsn.screen
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,12 +20,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.twotone.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,8 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,13 +43,14 @@ import com.example.appcsn.data.model.DanhSachNguyenLieu
 import com.example.appcsn.data.model.DanhSachVungMien
 import com.example.appcsn.screen.destinations.TrangTimKiemDacSanDestination
 import com.example.appcsn.ui.CircleProgressIndicator
+import com.example.appcsn.ui.PageHeader
+import com.example.appcsn.ui.StarBar
 import com.example.appcsn.viewmodel.BaseViewModel
 import com.example.appcsn.viewmodel.TrangChuDacSanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
-import kotlin.math.ceil
 
 @RootNavGraph(start = true)
 @Destination
@@ -64,29 +60,18 @@ fun TrangChuDacSan(
     dacSanViewModel: TrangChuDacSanViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     if (dacSanViewModel.loading.value) {
         CircleProgressIndicator()
     } else {
-        Box(modifier = Modifier.padding(10.dp)) {
+        Box() {
             Column {
-                Surface(shape = RoundedCornerShape(5.dp), shadowElevation = 3.dp) {
-                    Text(
-                        color = Color.White,
-                        text = "Đặc sản Việt Nam",
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
-                        maxLines = 1,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(shape = RoundedCornerShape(5.dp))
-                            .background(MaterialTheme.colorScheme.primary)
-                            .padding(vertical = 10.dp)
-                    )
-                }
+                PageHeader(text = "Đặc sản")
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp)
                 ) {
                     items(dacSanViewModel.dsVungMien) { vungMien ->
                         val dsDacSanTheoVung =
@@ -97,7 +82,7 @@ fun TrangChuDacSan(
                         if (dsDacSanTheoVung.isNotEmpty()) {
                             Column(
                                 modifier = Modifier
-                                    .padding(10.dp)
+                                    .padding(6.dp)
                                     .clip(
                                         shape = RoundedCornerShape(10.dp)
                                     )
@@ -105,7 +90,7 @@ fun TrangChuDacSan(
                             ) {
                                 Text(
                                     text = "Đặc sản ${vungMien.ten}",
-                                    fontWeight = FontWeight.W500,
+                                    fontSize = 16.sp,
                                     color = Color.White,
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -132,59 +117,44 @@ fun TrangChuDacSan(
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .background(MaterialTheme.colorScheme.primaryContainer)
-                                        .padding(5.dp),
+                                        .padding(vertical = 5.dp, horizontal = 3.dp),
                                 ) {
                                     items(dsDacSanTheoVung)
                                     {
                                         Row {
                                             Column(
                                                 modifier = Modifier
-                                                    .width(100.dp)
-                                                    .height(150.dp)
-                                                    .padding(horizontal = 5.dp)
+                                                    .padding(vertical = 5.dp, horizontal = 6.dp)
+                                                    .width(115.dp)
                                                     .clickable {
                                                         dacSanViewModel.xemDacSan(navigator, it)
                                                     },
                                             ) {
-                                                val context = LocalContext.current
-
                                                 AsyncImage(
                                                     contentScale = ContentScale.Crop,
                                                     model = it.hinh_dai_dien.url,
                                                     contentDescription = it.ten,
                                                     error = painterResource(id = R.drawable.image_not_found_128),
                                                     modifier = Modifier
-                                                        .size(100.dp)
-                                                        .padding(top = 6.dp)
+                                                        .size(115.dp)
                                                         .clip(shape = RoundedCornerShape(10.dp))
                                                 )
                                                 Text(
                                                     text = it.ten,
-                                                    fontSize = 11.sp,
+                                                    fontSize = 13.sp,
                                                     maxLines = 1,
                                                     overflow = TextOverflow.Ellipsis,
-                                                    fontWeight = FontWeight.Medium
+                                                    modifier = Modifier.padding(vertical = 4.dp)
                                                 )
                                                 Row(
                                                     verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                                    modifier = Modifier
+                                                        .width(115.dp)
                                                 ) {
-                                                    for (index in 1..5) {
-                                                        if (ceil(it.diem_danh_gia) >= index) {
-                                                            Icon(
-                                                                imageVector = Icons.Default.Star,
-                                                                contentDescription = null,
-                                                                tint = Color.Yellow,
-                                                                modifier = Modifier.size(12.dp)
-                                                            )
-                                                        } else {
-                                                            Icon(
-                                                                imageVector = Icons.TwoTone.Star,
-                                                                contentDescription = null,
-                                                                modifier = Modifier.size(12.dp)
-                                                            )
-                                                        }
+                                                    Row {
+                                                        StarBar(grade = it.diem_danh_gia)
                                                     }
-                                                    Spacer(modifier = Modifier.weight(1F))
                                                     IconToggleButton(
                                                         checked = dacSanViewModel.dsYeuThichDacSan[it.id]!!,
                                                         onCheckedChange = { isChecked ->
@@ -221,7 +191,7 @@ fun TrangChuDacSan(
                                                                     Toast.LENGTH_SHORT
                                                                 ).show()
                                                             }
-                                                        }, modifier = Modifier.size(12.dp)
+                                                        }, modifier = Modifier.size(20.dp)
                                                     ) {
                                                         if (dacSanViewModel.dsYeuThichDacSan[it.id]!!) {
                                                             Icon(

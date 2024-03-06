@@ -67,7 +67,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.auth)
-    implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
+    implementation(platform(libs.firebase.bom))
     implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

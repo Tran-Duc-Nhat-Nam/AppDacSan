@@ -2,7 +2,6 @@ package com.example.appcsn.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
@@ -44,38 +43,10 @@ class TrangTimKiemDacSanViewModel @Inject constructor(
             state = state.copy(ds = state.ds + items, pageIndex = newKey, isEnd = items.isEmpty())
         }
     )
-    val dsDacSan = mutableStateListOf<DacSan>()
     var ten = ""
     var dsVungMien = DanhSachVungMien()
     var dsMuaDacSan = DanhSachMuaDacSan()
     var dsNguyenLieu = DanhSachNguyenLieu()
-
-//    init {
-//        loadNext()
-//    }
-
-    fun docDuLieu() {
-        viewModelScope.launch {
-            loading.value = true
-            val job = viewModelScope.launch {
-                if (ten.isEmpty()) {
-                    dsDacSan.addAll(locKetQua(repository.docDanhSach().getOrNull() ?: emptyList()))
-                    Log.d("Load data", "${dsDacSan.size}")
-                    paginator.loadNext()
-                } else {
-                    dsDacSan.addAll(
-                        locKetQua(
-                            repository.docTheoTen(ten).getOrNull() ?: emptyList()
-                        )
-                    )
-                    Log.d("Load data", "${dsDacSan.size}")
-                    paginator.loadNext()
-                }
-            }
-            job.join()
-            loading.value = false
-        }
-    }
 
     fun loadNext() {
         viewModelScope.launch {

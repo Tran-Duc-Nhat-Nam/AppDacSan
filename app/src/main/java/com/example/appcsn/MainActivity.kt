@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -222,12 +221,10 @@ class MainActivity : ComponentActivity() {
                                                 imageVector = if (pos == navItem.index) navItem.selectedIcon else navItem.icon,
                                                 contentDescription = navItem.name,
                                                 modifier = Modifier
-                                                    .size(18.dp)
+                                                    .size(22.dp)
                                             )
                                         },
-                                        label = { Text(text = navItem.name, fontSize = 12.sp) },
-                                        modifier = Modifier
-                                            .height(25.dp)
+                                        label = { Text(text = navItem.name, fontSize = 15.sp) },
                                     )
                                 }
                             }

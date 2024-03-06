@@ -1,9 +1,10 @@
 [versions]
-agp = "8.2.2"
+agp = "8.3.0"
 coilCompose = "2.5.0"
 converterGson = "2.9.0"
 core = "1.9.62"
 desugar_jdk_libs = "2.0.4"
+firebaseBom = "32.7.3"
 fontAwesome = "1.1.0"
 googleServices = "4.4.1"
 hiltCompiler = "2.50"
@@ -39,6 +40,7 @@ css-gg = { module = "br.com.devsrsouza.compose.icons:css-gg", version.ref = "fon
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 eva-icons = { module = "br.com.devsrsouza.compose.icons:eva-icons", version.ref = "fontAwesome" }
 feather = { module = "br.com.devsrsouza.compose.icons:feather", version.ref = "fontAwesome" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 font-awesome = { module = "br.com.devsrsouza.compose.icons:font-awesome", version.ref = "fontAwesome" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltCompiler" }

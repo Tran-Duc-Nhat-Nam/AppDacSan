@@ -50,6 +50,10 @@ class TrangNguoiDungViewModel @Inject constructor(
         mutableStateOf<QuanHuyen?>(null)
     var phuongXa =
         mutableStateOf<PhuongXa?>(null)
+    var tenDuong =
+        mutableStateOf("")
+    var soNha =
+        mutableStateOf("")
     var dsTinhThanh = listOf<TinhThanh>()
     var dsQuanHuyen = listOf<QuanHuyen>()
     var dsPhuongXa = listOf<PhuongXa>()
@@ -73,6 +77,15 @@ class TrangNguoiDungViewModel @Inject constructor(
                 nguoiDung = nguoiDungRepository.docTheoID(user.uid).getOrNull()
             }
             job.join()
+            ten.value = nguoiDung!!.ten
+            sdt.value = nguoiDung!!.so_dien_thoai
+            date.value = nguoiDung!!.ngay_sinh.toInstant()
+                .atZone(
+                    ZoneId.systemDefault()
+                ).toLocalDate()
+            soNha.value = nguoiDung!!.dia_chi.so_nha
+            tenDuong.value = nguoiDung!!.dia_chi.ten_duong
+            phuongXa.value = nguoiDung!!.dia_chi.phuong_xa
         }
         loading.value = false
     }
@@ -156,7 +169,7 @@ class TrangNguoiDungViewModel @Inject constructor(
                         ngay_sinh = Date.from(
                             date.value.atStartOfDay(ZoneId.systemDefault()).toInstant()
                         ),
-                        dia_chi = DiaChi(-1, "Nhà không số", "Đường không tên", phuongXa.value!!)
+                        dia_chi = DiaChi(-1, soNha.value, ten.value, phuongXa.value!!)
                     )
                     viewModelScope.launch {
                         val kq = nguoiDungRepository.them(nd)
@@ -183,5 +196,28 @@ class TrangNguoiDungViewModel @Inject constructor(
                     ).show()
                 }
             }
+    }
+
+    suspend fun capNhatNguoiDung(): Boolean {
+        val nd = NguoiDung(
+            id = nguoiDung!!.id,
+            email = email.value,
+            so_dien_thoai = sdt.value,
+            ten = ten.value,
+            is_nam = isNam.value,
+            ngay_sinh = Date.from(
+                date.value.atStartOfDay(ZoneId.systemDefault()).toInstant()
+            ),
+            dia_chi = DiaChi(nguoiDung!!.dia_chi.id, soNha.value, ten.value, phuongXa.value!!)
+        )
+
+        val kq: Result<Boolean>
+
+        return try {
+            kq = nguoiDungRepository.capNhat(nd)
+            kq.getOrNull() == true
+        } catch (_: Exception) {
+            false
+        }
     }
 }
