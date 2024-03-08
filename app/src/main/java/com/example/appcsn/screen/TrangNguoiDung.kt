@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -89,13 +90,13 @@ fun TrangNguoiDung(
     var isDatePicking by remember {
         mutableStateOf(false)
     }
-    var isChonTinhThanh by remember {
+    val isChonTinhThanh = remember {
         mutableStateOf(false)
     }
-    var isChonQuanHuyen by remember {
+    val isChonQuanHuyen = remember {
         mutableStateOf(false)
     }
-    var isChonPhuongXa by remember {
+    val isChonPhuongXa = remember {
         mutableStateOf(false)
     }
     val transition = updateTransition(isDangKy, label = "selected state")
@@ -219,6 +220,7 @@ fun TrangNguoiDung(
             }
         } else {
             LazyColumn(
+                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxSize()
@@ -235,8 +237,8 @@ fun TrangNguoiDung(
                             .padding(5.dp)
                     )
                     OutlinedTextField(
-                        value = nguoiDungViewModel.pass.value,
-                        onValueChange = { nguoiDungViewModel.pass.value = it },
+                        value = nguoiDungViewModel.matKhau.value,
+                        onValueChange = { nguoiDungViewModel.matKhau.value = it },
                         label = { Text(text = "Mật khẩu") },
                         visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         trailingIcon = {
@@ -261,8 +263,8 @@ fun TrangNguoiDung(
                     ) {
                         Column {
                             OutlinedTextField(
-                                value = nguoiDungViewModel.pass.value,
-                                onValueChange = { nguoiDungViewModel.pass.value = it },
+                                value = nguoiDungViewModel.xacNhanMatKhau.value,
+                                onValueChange = { nguoiDungViewModel.xacNhanMatKhau.value = it },
                                 label = { Text(text = "Xác nhận mật khẩu") },
                                 visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
                                 trailingIcon = {
@@ -283,7 +285,7 @@ fun TrangNguoiDung(
                             OutlinedTextField(
                                 value = nguoiDungViewModel.ten.value,
                                 onValueChange = { nguoiDungViewModel.ten.value = it },
-                                label = { Text(text = "Tên tài khoản") },
+                                label = { Text(text = "Tên người dùng") },
                                 shape = RoundedCornerShape(35.dp),
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -336,135 +338,12 @@ fun TrangNguoiDung(
                                     Text(text = "Nữ")
                                 }
                             }
-                            ExposedDropdownMenuBox(
-                                expanded = isChonTinhThanh,
-                                onExpandedChange = {
-                                    isChonTinhThanh = !isChonTinhThanh
-                                }
-                            ) {
-                                OutlinedTextField(
-                                    readOnly = true,
-                                    value = if (nguoiDungViewModel.tinhThanh.value != null) nguoiDungViewModel.tinhThanh.value!!.ten else "Vui lòng chọn tỉnh thành",
-                                    onValueChange = { },
-                                    label = { Text("Tỉnh thành") },
-                                    trailingIcon = {
-                                        ExposedDropdownMenuDefaults.TrailingIcon(
-                                            expanded = isChonTinhThanh
-                                        )
-                                    },
-                                    shape = RoundedCornerShape(35.dp),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(5.dp)
-                                        .menuAnchor()
-                                )
-                                ExposedDropdownMenu(
-                                    expanded = isChonTinhThanh,
-                                    onDismissRequest = {
-                                        isChonTinhThanh = false
-                                    },
-                                    modifier = Modifier
-                                        .clip(shape = RoundedCornerShape(35.dp))
-                                        .padding(5.dp)
-                                ) {
-                                    nguoiDungViewModel.dsTinhThanh.forEach { tinhThanh ->
-                                        DropdownMenuItem(
-                                            text = { Text(text = tinhThanh.ten) },
-                                            onClick = {
-                                                nguoiDungViewModel.tinhThanh.value = tinhThanh
-                                                nguoiDungViewModel.docQuanHuyen()
-                                                isChonTinhThanh = false
-                                            })
-                                    }
-                                }
-                            }
-                            if (nguoiDungViewModel.tinhThanh.value != null) {
-                                ExposedDropdownMenuBox(
-                                    expanded = isChonQuanHuyen,
-                                    onExpandedChange = {
-                                        isChonQuanHuyen = !isChonQuanHuyen
-                                    }
-                                ) {
-                                    OutlinedTextField(
-                                        readOnly = true,
-                                        value = if (nguoiDungViewModel.quanHuyen.value != null) nguoiDungViewModel.quanHuyen.value!!.ten else "Vui lòng chọn tỉnh thành",
-                                        onValueChange = { },
-                                        label = { Text("Quận huyện") },
-                                        trailingIcon = {
-                                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                                expanded = isChonQuanHuyen
-                                            )
-                                        },
-                                        shape = RoundedCornerShape(35.dp),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(10.dp)
-                                            .menuAnchor()
-                                    )
-                                    ExposedDropdownMenu(
-                                        expanded = isChonQuanHuyen,
-                                        onDismissRequest = {
-                                            isChonQuanHuyen = false
-                                        },
-                                        modifier = Modifier
-                                            .clip(shape = RoundedCornerShape(35.dp))
-                                            .padding(10.dp)
-                                    ) {
-                                        nguoiDungViewModel.dsQuanHuyen.forEach { quanHuyen ->
-                                            DropdownMenuItem(
-                                                text = { Text(text = quanHuyen.ten) },
-                                                onClick = {
-                                                    nguoiDungViewModel.quanHuyen.value = quanHuyen
-                                                    nguoiDungViewModel.docPhuongXa()
-                                                    isChonQuanHuyen = false
-                                                })
-                                        }
-                                    }
-                                }
-                            }
-                            if (nguoiDungViewModel.quanHuyen.value != null) {
-                                ExposedDropdownMenuBox(
-                                    expanded = isChonPhuongXa,
-                                    onExpandedChange = {
-                                        isChonPhuongXa = !isChonPhuongXa
-                                    }
-                                ) {
-                                    OutlinedTextField(
-                                        readOnly = true,
-                                        value = if (nguoiDungViewModel.phuongXa.value != null) nguoiDungViewModel.phuongXa.value!!.ten else "Vui lòng chọn tỉnh thành",
-                                        onValueChange = { },
-                                        label = { Text("Phường xã") },
-                                        trailingIcon = {
-                                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                                expanded = isChonPhuongXa
-                                            )
-                                        },
-                                        shape = RoundedCornerShape(35.dp),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(5.dp)
-                                            .menuAnchor()
-                                    )
-                                    ExposedDropdownMenu(
-                                        expanded = isChonPhuongXa,
-                                        onDismissRequest = {
-                                            isChonPhuongXa = false
-                                        },
-                                        modifier = Modifier
-                                            .clip(shape = RoundedCornerShape(35.dp))
-                                            .padding(5.dp)
-                                    ) {
-                                        nguoiDungViewModel.dsPhuongXa.forEach { phuongXa ->
-                                            DropdownMenuItem(
-                                                text = { Text(text = phuongXa.ten) },
-                                                onClick = {
-                                                    nguoiDungViewModel.phuongXa.value = phuongXa
-                                                    isChonPhuongXa = false
-                                                })
-                                        }
-                                    }
-                                }
-                            }
+                            ChonDiaChi(
+                                isChonTinhThanh,
+                                isChonQuanHuyen,
+                                isChonPhuongXa,
+                                nguoiDungViewModel
+                            )
                         }
                     }
                     Row {
@@ -481,6 +360,7 @@ fun TrangNguoiDung(
                                     nguoiDungViewModel.dangKy(context)
                                     false
                                 } else {
+                                    nguoiDungViewModel.clear()
                                     true
                                 }
                             },
@@ -514,4 +394,167 @@ fun soSanhNguoiDung(nguoiDungGoc: NguoiDung, nguoiDungHienTai: TrangNguoiDungVie
         return false
     }
     return true
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChonDiaChi(
+    isChonTinhThanh: MutableState<Boolean>,
+    isChonQuanHuyen: MutableState<Boolean>,
+    isChonPhuongXa: MutableState<Boolean>,
+    nguoiDungViewModel: TrangNguoiDungViewModel
+) {
+    ExposedDropdownMenuBox(
+        expanded = isChonTinhThanh.value,
+        onExpandedChange = {
+            isChonTinhThanh.value = !isChonTinhThanh.value
+        }
+    ) {
+        OutlinedTextField(
+            readOnly = true,
+            value = if (nguoiDungViewModel.tinhThanh.value != null) nguoiDungViewModel.tinhThanh.value!!.ten else "Vui lòng chọn tỉnh thành",
+            onValueChange = { },
+            label = { Text("Tỉnh thành") },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = isChonTinhThanh.value
+                )
+            },
+            shape = RoundedCornerShape(35.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp)
+                .menuAnchor()
+        )
+        ExposedDropdownMenu(
+            expanded = isChonTinhThanh.value,
+            onDismissRequest = {
+                isChonTinhThanh.value = false
+            },
+            modifier = Modifier
+                .clip(shape = RoundedCornerShape(35.dp))
+                .padding(5.dp)
+        ) {
+            nguoiDungViewModel.dsTinhThanh.forEach { tinhThanh ->
+                DropdownMenuItem(
+                    text = { Text(text = tinhThanh.ten) },
+                    onClick = {
+                        nguoiDungViewModel.tinhThanh.value = tinhThanh
+                        nguoiDungViewModel.docQuanHuyen()
+                        isChonTinhThanh.value = false
+                    })
+            }
+        }
+    }
+    if (nguoiDungViewModel.tinhThanh.value != null) {
+        ExposedDropdownMenuBox(
+            expanded = isChonQuanHuyen.value,
+            onExpandedChange = {
+                isChonQuanHuyen.value = !isChonQuanHuyen.value
+            }
+        ) {
+            OutlinedTextField(
+                readOnly = true,
+                value = if (nguoiDungViewModel.quanHuyen.value != null)
+                    nguoiDungViewModel.quanHuyen.value!!.ten
+                else "Vui lòng chọn quận huyện",
+                onValueChange = { },
+                label = { Text("Quận huyện") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = isChonQuanHuyen.value
+                    )
+                },
+                shape = RoundedCornerShape(35.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .menuAnchor()
+            )
+            ExposedDropdownMenu(
+                expanded = isChonQuanHuyen.value,
+                onDismissRequest = {
+                    isChonQuanHuyen.value = false
+                },
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(35.dp))
+                    .padding(10.dp)
+            ) {
+                nguoiDungViewModel.dsQuanHuyen.forEach { quanHuyen ->
+                    DropdownMenuItem(
+                        text = { Text(text = quanHuyen.ten) },
+                        onClick = {
+                            nguoiDungViewModel.quanHuyen.value = quanHuyen
+                            nguoiDungViewModel.docPhuongXa()
+                            isChonQuanHuyen.value = false
+                        })
+                }
+            }
+        }
+    }
+    if (nguoiDungViewModel.quanHuyen.value != null) {
+        ExposedDropdownMenuBox(
+            expanded = isChonPhuongXa.value,
+            onExpandedChange = {
+                isChonPhuongXa.value = !isChonPhuongXa.value
+            }
+        ) {
+            OutlinedTextField(
+                readOnly = true,
+                value = if (nguoiDungViewModel.phuongXa.value != null)
+                    nguoiDungViewModel.phuongXa.value!!.ten
+                else "Vui lòng chọn phường xã",
+                onValueChange = { },
+                label = { Text("Phường xã") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = isChonPhuongXa.value
+                    )
+                },
+                shape = RoundedCornerShape(35.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
+                    .menuAnchor()
+            )
+            ExposedDropdownMenu(
+                expanded = isChonPhuongXa.value,
+                onDismissRequest = {
+                    isChonPhuongXa.value = false
+                },
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(35.dp))
+                    .padding(5.dp)
+            ) {
+                nguoiDungViewModel.dsPhuongXa.forEach { phuongXa ->
+                    DropdownMenuItem(
+                        text = { Text(text = phuongXa.ten) },
+                        onClick = {
+                            nguoiDungViewModel.phuongXa.value = phuongXa
+                            isChonPhuongXa.value = false
+                        })
+                }
+            }
+        }
+    }
+    if (nguoiDungViewModel.phuongXa.value != null) {
+        OutlinedTextField(
+            value = nguoiDungViewModel.soNha.value,
+            onValueChange = { nguoiDungViewModel.soNha.value = it },
+            label = { Text(text = "Số nhà") },
+            shape = RoundedCornerShape(35.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp)
+        )
+        OutlinedTextField(
+            value = nguoiDungViewModel.tenDuong.value,
+            onValueChange = { nguoiDungViewModel.tenDuong.value = it },
+            label = { Text(text = "Tên đường") },
+            shape = RoundedCornerShape(35.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp)
+        )
+    }
 }

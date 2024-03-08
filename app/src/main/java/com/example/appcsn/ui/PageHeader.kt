@@ -18,14 +18,15 @@ fun PageHeader(
     text: String
 ) {
     Surface(
-        shadowElevation = 1.dp, modifier = Modifier
+        shadowElevation = 1.dp,
+        modifier = Modifier
             .padding(top = 15.dp)
     ) {
         Text(
             text = text,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 20.sp,
+            fontSize = 18.sp,
             maxLines = 1,
             modifier = Modifier
                 .fillMaxWidth()

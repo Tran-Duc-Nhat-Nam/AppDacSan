@@ -6,5 +6,5 @@ import retrofit2.http.GET
 
 interface VungMienAPI {
     @GET("/vungmien")
-    suspend fun docDanhSach(): Response<List<VungMien>>
+    suspend fun doc(): Response<List<VungMien>>
 }

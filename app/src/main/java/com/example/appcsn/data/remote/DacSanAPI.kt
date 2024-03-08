@@ -2,6 +2,7 @@ package com.example.appcsn.data.remote
 
 import com.example.appcsn.data.model.dacsan.DacSan
 import com.example.appcsn.data.model.dacsan.LuotDanhGiaDacSan
+import com.example.appcsn.data.model.dacsan.TuKhoaTimKiem
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -35,8 +36,36 @@ interface DacSanAPI {
         @Path("idNguoiDung") idNguoiDung: String
     ): Response<DacSan>
 
-    @GET("/dacsan/ten={ten}")
-    suspend fun docTheoTen(@Path("ten") ten: String): Response<List<DacSan>>
+    @POST("/dacsan/ten={ten}/size={size}/index={index}")
+    suspend fun timKiem(
+        @Path("ten") ten: String,
+        @Path("size") size: Int,
+        @Path("index") index: Int
+    ): Response<List<DacSan>>
+
+    @POST("/dacsan/theovungmien/ten={ten}/size={size}/index={index}")
+    suspend fun timKiemTheoVungMien(
+        @Path("ten") ten: String,
+        @Path("size") size: Int,
+        @Path("index") index: Int,
+        @Body tuKhoaTimKiem: TuKhoaTimKiem
+    ): Response<List<DacSan>>
+
+    @POST("/dacsan/theomua/ten={ten}/size={size}/index={index}")
+    suspend fun timKiemTheoMua(
+        @Path("ten") ten: String,
+        @Path("size") size: Int,
+        @Path("index") index: Int,
+        @Body tuKhoaTimKiem: TuKhoaTimKiem
+    ): Response<List<DacSan>>
+
+    @POST("/dacsan/theovungmien/theomua/ten={ten}/size={size}/index={index}")
+    suspend fun timKiemTheoMuaVaVungMien(
+        @Path("ten") ten: String,
+        @Path("size") size: Int,
+        @Path("index") index: Int,
+        @Body tuKhoaTimKiem: TuKhoaTimKiem
+    ): Response<List<DacSan>>
 
     @GET("/dacsan/mota={mota}")
     suspend fun docTheoMoTa(@Path("mota") moTa: String): Response<List<DacSan>>

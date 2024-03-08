@@ -5,31 +5,41 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -43,12 +53,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.compose.rememberNavController
-import com.example.appcsn.data.model.DanhSachMuaDacSan
-import com.example.appcsn.data.model.DanhSachNguyenLieu
-import com.example.appcsn.data.model.DanhSachVungMien
 import com.example.appcsn.screen.NavGraphs
 import com.example.appcsn.screen.destinations.TrangChiTietDacSanDestination
 import com.example.appcsn.screen.destinations.TrangChuDacSanDestination
@@ -67,6 +77,7 @@ import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigate
 import dagger.hilt.android.AndroidEntryPoint
 
+@OptIn(ExperimentalLayoutApi::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val mainViewModel by viewModels<MainViewModel>()
@@ -98,7 +109,7 @@ class MainActivity : ComponentActivity() {
     )
 
     @OptIn(
-        ExperimentalMaterial3Api::class
+        ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,6 +125,9 @@ class MainActivity : ComponentActivity() {
                     mutableStateOf("")
                 }
                 var active by remember {
+                    mutableStateOf(false)
+                }
+                var filter by remember {
                     mutableStateOf(false)
                 }
                 var pos by remember {
@@ -140,24 +154,25 @@ class MainActivity : ComponentActivity() {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
                             ) {
                                 SearchBar(
                                     query = searchText,
                                     onQueryChange = {
                                         searchText = it
-                                        mainViewModel.docDuLieu(it)
+                                        mainViewModel.goiY(it)
                                     },
                                     onSearch = {
-                                        navController.navigate(
-                                            TrangTimKiemDacSanDestination(
-                                                it,
-                                                DanhSachVungMien(),
-                                                DanhSachMuaDacSan(),
-                                                DanhSachNguyenLieu()
+                                        if (it.isNotBlank()) {
+                                            navController.navigate(
+                                                TrangTimKiemDacSanDestination(
+                                                    it,
+                                                    mainViewModel.taoTuKhoa()
+                                                )
                                             )
-                                        )
-                                        active = false
+                                            active = false
+                                        }
                                     },
                                     active = active,
                                     onActiveChange = {
@@ -180,10 +195,12 @@ class MainActivity : ComponentActivity() {
                                         }
                                     },
                                     trailingIcon = {
-                                        Icon(
-                                            Icons.Default.MoreVert,
-                                            contentDescription = null,
-                                        )
+                                        IconButton(onClick = { filter = !filter }) {
+                                            Icon(
+                                                Icons.Default.Settings,
+                                                contentDescription = null,
+                                            )
+                                        }
                                     },
                                 ) {
                                     LazyColumn(
@@ -231,6 +248,78 @@ class MainActivity : ComponentActivity() {
                         },
                         modifier = Modifier.fillMaxSize()
                     ) { innerPadding ->
+                        if (filter) {
+                            Dialog(
+                                onDismissRequest = { filter = false },
+                                properties = DialogProperties()
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(MaterialTheme.colorScheme.surfaceContainer)
+                                ) {
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    Text(
+                                        text = "Vùng miền",
+                                        modifier = Modifier
+                                            .padding(start = 15.dp)
+                                    )
+                                    FlowRow(modifier = Modifier.padding(10.dp)) {
+                                        mainViewModel.dsVungMien.forEach { vungMien ->
+                                            ElevatedFilterChip(
+                                                selected = mainViewModel.dsChonVungMien[mainViewModel.dsVungMien.indexOf(
+                                                    vungMien
+                                                )],
+                                                onClick = {
+                                                    mainViewModel.dsChonVungMien[mainViewModel.dsVungMien.indexOf(
+                                                        vungMien
+                                                    )] =
+                                                        !mainViewModel.dsChonVungMien[mainViewModel.dsVungMien.indexOf(
+                                                            vungMien
+                                                        )]
+                                                },
+                                                label = {
+                                                    Text(
+                                                        text = vungMien.ten,
+                                                    )
+                                                },
+                                                modifier = Modifier.padding(end = 10.dp),
+                                            )
+                                        }
+                                    }
+                                    Divider()
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    Text(
+                                        text = "Mùa",
+                                        modifier = Modifier
+                                            .padding(start = 15.dp)
+                                    )
+                                    FlowRow(modifier = Modifier.padding(10.dp)) {
+                                        mainViewModel.dsMuaDacSan.forEach { muaDacSan ->
+                                            ElevatedFilterChip(
+                                                selected = mainViewModel.dsChonMuaDacSan[mainViewModel.dsMuaDacSan.indexOf(
+                                                    muaDacSan
+                                                )],
+                                                onClick = {
+                                                    mainViewModel.dsChonMuaDacSan[mainViewModel.dsMuaDacSan.indexOf(
+                                                        muaDacSan
+                                                    )] =
+                                                        !mainViewModel.dsChonMuaDacSan[mainViewModel.dsMuaDacSan.indexOf(
+                                                            muaDacSan
+                                                        )]
+                                                },
+                                                label = {
+                                                    Text(
+                                                        text = muaDacSan.ten,
+                                                    )
+                                                },
+                                                modifier = Modifier.padding(end = 10.dp),
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()

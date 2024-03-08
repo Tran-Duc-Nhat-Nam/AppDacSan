@@ -57,8 +57,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.appcsn.R
-import com.example.appcsn.data.model.DanhSachVungMien
 import com.example.appcsn.data.model.dacsan.DacSan
+import com.example.appcsn.data.model.dacsan.TuKhoaTimKiem
 import com.example.appcsn.screen.destinations.TrangTimKiemDacSanDestination
 import com.example.appcsn.viewmodel.BaseViewModel
 import com.example.appcsn.viewmodel.TrangChiTietDacSanViewModel
@@ -102,8 +102,6 @@ fun TrangChiTietDacSan(
             color = MaterialTheme.colorScheme.secondaryContainer,
             shadowElevation = 1.dp, modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 15.dp)
-
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -364,8 +362,12 @@ fun TrangChiTietDacSan(
                                 onClick = {
                                     navigator.navigate(
                                         TrangTimKiemDacSanDestination(
-                                            ten = null,
-                                            dsVungMien = DanhSachVungMien(listOf(vungMien))
+                                            ten = "",
+                                            tuKhoa = TuKhoaTimKiem(
+                                                dsVungMien = mutableListOf(
+                                                    vungMien.id
+                                                )
+                                            )
                                         )
                                     )
                                 },

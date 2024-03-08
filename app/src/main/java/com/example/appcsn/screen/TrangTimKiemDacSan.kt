@@ -50,9 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.appcsn.R
-import com.example.appcsn.data.model.DanhSachMuaDacSan
-import com.example.appcsn.data.model.DanhSachNguyenLieu
-import com.example.appcsn.data.model.DanhSachVungMien
+import com.example.appcsn.data.model.dacsan.TuKhoaTimKiem
 import com.example.appcsn.screen.destinations.TrangChiTietDacSanDestination
 import com.example.appcsn.ui.CircleProgressIndicator
 import com.example.appcsn.viewmodel.TrangTimKiemDacSanViewModel
@@ -65,16 +63,13 @@ import kotlin.math.ceil
 @Composable
 fun TrangTimKiemDacSan(
     navigator: DestinationsNavigator,
-    ten: String?,
-    dsVungMien: DanhSachVungMien = DanhSachVungMien(),
-    dsMuaDacSan: DanhSachMuaDacSan = DanhSachMuaDacSan(),
-    dsNguyenLieu: DanhSachNguyenLieu = DanhSachNguyenLieu(),
+    ten: String,
+    tuKhoa: TuKhoaTimKiem
 ) {
     val viewModel = hiltViewModel<TrangTimKiemDacSanViewModel>()
-    viewModel.ten = ten ?: ""
-    viewModel.dsVungMien = dsVungMien
-    viewModel.dsMuaDacSan = dsMuaDacSan
-    viewModel.dsNguyenLieu = dsNguyenLieu
+    viewModel.ten = ten
+    viewModel.tuKhoa = tuKhoa
+
     val state = viewModel.state
 
     val isRefreshing by remember {

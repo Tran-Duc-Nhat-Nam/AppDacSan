@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -38,9 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.appcsn.R
-import com.example.appcsn.data.model.DanhSachMuaDacSan
-import com.example.appcsn.data.model.DanhSachNguyenLieu
-import com.example.appcsn.data.model.DanhSachVungMien
+import com.example.appcsn.data.model.dacsan.TuKhoaTimKiem
 import com.example.appcsn.screen.destinations.TrangTimKiemDacSanDestination
 import com.example.appcsn.ui.CircleProgressIndicator
 import com.example.appcsn.ui.PageHeader
@@ -65,13 +64,13 @@ fun TrangChuDacSan(
     if (dacSanViewModel.loading.value) {
         CircleProgressIndicator()
     } else {
-        Box() {
+        Box {
             Column {
                 PageHeader(text = "Đặc sản")
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 8.dp)
+                        .padding(horizontal = 6.dp)
                 ) {
                     items(dacSanViewModel.dsVungMien) { vungMien ->
                         val dsDacSanTheoVung =
@@ -82,7 +81,7 @@ fun TrangChuDacSan(
                         if (dsDacSanTheoVung.isNotEmpty()) {
                             Column(
                                 modifier = Modifier
-                                    .padding(6.dp)
+                                    .padding(8.dp)
                                     .clip(
                                         shape = RoundedCornerShape(10.dp)
                                     )
@@ -90,7 +89,7 @@ fun TrangChuDacSan(
                             ) {
                                 Text(
                                     text = "Đặc sản ${vungMien.ten}",
-                                    fontSize = 16.sp,
+                                    fontSize = 14.sp,
                                     color = Color.White,
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -101,14 +100,16 @@ fun TrangChuDacSan(
                                             )
                                         )
                                         .background(Color(30, 144, 255))
-                                        .padding(vertical = 5.dp, horizontal = 10.dp)
+                                        .padding(vertical = 4.dp, horizontal = 10.dp)
                                         .clickable {
                                             navigator.navigate(
                                                 TrangTimKiemDacSanDestination(
-                                                    ten = null,
-                                                    dsVungMien = DanhSachVungMien(listOf(vungMien)),
-                                                    dsMuaDacSan = DanhSachMuaDacSan(),
-                                                    dsNguyenLieu = DanhSachNguyenLieu(),
+                                                    ten = "",
+                                                    tuKhoa = TuKhoaTimKiem(
+                                                        dsVungMien = mutableListOf(
+                                                            vungMien.id
+                                                        )
+                                                    )
                                                 )
                                             )
                                         }
@@ -117,14 +118,14 @@ fun TrangChuDacSan(
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .background(MaterialTheme.colorScheme.primaryContainer)
-                                        .padding(vertical = 5.dp, horizontal = 3.dp),
+                                        .padding(vertical = 4.dp, horizontal = 4.dp),
                                 ) {
                                     items(dsDacSanTheoVung)
                                     {
                                         Row {
                                             Column(
                                                 modifier = Modifier
-                                                    .padding(vertical = 5.dp, horizontal = 6.dp)
+                                                    .padding(5.dp)
                                                     .width(115.dp)
                                                     .clickable {
                                                         dacSanViewModel.xemDacSan(navigator, it)
@@ -135,9 +136,10 @@ fun TrangChuDacSan(
                                                     model = it.hinh_dai_dien.url,
                                                     contentDescription = it.ten,
                                                     error = painterResource(id = R.drawable.image_not_found_128),
+                                                    filterQuality = FilterQuality.None,
                                                     modifier = Modifier
                                                         .size(115.dp)
-                                                        .clip(shape = RoundedCornerShape(10.dp))
+                                                        .clip(shape = RoundedCornerShape(8.dp))
                                                 )
                                                 Text(
                                                     text = it.ten,

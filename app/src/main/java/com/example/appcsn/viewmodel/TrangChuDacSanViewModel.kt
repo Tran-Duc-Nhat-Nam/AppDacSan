@@ -34,7 +34,7 @@ class TrangChuDacSanViewModel @Inject constructor(
     }
 
     private suspend fun docDuLieu() {
-        val kq = dacSanRepository.docDanhSach()
+        val kq = dacSanRepository.doc()
 
         if (kq.getOrNull() != null) {
             dsDacSan.addAll(kq.getOrNull()!!)
@@ -46,7 +46,7 @@ class TrangChuDacSanViewModel @Inject constructor(
     }
 
     private suspend fun docVungMien() {
-        val kq = vungMienRepository.docDanhSach()
+        val kq = vungMienRepository.doc()
 
         if (kq.getOrNull() != null) {
             dsVungMien.addAll(kq.getOrNull()!!)

@@ -2,7 +2,6 @@ package com.example.appcsn.viewmodel
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
@@ -34,7 +33,9 @@ class TrangNguoiDungViewModel @Inject constructor(
     val auth = Firebase.auth
     var email =
         mutableStateOf("")
-    var pass =
+    var matKhau =
+        mutableStateOf("")
+    var xacNhanMatKhau =
         mutableStateOf("")
     var ten =
         mutableStateOf("")
@@ -44,16 +45,16 @@ class TrangNguoiDungViewModel @Inject constructor(
         mutableStateOf(true)
     var date =
         mutableStateOf(LocalDate.now())
+    var tenDuong =
+        mutableStateOf("")
+    var soNha =
+        mutableStateOf("")
     var tinhThanh =
         mutableStateOf<TinhThanh?>(null)
     var quanHuyen =
         mutableStateOf<QuanHuyen?>(null)
     var phuongXa =
         mutableStateOf<PhuongXa?>(null)
-    var tenDuong =
-        mutableStateOf("")
-    var soNha =
-        mutableStateOf("")
     var dsTinhThanh = listOf<TinhThanh>()
     var dsQuanHuyen = listOf<QuanHuyen>()
     var dsPhuongXa = listOf<PhuongXa>()
@@ -67,6 +68,19 @@ class TrangNguoiDungViewModel @Inject constructor(
             job.join()
             loading.value = false
         }
+    }
+
+    fun clear() {
+        email.value = ""
+        matKhau.value = ""
+        xacNhanMatKhau.value = ""
+        ten.value = ""
+        sdt.value = ""
+        isNam.value = true
+        date.value = LocalDate.now()
+        tenDuong.value = ""
+        soNha.value = ""
+        tinhThanh.value = null
     }
 
     suspend fun docNguoiDungFirebase() {
@@ -119,10 +133,11 @@ class TrangNguoiDungViewModel @Inject constructor(
     }
 
     fun dangNhap(context: Context) {
-        if (email.value.isEmpty() || pass.value.isEmpty()) {
+        if (email.value.isBlank() || matKhau.value.isBlank()) {
             return
         }
-        auth.signInWithEmailAndPassword(email.value, pass.value)
+        loading.value = true
+        auth.signInWithEmailAndPassword(email.value, matKhau.value)
             .addOnCompleteListener(context as Activity) { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(context, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
@@ -142,16 +157,43 @@ class TrangNguoiDungViewModel @Inject constructor(
                         Toast.LENGTH_SHORT,
                     ).show()
                 }
+                loading.value = false
             }
     }
 
     fun dangKy(context: Context) {
-        if (email.value.isEmpty() || pass.value.isEmpty()) {
+        if (
+            email.value.isBlank() || matKhau.value.isBlank()
+            || xacNhanMatKhau.value.isBlank() || ten.value.isBlank()
+            || sdt.value.isBlank() || soNha.value.isBlank()
+            || tenDuong.value.isBlank()
+        ) {
+            Toast.makeText(
+                context,
+                "Vui lòng nhập đầy đủ thông tin",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+        if (matKhau.value != xacNhanMatKhau.value) {
+            Toast.makeText(
+                context,
+                "Mật khẩu xác nhận không trùng khớp",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+        if (phuongXa.value == null) {
+            Toast.makeText(
+                context,
+                "Vui lòng chọn phường xã",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
         auth.createUserWithEmailAndPassword(
             email.value,
-            pass.value
+            matKhau.value
         )
             .addOnCompleteListener(context as Activity) { task ->
                 if (task.isSuccessful) {
@@ -184,11 +226,6 @@ class TrangNguoiDungViewModel @Inject constructor(
                         }
                     }
                 } else {
-                    Log.w(
-                        "Auth",
-                        "createUserWithEmail:failure",
-                        task.exception
-                    )
                     Toast.makeText(
                         context,
                         "Đăng ký thất bại. ${task.exception}",

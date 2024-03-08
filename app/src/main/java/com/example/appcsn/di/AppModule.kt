@@ -1,6 +1,7 @@
 package com.example.appcsn.di
 
 import com.example.appcsn.data.remote.DacSanAPI
+import com.example.appcsn.data.remote.MuaDacSanAPI
 import com.example.appcsn.data.remote.NguoiDungAPI
 import com.example.appcsn.data.remote.NoiBanAPI
 import com.example.appcsn.data.remote.PhuongXaAPI
@@ -8,6 +9,7 @@ import com.example.appcsn.data.remote.QuanHuyenAPI
 import com.example.appcsn.data.remote.TinhThanhAPI
 import com.example.appcsn.data.remote.VungMienAPI
 import com.example.appcsn.data.repository.DacSanRepository
+import com.example.appcsn.data.repository.MuaDacSanRepository
 import com.example.appcsn.data.repository.NguoiDungRepository
 import com.example.appcsn.data.repository.NoiBanRepository
 import com.example.appcsn.data.repository.PhuongXaRepository
@@ -63,6 +65,18 @@ object AppModule {
     @Singleton
     fun provideVungMienRepository(api: VungMienAPI): VungMienRepository {
         return VungMienRepository(api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMuaDacSanAPI(retrofit: Retrofit): MuaDacSanAPI {
+        return retrofit.create(MuaDacSanAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMuaDacSanRepository(api: MuaDacSanAPI): MuaDacSanRepository {
+        return MuaDacSanRepository(api)
     }
 
     @Provides
