@@ -1,5 +1,7 @@
 package com.example.appcsn.screen
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
@@ -57,6 +59,8 @@ import com.example.appcsn.viewmodel.BaseViewModel.Companion.toLocalDate
 import com.example.appcsn.viewmodel.TrangNguoiDungViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Eye
 import compose.icons.feathericons.EyeOff
@@ -68,13 +72,19 @@ import java.time.format.DateTimeFormatter
     ExperimentalMaterial3Api::class,
     ExperimentalAnimationApi::class
 )
-@Destination
+@Destination<RootGraph>()
 @Composable
 fun TrangNguoiDung(
+    navigator: DestinationsNavigator,
     nguoiDungViewModel: TrangNguoiDungViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    BackHandler {
+        (context as Activity).finish()
+    }
+
     var isDangKy by remember {
         mutableStateOf(false)
     }

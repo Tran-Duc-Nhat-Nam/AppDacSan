@@ -1,12 +1,12 @@
 package com.example.appcsn.data.repository
 
-import com.example.appcsn.data.model.NoiBan
-import com.example.appcsn.data.remote.NoiBanAPI
+import com.example.appcsn.data.model.NguyenLieu
+import com.example.appcsn.data.remote.NguyenLieuAPI
 
-class NoiBanRepository(
-    private val api: NoiBanAPI
+class NguyenLieuRepository(
+    private val api: NguyenLieuAPI
 ) {
-    suspend fun doc(): Result<List<NoiBan>> {
+    suspend fun doc(): Result<List<NguyenLieu>> {
         val kq = api.doc()
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
@@ -15,8 +15,8 @@ class NoiBanRepository(
         }
     }
 
-    suspend fun timKiem(ten: String, pageSize: Int, pageIndex: Int): Result<List<NoiBan>> {
-        val kq = api.timKiem(ten, pageSize, pageIndex)
+    suspend fun doc(ten: String, pageSize: Int, pageIndex: Int): Result<List<NguyenLieu>> {
+        val kq = api.doc(ten, pageSize, pageIndex)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
         } else {

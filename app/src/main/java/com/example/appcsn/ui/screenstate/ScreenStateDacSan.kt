@@ -1,8 +1,8 @@
-package com.example.appcsn.ui
+package com.example.appcsn.ui.screenstate
 
 import com.example.appcsn.data.model.dacsan.DacSan
 
-data class ScreenState(
+data class ScreenStateDacSan(
     val isLoading: Boolean = false,
     val ds: List<DacSan> = emptyList(),
     val errorMessage: String? = null,

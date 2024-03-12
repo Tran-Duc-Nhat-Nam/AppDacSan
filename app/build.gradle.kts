@@ -32,15 +32,16 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
         isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "21"
     }
     buildFeatures {
         compose = true
@@ -91,7 +92,6 @@ dependencies {
     implementation(libs.coil.compose)
 
     implementation(libs.core)
-    implementation(libs.animations)
     implementation(("androidx.compose.material3:material3:1.2.0-beta02"))
     implementation(libs.androidx.material)
     ksp(libs.ksp)

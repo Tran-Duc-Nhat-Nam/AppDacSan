@@ -29,11 +29,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.appcsn.data.model.NoiBan
 import com.example.appcsn.ui.PageHeader
+import com.example.appcsn.ui.navgraph.PlaceGraph
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-@Destination
+@Destination<PlaceGraph>()
 @Composable
-fun TrangChiTietNoiBan(noiBan: NoiBan) {
+fun TrangChiTietNoiBan(
+    navigator: DestinationsNavigator,
+    noiBan: NoiBan
+) {
     var maxLineMT by remember {
         mutableIntStateOf(4)
     }

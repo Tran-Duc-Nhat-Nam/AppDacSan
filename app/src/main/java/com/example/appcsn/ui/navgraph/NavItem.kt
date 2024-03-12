@@ -1,11 +1,13 @@
-package com.example.appcsn.ui
+package com.example.appcsn.ui.navgraph
 
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.appcsn.screen.destinations.Destination
+import com.ramcosta.composedestinations.spec.Direction
+import com.ramcosta.composedestinations.spec.NavGraphSpec
 
 data class NavItem(
-    val destination: Destination,
+    val graph: NavGraphSpec,
+    var backStack: MutableList<Direction> = mutableListOf(),
     val index: Int,
     val name: String,
     val icon: ImageVector,

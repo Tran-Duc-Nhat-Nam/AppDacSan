@@ -27,7 +27,7 @@ class TrangChuNoiBanViewModel @Inject constructor(
     }
 
     private suspend fun docDuLieu() {
-        val kq = repository.docDanhSach()
+        val kq = repository.doc()
 
         if (kq.getOrNull() != null) {
             dsNoiBan.addAll(kq.getOrNull()!!)

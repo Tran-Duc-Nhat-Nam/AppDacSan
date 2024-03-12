@@ -1,6 +1,8 @@
 package com.example.appcsn.screen
 
+import android.app.Activity
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,19 +42,20 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.appcsn.R
 import com.example.appcsn.data.model.dacsan.TuKhoaTimKiem
-import com.example.appcsn.screen.destinations.TrangTimKiemDacSanDestination
 import com.example.appcsn.ui.CircleProgressIndicator
 import com.example.appcsn.ui.PageHeader
 import com.example.appcsn.ui.StarBar
+import com.example.appcsn.ui.navgraph.FoodGraph
 import com.example.appcsn.viewmodel.BaseViewModel
+import com.example.appcsn.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.viewmodel.TrangChuDacSanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.generated.destinations.TrangChiTietDacSanDestination
+import com.ramcosta.composedestinations.generated.destinations.TrangTimKiemDacSanDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
-@RootNavGraph(start = true)
-@Destination
+@Destination<FoodGraph>(start = true)
 @Composable
 fun TrangChuDacSan(
     navigator: DestinationsNavigator,
@@ -60,6 +63,10 @@ fun TrangChuDacSan(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    BackHandler {
+        (context as Activity).finish()
+    }
 
     if (dacSanViewModel.loading.value) {
         CircleProgressIndicator()
@@ -121,20 +128,26 @@ fun TrangChuDacSan(
                                         .padding(vertical = 4.dp, horizontal = 4.dp),
                                 ) {
                                     items(dsDacSanTheoVung)
-                                    {
+                                    { dacSan ->
                                         Row {
                                             Column(
                                                 modifier = Modifier
                                                     .padding(5.dp)
                                                     .width(115.dp)
                                                     .clickable {
-                                                        dacSanViewModel.xemDacSan(navigator, it)
+                                                        dsNavItem[0].backStack.add(
+                                                            TrangChiTietDacSanDestination(dacSan)
+                                                        )
+                                                        navigator.navigate(
+                                                            dsNavItem[0].backStack.last(),
+                                                            onlyIfResumed = true
+                                                        )
                                                     },
                                             ) {
                                                 AsyncImage(
                                                     contentScale = ContentScale.Crop,
-                                                    model = it.hinh_dai_dien.url,
-                                                    contentDescription = it.ten,
+                                                    model = dacSan.hinh_dai_dien.url,
+                                                    contentDescription = dacSan.ten,
                                                     error = painterResource(id = R.drawable.image_not_found_128),
                                                     filterQuality = FilterQuality.None,
                                                     modifier = Modifier
@@ -142,7 +155,7 @@ fun TrangChuDacSan(
                                                         .clip(shape = RoundedCornerShape(8.dp))
                                                 )
                                                 Text(
-                                                    text = it.ten,
+                                                    text = dacSan.ten,
                                                     fontSize = 13.sp,
                                                     maxLines = 1,
                                                     overflow = TextOverflow.Ellipsis,
@@ -155,57 +168,53 @@ fun TrangChuDacSan(
                                                         .width(115.dp)
                                                 ) {
                                                     Row {
-                                                        StarBar(grade = it.diem_danh_gia)
+                                                        StarBar(grade = dacSan.diem_danh_gia)
                                                     }
-                                                    IconToggleButton(
-                                                        checked = dacSanViewModel.dsYeuThichDacSan[it.id]!!,
-                                                        onCheckedChange = { isChecked ->
-                                                            if (BaseViewModel.nguoiDung != null) {
+                                                    if (BaseViewModel.nguoiDung != null) {
+                                                        IconToggleButton(
+                                                            checked = dacSanViewModel.dsYeuThichDacSan[dacSan.id]!!,
+                                                            onCheckedChange = { isChecked ->
                                                                 coroutineScope.launch {
                                                                     if (isChecked) {
                                                                         val kq =
-                                                                            dacSanViewModel.like(it.id)
+                                                                            dacSanViewModel.like(
+                                                                                dacSan.id
+                                                                            )
                                                                         if (kq) {
                                                                             Toast.makeText(
                                                                                 context,
-                                                                                "Đã yêu thích ${it.ten}.",
+                                                                                "Đã yêu thích ${dacSan.ten}.",
                                                                                 Toast.LENGTH_SHORT
                                                                             ).show()
                                                                         }
                                                                     } else {
                                                                         val kq =
                                                                             dacSanViewModel.unlike(
-                                                                                it.id
+                                                                                dacSan.id
                                                                             )
                                                                         if (kq) {
                                                                             Toast.makeText(
                                                                                 context,
-                                                                                "Đã hủy yêu thích ${it.ten}.",
+                                                                                "Đã hủy yêu thích ${dacSan.ten}.",
                                                                                 Toast.LENGTH_SHORT
                                                                             ).show()
                                                                         }
                                                                     }
                                                                 }
+                                                            }, modifier = Modifier.size(20.dp)
+                                                        ) {
+                                                            if (dacSanViewModel.dsYeuThichDacSan[dacSan.id]!!) {
+                                                                Icon(
+                                                                    imageVector = Icons.Default.Favorite,
+                                                                    contentDescription = "Đã yêu thích",
+                                                                    tint = Color(255, 105, 180)
+                                                                )
                                                             } else {
-                                                                Toast.makeText(
-                                                                    context,
-                                                                    "Vui lòng đăng nhập để sử dụng tính năng này.",
-                                                                    Toast.LENGTH_SHORT
-                                                                ).show()
+                                                                Icon(
+                                                                    imageVector = Icons.Default.FavoriteBorder,
+                                                                    contentDescription = "Chưa yêu thích",
+                                                                )
                                                             }
-                                                        }, modifier = Modifier.size(20.dp)
-                                                    ) {
-                                                        if (dacSanViewModel.dsYeuThichDacSan[it.id]!!) {
-                                                            Icon(
-                                                                imageVector = Icons.Default.Favorite,
-                                                                contentDescription = "Đã yêu thích",
-                                                                tint = Color(255, 105, 180)
-                                                            )
-                                                        } else {
-                                                            Icon(
-                                                                imageVector = Icons.Default.FavoriteBorder,
-                                                                contentDescription = "Chưa yêu thích",
-                                                            )
                                                         }
                                                     }
                                                 }

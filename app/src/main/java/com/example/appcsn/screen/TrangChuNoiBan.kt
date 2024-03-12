@@ -1,5 +1,7 @@
 package com.example.appcsn.screen
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,22 +15,30 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.appcsn.screen.destinations.TrangChiTietNoiBanDestination
 import com.example.appcsn.ui.CircleProgressIndicator
 import com.example.appcsn.ui.PageHeader
+import com.example.appcsn.ui.navgraph.PlaceGraph
 import com.example.appcsn.viewmodel.TrangChuNoiBanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.generated.destinations.TrangChiTietNoiBanDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-@Destination
+@Destination<PlaceGraph>(start = true)
 @Composable
 fun TrangChuNoiBan(
     navigator: DestinationsNavigator,
     noiBanViewModel: TrangChuNoiBanViewModel
 ) {
+    val context = LocalContext.current
+
+    BackHandler {
+        (context as Activity).finish()
+    }
+
     if (noiBanViewModel.loading.value) {
         CircleProgressIndicator()
     } else {
@@ -49,7 +59,7 @@ fun TrangChuNoiBan(
                         modifier = Modifier
                             .padding(10.dp)
                             .clickable {
-                                navigator.navigate(TrangChiTietNoiBanDestination(noiBan = it))
+                                navigator.navigate(TrangChiTietNoiBanDestination(it))
                             }
                     ) {
                         Column(

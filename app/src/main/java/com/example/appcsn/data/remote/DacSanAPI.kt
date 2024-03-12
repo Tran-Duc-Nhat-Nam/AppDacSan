@@ -12,23 +12,16 @@ import retrofit2.http.Path
 
 interface DacSanAPI {
     @GET("/dacsan")
-    suspend fun doc(): Response<List<DacSan>>
+    suspend fun timKiem(): Response<List<DacSan>>
 
     @GET("/dacsan/size={size}/index={index}")
-    suspend fun doc(
-        @Path("size") size: Int,
-        @Path("index") index: Int
-    ): Response<List<DacSan>>
-
-    @GET("/dacsan/ten={ten}/size={size}/index={index}")
-    suspend fun doc(
-        @Path("ten") ten: String,
+    suspend fun timKiem(
         @Path("size") size: Int,
         @Path("index") index: Int
     ): Response<List<DacSan>>
 
     @GET("/dacsan/{id}")
-    suspend fun doc(@Path("id") id: Int): Response<DacSan>
+    suspend fun timKiem(@Path("id") id: Int): Response<DacSan>
 
     @GET("/dacsan/{id}/xem")
     suspend fun xem(
@@ -36,7 +29,7 @@ interface DacSanAPI {
         @Path("idNguoiDung") idNguoiDung: String
     ): Response<DacSan>
 
-    @POST("/dacsan/ten={ten}/size={size}/index={index}")
+    @GET("/dacsan/ten={ten}/size={size}/index={index}")
     suspend fun timKiem(
         @Path("ten") ten: String,
         @Path("size") size: Int,
@@ -60,7 +53,39 @@ interface DacSanAPI {
     ): Response<List<DacSan>>
 
     @POST("/dacsan/theovungmien/theomua/ten={ten}/size={size}/index={index}")
-    suspend fun timKiemTheoMuaVaVungMien(
+    suspend fun timKiemTheoMuaVungMien(
+        @Path("ten") ten: String,
+        @Path("size") size: Int,
+        @Path("index") index: Int,
+        @Body tuKhoaTimKiem: TuKhoaTimKiem
+    ): Response<List<DacSan>>
+
+    @POST("/dacsan/theonguyenlieu/ten={ten}/size={size}/index={index}")
+    suspend fun timKiemTheoNguyenLieu(
+        @Path("ten") ten: String,
+        @Path("size") size: Int,
+        @Path("index") index: Int,
+        @Body tuKhoaTimKiem: TuKhoaTimKiem
+    ): Response<List<DacSan>>
+
+    @POST("/dacsan/theonguyenlieu/theovungmien/ten={ten}/size={size}/index={index}")
+    suspend fun timKiemTheoNguyenLieuVungMien(
+        @Path("ten") ten: String,
+        @Path("size") size: Int,
+        @Path("index") index: Int,
+        @Body tuKhoaTimKiem: TuKhoaTimKiem
+    ): Response<List<DacSan>>
+
+    @POST("/dacsan/theonguyenlieu/theomua/ten={ten}/size={size}/index={index}")
+    suspend fun timKiemTheoNguyenLieuMua(
+        @Path("ten") ten: String,
+        @Path("size") size: Int,
+        @Path("index") index: Int,
+        @Body tuKhoaTimKiem: TuKhoaTimKiem
+    ): Response<List<DacSan>>
+
+    @POST("/dacsan/theodieukien/ten={ten}/size={size}/index={index}")
+    suspend fun timKiemTheoDieuKien(
         @Path("ten") ten: String,
         @Path("size") size: Int,
         @Path("index") index: Int,

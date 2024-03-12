@@ -2,13 +2,17 @@ package com.example.appcsn.screen
 
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -54,20 +60,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.appcsn.R
 import com.example.appcsn.data.model.dacsan.DacSan
 import com.example.appcsn.data.model.dacsan.TuKhoaTimKiem
-import com.example.appcsn.screen.destinations.TrangTimKiemDacSanDestination
+import com.example.appcsn.ui.navgraph.FoodGraph
 import com.example.appcsn.viewmodel.BaseViewModel
+import com.example.appcsn.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.viewmodel.TrangChiTietDacSanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.generated.destinations.TrangTimKiemDacSanDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalLayoutApi::class)
-@Destination
+@Destination<FoodGraph>()
 @Composable
 fun TrangChiTietDacSan(
     navigator: DestinationsNavigator,
@@ -78,6 +87,14 @@ fun TrangChiTietDacSan(
 
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    val pagerState = rememberPagerState {
+        viewModel.dsHinhAnh.size
+    }
+
+    var selectedImage by remember {
+        mutableIntStateOf(-1)
+    }
 
     var maxLineMT by remember {
         mutableIntStateOf(4)
@@ -95,18 +112,27 @@ fun TrangChiTietDacSan(
     LaunchedEffect(true) {
         viewModel.checkLike(dacSan.id)
         viewModel.docDanhGia()
+        viewModel.docHinhAnh()
+    }
+
+    BackHandler {
+        dsNavItem[0].backStack.removeLast()
+        navigator.navigate(dsNavItem[0].backStack.last())
     }
 
     Column {
         Surface(
-            color = MaterialTheme.colorScheme.secondaryContainer,
-            shadowElevation = 1.dp, modifier = Modifier
+            shadowElevation = 1.dp,
+            modifier = Modifier
                 .fillMaxWidth()
+                .padding(top = 15.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .padding(10.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.FavoriteBorder,
@@ -186,9 +212,47 @@ fun TrangChiTietDacSan(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 15.dp)
-                        .clip(shape = RoundedCornerShape(corner = CornerSize(10.dp)))
+                        .clip(shape = RoundedCornerShape(10.dp))
                 )
                 Spacer(modifier = Modifier.height(20.dp))
+                if (viewModel.dsHinhAnh.isNotEmpty()) {
+                    HorizontalPager(
+                        state = pagerState,
+                        contentPadding = PaddingValues(8.dp),
+                        pageSpacing = 6.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(shape = RoundedCornerShape(10.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                    ) { index ->
+                        AsyncImage(
+                            contentScale = ContentScale.Crop,
+                            model = viewModel.dsHinhAnh[index].url,
+                            contentDescription = viewModel.dsHinhAnh[index].moTa,
+                            error = painterResource(id = R.drawable.image_not_found_128),
+                            modifier = Modifier
+                                .size(75.dp)
+                                .clip(shape = RoundedCornerShape(10.dp))
+                                .clickable {
+                                    selectedImage = index
+                                }
+                        )
+                    }
+                    if (selectedImage >= 0) {
+                        Dialog(onDismissRequest = { selectedImage = -1 }) {
+                            AsyncImage(
+                                contentScale = ContentScale.Crop,
+                                model = viewModel.dsHinhAnh[selectedImage].url,
+                                contentDescription = viewModel.dsHinhAnh[selectedImage].moTa,
+                                error = painterResource(id = R.drawable.image_not_found_512),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .aspectRatio(1F)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
                 Row(
                     horizontalArrangement = Arrangement.SpaceAround,
                     verticalAlignment = Alignment.CenterVertically,
@@ -353,7 +417,6 @@ fun TrangChiTietDacSan(
                     )
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier
                             .padding(10.dp)
                     ) {
@@ -373,6 +436,103 @@ fun TrangChiTietDacSan(
                                 },
                                 shape = RoundedCornerShape(25.dp),
                                 label = { Text(text = vungMien.ten, fontSize = 13.sp) })
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(15.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(shape = RoundedCornerShape(corner = CornerSize(10.dp)))
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                ) {
+                    Text(
+                        text = "Mùa",
+                        fontSize = 14.sp,
+                        color = Color.White,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(
+                                shape = RoundedCornerShape(
+                                    topStart = 10.dp,
+                                    topEnd = 10.dp
+                                )
+                            )
+                            .background(Color(30, 144, 255))
+                            .padding(vertical = 5.dp, horizontal = 10.dp)
+                    )
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier
+                            .padding(10.dp)
+                    ) {
+                        dacSan.mua_dac_san.forEach { mua ->
+                            AssistChip(
+                                onClick = {
+                                    navigator.navigate(
+                                        TrangTimKiemDacSanDestination(
+                                            ten = "",
+                                            tuKhoa = TuKhoaTimKiem(
+                                                dsMuaDacSan = mutableListOf(
+                                                    mua.id
+                                                )
+                                            )
+                                        )
+                                    )
+                                },
+                                shape = RoundedCornerShape(25.dp),
+                                label = { Text(text = mua.ten, fontSize = 13.sp) })
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(15.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(shape = RoundedCornerShape(corner = CornerSize(10.dp)))
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                ) {
+                    Text(
+                        text = "Nguyên liệu",
+                        fontSize = 14.sp,
+                        color = Color.White,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(
+                                shape = RoundedCornerShape(
+                                    topStart = 10.dp,
+                                    topEnd = 10.dp
+                                )
+                            )
+                            .background(Color(30, 144, 255))
+                            .padding(vertical = 5.dp, horizontal = 10.dp)
+                    )
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier
+                            .padding(10.dp)
+                    ) {
+                        dacSan.thanh_phan.forEach { thanhPhan ->
+                            AssistChip(
+                                onClick = {
+                                    navigator.navigate(
+                                        TrangTimKiemDacSanDestination(
+                                            ten = "",
+                                            tuKhoa = TuKhoaTimKiem(
+                                                dsNguyenLieu = mutableListOf(
+                                                    thanhPhan.nguyen_lieu.id
+                                                )
+                                            )
+                                        )
+                                    )
+                                },
+                                shape = RoundedCornerShape(25.dp),
+                                label = {
+                                    Text(
+                                        text = thanhPhan.nguyen_lieu.ten,
+                                        fontSize = 13.sp
+                                    )
+                                })
                         }
                     }
                 }

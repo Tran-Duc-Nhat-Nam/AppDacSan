@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,25 +24,24 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
@@ -59,21 +59,24 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.compose.rememberNavController
-import com.example.appcsn.screen.NavGraphs
-import com.example.appcsn.screen.destinations.TrangChiTietDacSanDestination
-import com.example.appcsn.screen.destinations.TrangChuDacSanDestination
-import com.example.appcsn.screen.destinations.TrangChuNoiBanDestination
-import com.example.appcsn.screen.destinations.TrangNguoiDungDestination
-import com.example.appcsn.screen.destinations.TrangTimKiemDacSanDestination
 import com.example.appcsn.ui.CircleProgressIndicator
-import com.example.appcsn.ui.NavItem
 import com.example.appcsn.ui.theme.AppTheme
+import com.example.appcsn.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.viewmodel.MainViewModel
 import com.example.appcsn.viewmodel.TrangChuDacSanViewModel
 import com.example.appcsn.viewmodel.TrangChuNoiBanViewModel
 import com.example.appcsn.viewmodel.TrangNguoiDungViewModel
 import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.TrangChiTietDacSanDestination
+import com.ramcosta.composedestinations.generated.destinations.TrangChiTietNoiBanDestination
+import com.ramcosta.composedestinations.generated.destinations.TrangChuDacSanDestination
+import com.ramcosta.composedestinations.generated.destinations.TrangChuNoiBanDestination
+import com.ramcosta.composedestinations.generated.destinations.TrangNguoiDungDestination
+import com.ramcosta.composedestinations.generated.destinations.TrangTimKiemDacSanDestination
+import com.ramcosta.composedestinations.generated.destinations.TrangTimKiemNoiBanDestination
 import com.ramcosta.composedestinations.navigation.dependency
+import com.ramcosta.composedestinations.navigation.destination
 import com.ramcosta.composedestinations.navigation.navigate
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -84,32 +87,9 @@ class MainActivity : ComponentActivity() {
     private val dacSanViewModel by viewModels<TrangChuDacSanViewModel>()
     private val noiBanViewModel by viewModels<TrangChuNoiBanViewModel>()
     private val nguoiDungViewModel by viewModels<TrangNguoiDungViewModel>()
-    private val dsNavItem = listOf(
-        NavItem(
-            destination = TrangChuDacSanDestination,
-            index = 1,
-            name = "Đặc sản",
-            icon = Icons.Outlined.Home,
-            selectedIcon = Icons.Default.Home
-        ),
-        NavItem(
-            destination = TrangChuNoiBanDestination,
-            index = 2,
-            name = "Nơi bán",
-            icon = Icons.Outlined.LocationOn,
-            selectedIcon = Icons.Default.LocationOn
-        ),
-        NavItem(
-            destination = TrangNguoiDungDestination,
-            index = 3,
-            name = "Người dùng",
-            icon = Icons.Outlined.Person,
-            selectedIcon = Icons.Default.Person
-        )
-    )
 
     @OptIn(
-        ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class
+        ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,8 +101,14 @@ class MainActivity : ComponentActivity() {
                 var connected by remember {
                     mutableStateOf(false)
                 }
-                var searchText by remember {
+                var tenTimKiem by remember {
                     mutableStateOf("")
+                }
+                var tenNguyenLieu by remember {
+                    mutableStateOf("")
+                }
+                var isChonNguyenLieu by remember {
+                    mutableStateOf(false)
                 }
                 var active by remember {
                     mutableStateOf(false)
@@ -133,11 +119,14 @@ class MainActivity : ComponentActivity() {
                 var pos by remember {
                     mutableIntStateOf(1)
                 }
+
+                val navController = rememberNavController()
+
                 LaunchedEffect(key1 = true) {
                     connected = mainViewModel.checkConnect()
                     nguoiDungViewModel.docNguoiDungFirebase()
                 }
-                val navController = rememberNavController()
+
                 if (nguoiDungViewModel.loading.value) {
                     Scaffold(Modifier.fillMaxSize()) {
                         Box(
@@ -158,19 +147,37 @@ class MainActivity : ComponentActivity() {
                                     .fillMaxWidth()
                             ) {
                                 SearchBar(
-                                    query = searchText,
+                                    query = tenTimKiem,
                                     onQueryChange = {
-                                        searchText = it
-                                        mainViewModel.goiY(it)
+                                        tenTimKiem = it
+                                        if (pos == 1) {
+                                            mainViewModel.goiYDacSan(it)
+                                        } else if (pos == 2) {
+                                            mainViewModel.goiYNoiBan(it)
+                                        } else {
+                                            mainViewModel.goiYNguoiDung(it)
+                                        }
                                     },
                                     onSearch = {
                                         if (it.isNotBlank()) {
-                                            navController.navigate(
-                                                TrangTimKiemDacSanDestination(
-                                                    it,
-                                                    mainViewModel.taoTuKhoa()
+                                            if (pos == 1) {
+                                                dsNavItem[0].backStack.add(
+                                                    TrangTimKiemDacSanDestination(
+                                                        it,
+                                                        mainViewModel.taoTuKhoa()
+                                                    )
                                                 )
-                                            )
+                                                navController.navigate(
+                                                    dsNavItem[0].backStack.last()
+                                                )
+                                            } else if (pos == 2) {
+                                                dsNavItem[1].backStack.add(
+                                                    TrangTimKiemNoiBanDestination(it)
+                                                )
+                                                navController.navigate(
+                                                    dsNavItem[1].backStack.last()
+                                                )
+                                            }
                                             active = false
                                         }
                                     },
@@ -178,7 +185,17 @@ class MainActivity : ComponentActivity() {
                                     onActiveChange = {
                                         active = it
                                     },
-                                    placeholder = { Text("Tìm kiếm") },
+                                    placeholder = {
+                                        Text(
+                                            "Tìm kiếm ${
+                                                when {
+                                                    (pos == 1) -> "đặc sản"
+                                                    (pos == 2) -> "nơi bán"
+                                                    else -> "người dùng"
+                                                }
+                                            }"
+                                        )
+                                    },
                                     leadingIcon = {
                                         if (active) {
                                             IconButton(onClick = { active = false }) {
@@ -195,11 +212,13 @@ class MainActivity : ComponentActivity() {
                                         }
                                     },
                                     trailingIcon = {
-                                        IconButton(onClick = { filter = !filter }) {
-                                            Icon(
-                                                Icons.Default.Settings,
-                                                contentDescription = null,
-                                            )
+                                        if (active) {
+                                            IconButton(onClick = { filter = !filter }) {
+                                                Icon(
+                                                    Icons.Default.Settings,
+                                                    contentDescription = null,
+                                                )
+                                            }
                                         }
                                     },
                                 ) {
@@ -207,18 +226,45 @@ class MainActivity : ComponentActivity() {
                                         Modifier
                                             .padding(horizontal = 15.dp, vertical = 10.dp)
                                     ) {
-                                        items(mainViewModel.dsDacSan) { dacSan ->
-                                            Text(
-                                                text = dacSan.ten,
-                                                modifier = Modifier.clickable {
-                                                    navController.navigate(
-                                                        TrangChiTietDacSanDestination(
-                                                            dacSan
+                                        if (pos == 1) {
+                                            items(mainViewModel.dsDacSan) { dacSan ->
+                                                Text(
+                                                    text = dacSan.ten,
+                                                    modifier = Modifier.clickable {
+                                                        dsNavItem[0].backStack.add(
+                                                            TrangChiTietDacSanDestination(dacSan)
                                                         )
-                                                    )
-                                                    active = false
-                                                }
-                                            )
+                                                        navController.navigate(
+                                                            dsNavItem[0].backStack.last()
+                                                        )
+                                                        active = false
+                                                    }
+                                                )
+                                            }
+                                        } else if (pos == 2) {
+                                            items(mainViewModel.dsNoiBan) { noiBan ->
+                                                Text(
+                                                    text = noiBan.ten,
+                                                    modifier = Modifier.clickable {
+                                                        dsNavItem[1].backStack.add(
+                                                            TrangChiTietNoiBanDestination(noiBan)
+                                                        )
+                                                        navController.navigate(
+                                                            dsNavItem[1].backStack.last()
+                                                        )
+                                                        active = false
+                                                    }
+                                                )
+                                            }
+                                        } else {
+                                            items(mainViewModel.dsNguoiDung) { nguoiDung ->
+                                                Text(
+                                                    text = nguoiDung.ten,
+                                                    modifier = Modifier.clickable {
+                                                        active = false
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -230,7 +276,9 @@ class MainActivity : ComponentActivity() {
                                     NavigationBarItem(
                                         selected = pos == navItem.index,
                                         onClick = {
-                                            navController.navigate(navItem.destination.route)
+                                            navController.navigate(navItem.backStack.last()) {
+                                                launchSingleTop = true
+                                            }
                                             pos = navItem.index
                                         },
                                         icon = {
@@ -287,7 +335,7 @@ class MainActivity : ComponentActivity() {
                                             )
                                         }
                                     }
-                                    Divider()
+                                    HorizontalDivider()
                                     Spacer(modifier = Modifier.height(10.dp))
                                     Text(
                                         text = "Mùa",
@@ -317,6 +365,78 @@ class MainActivity : ComponentActivity() {
                                             )
                                         }
                                     }
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    Text(
+                                        text = "Nguyên liệu",
+                                        modifier = Modifier
+                                            .padding(start = 15.dp)
+                                    )
+                                    ExposedDropdownMenuBox(
+                                        expanded = isChonNguyenLieu,
+                                        onExpandedChange = {
+                                            isChonNguyenLieu = !isChonNguyenLieu
+                                        }
+                                    ) {
+                                        OutlinedTextField(
+                                            value = tenNguyenLieu,
+                                            onValueChange = {
+                                                tenNguyenLieu = it
+                                                mainViewModel.goiYNguyenLieu(it)
+                                            },
+                                            trailingIcon = {
+                                                ExposedDropdownMenuDefaults.TrailingIcon(
+                                                    expanded = isChonNguyenLieu
+                                                )
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clip(RoundedCornerShape(25.dp))
+                                                .padding(10.dp)
+                                                .menuAnchor()
+                                        )
+                                        ExposedDropdownMenu(
+                                            expanded = isChonNguyenLieu,
+                                            onDismissRequest = {
+                                                isChonNguyenLieu = false
+                                            },
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(25.dp))
+                                                .padding(10.dp)
+                                        ) {
+                                            mainViewModel.dsNguyenLieu.forEach { nguyenLieu ->
+                                                DropdownMenuItem(
+                                                    text = { Text(text = nguyenLieu.ten) },
+                                                    onClick = {
+                                                        mainViewModel.dsNguyenLieuDaChon.add(
+                                                            nguyenLieu
+                                                        )
+                                                        isChonNguyenLieu = false
+                                                    })
+                                            }
+                                        }
+                                    }
+                                    FlowRow(modifier = Modifier.padding(10.dp)) {
+                                        mainViewModel.dsNguyenLieuDaChon.forEach { nguyenLieu ->
+                                            AssistChip(
+                                                onClick = {
+                                                    mainViewModel.dsNguyenLieuDaChon.remove(
+                                                        nguyenLieu
+                                                    )
+                                                },
+                                                label = {
+                                                    Text(
+                                                        text = nguyenLieu.ten,
+                                                    )
+                                                    Spacer(modifier = Modifier.weight(1F))
+                                                    Icon(
+                                                        imageVector = Icons.Default.Close,
+                                                        contentDescription = "Bỏ từ khóa ${nguyenLieu.ten}"
+                                                    )
+                                                },
+                                                modifier = Modifier.padding(end = 10.dp),
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -329,19 +449,19 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 navGraph = NavGraphs.root,
                                 startRoute = if (connected) {
-                                    TrangChuDacSanDestination
+                                    NavGraphs.root.startRoute
                                 } else {
                                     TrangNguoiDungDestination
                                 },
                                 dependenciesContainerBuilder = {
-                                    dependency(TrangChuDacSanDestination) {
-                                        dacSanViewModel
+                                    destination(TrangChuDacSanDestination) {
+                                        dependency(dacSanViewModel)
                                     }
-                                    dependency(TrangChuNoiBanDestination) {
-                                        noiBanViewModel
+                                    destination(TrangChuNoiBanDestination) {
+                                        dependency(noiBanViewModel)
                                     }
-                                    dependency(TrangNguoiDungDestination) {
-                                        nguoiDungViewModel
+                                    destination(TrangNguoiDungDestination) {
+                                        dependency(nguoiDungViewModel)
                                     }
                                 }
                             )

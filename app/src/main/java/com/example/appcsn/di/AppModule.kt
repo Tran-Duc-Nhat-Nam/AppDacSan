@@ -1,16 +1,20 @@
 package com.example.appcsn.di
 
 import com.example.appcsn.data.remote.DacSanAPI
+import com.example.appcsn.data.remote.HinhAnhAPI
 import com.example.appcsn.data.remote.MuaDacSanAPI
 import com.example.appcsn.data.remote.NguoiDungAPI
+import com.example.appcsn.data.remote.NguyenLieuAPI
 import com.example.appcsn.data.remote.NoiBanAPI
 import com.example.appcsn.data.remote.PhuongXaAPI
 import com.example.appcsn.data.remote.QuanHuyenAPI
 import com.example.appcsn.data.remote.TinhThanhAPI
 import com.example.appcsn.data.remote.VungMienAPI
 import com.example.appcsn.data.repository.DacSanRepository
+import com.example.appcsn.data.repository.HinhAnhRepository
 import com.example.appcsn.data.repository.MuaDacSanRepository
 import com.example.appcsn.data.repository.NguoiDungRepository
+import com.example.appcsn.data.repository.NguyenLieuRepository
 import com.example.appcsn.data.repository.NoiBanRepository
 import com.example.appcsn.data.repository.PhuongXaRepository
 import com.example.appcsn.data.repository.QuanHuyenRepository
@@ -77,6 +81,30 @@ object AppModule {
     @Singleton
     fun provideMuaDacSanRepository(api: MuaDacSanAPI): MuaDacSanRepository {
         return MuaDacSanRepository(api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNguyenLieuAPI(retrofit: Retrofit): NguyenLieuAPI {
+        return retrofit.create(NguyenLieuAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNguyenLieuRepository(api: NguyenLieuAPI): NguyenLieuRepository {
+        return NguyenLieuRepository(api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideHinhAnhAPI(retrofit: Retrofit): HinhAnhAPI {
+        return retrofit.create(HinhAnhAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideHinhAnhRepository(api: HinhAnhAPI): HinhAnhRepository {
+        return HinhAnhRepository(api)
     }
 
     @Provides

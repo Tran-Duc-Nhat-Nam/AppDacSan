@@ -51,15 +51,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.appcsn.R
 import com.example.appcsn.data.model.dacsan.TuKhoaTimKiem
-import com.example.appcsn.screen.destinations.TrangChiTietDacSanDestination
 import com.example.appcsn.ui.CircleProgressIndicator
+import com.example.appcsn.ui.navgraph.FoodGraph
+import com.example.appcsn.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.viewmodel.TrangTimKiemDacSanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.generated.destinations.TrangChiTietDacSanDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlin.math.ceil
 
 @OptIn(ExperimentalMaterialApi::class)
-@Destination
+@Destination<FoodGraph>()
 @Composable
 fun TrangTimKiemDacSan(
     navigator: DestinationsNavigator,
@@ -112,11 +114,8 @@ fun TrangTimKiemDacSan(
                                 .clip(shape = RoundedCornerShape(10.dp))
                                 .background(MaterialTheme.colorScheme.primaryContainer)
                                 .clickable {
-                                    navigator.navigate(
-                                        TrangChiTietDacSanDestination(
-                                            dacSan = it
-                                        )
-                                    )
+                                    dsNavItem[0].backStack.add(TrangChiTietDacSanDestination(it))
+                                    navigator.navigate(dsNavItem[0].backStack.last())
                                 },
                         ) {
                             var checked by remember {

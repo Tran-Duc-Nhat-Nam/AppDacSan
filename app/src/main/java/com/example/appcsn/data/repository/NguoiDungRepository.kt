@@ -6,7 +6,7 @@ import com.example.appcsn.data.remote.NguoiDungAPI
 class NguoiDungRepository(
     private val api: NguoiDungAPI
 ) {
-    suspend fun docDanhSach(): Result<List<NguoiDung>> {
+    suspend fun doc(): Result<List<NguoiDung>> {
         val kq = api.doc()
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
@@ -15,8 +15,17 @@ class NguoiDungRepository(
         }
     }
 
-    suspend fun docTheoID(id: String): Result<NguoiDung> {
+    suspend fun doc(id: String): Result<NguoiDung> {
         val kq = api.doc(id)
+        return if (kq.body() == null) {
+            Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
+        } else {
+            Result.success(kq.body()!!)
+        }
+    }
+
+    suspend fun timKiem(ten: String, pageSize: Int, pageIndex: Int): Result<List<NguoiDung>> {
+        val kq = api.timKiem(ten, pageSize, pageIndex)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
         } else {

@@ -5,26 +5,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.example.appcsn.data.model.dacsan.TuKhoaTimKiem
-import com.example.appcsn.data.repository.DacSanRepository
+import com.example.appcsn.data.repository.NoiBanRepository
 import com.example.appcsn.domain.repository.BasePaginationRepository
-import com.example.appcsn.ui.screenstate.ScreenStateDacSan
+import com.example.appcsn.ui.screenstate.ScreenStateNoiBan
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TrangTimKiemDacSanViewModel @Inject constructor(
-    private val repository: DacSanRepository
+class TrangTimKiemNoiBanViewModel @Inject constructor(
+    private val repository: NoiBanRepository
 ) : BaseViewModel() {
-    var state by mutableStateOf(ScreenStateDacSan())
+    var state by mutableStateOf(ScreenStateNoiBan())
     private val paginator = BasePaginationRepository(
         initKey = state.pageIndex,
         onLoading = {
             state = state.copy(isLoading = it)
         },
         onRequest = { nextPage: Int ->
-            repository.timKiem(ten, tuKhoa, 2, nextPage)
+            repository.timKiem(ten, 2, nextPage)
         },
         getNextKey = {
             state.pageIndex + 1
@@ -37,12 +36,11 @@ class TrangTimKiemDacSanViewModel @Inject constructor(
         }
     )
     var ten = ""
-    var tuKhoa = TuKhoaTimKiem()
 
     fun loadNext() {
         viewModelScope.launch {
             paginator.loadNext()
-            Log.d("Paging", "Keyword: $tuKhoa, state: ${state.ds.size}")
+            Log.d("Paging", "Name: $ten, state: ${state.ds.size}")
         }
     }
 

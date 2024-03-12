@@ -8,11 +8,18 @@ import retrofit2.http.Path
 
 interface NoiBanAPI {
     @GET("/noiban")
-    suspend fun docDanhSach(): Response<List<NoiBan>>
+    suspend fun doc(): Response<List<NoiBan>>
 
     @GET("/noiban/{id}")
-    suspend fun docTheoTen(@Path("id") id: Int): Response<NoiBan>
+    suspend fun doc(@Path("id") id: Int): Response<NoiBan>
 
     @GET("/noiban/{id}/dacsan")
-    suspend fun docDanhSachDacSan(@Path("id") id: Int): Response<List<DacSan>>
+    suspend fun docDacSan(@Path("id") id: Int): Response<List<DacSan>>
+
+    @GET("/noiban/ten={ten}/size={size}/index={index}")
+    suspend fun timKiem(
+        @Path("ten") ten: String,
+        @Path("size") size: Int,
+        @Path("index") index: Int
+    ): Response<List<NoiBan>>
 }

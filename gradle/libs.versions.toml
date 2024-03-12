@@ -2,9 +2,9 @@
 agp = "8.3.0"
 coilCompose = "2.5.0"
 converterGson = "2.9.0"
-core = "1.9.62"
+core = "2.1.0-alpha03"
 desugar_jdk_libs = "2.0.4"
-firebaseBom = "32.7.3"
+firebaseBom = "32.7.4"
 fontAwesome = "1.1.0"
 googleServices = "4.4.1"
 hiltCompiler = "2.50"
@@ -35,7 +35,6 @@ androidx-material = { module = "androidx.compose.material:material", version.ref
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 core = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "core" }
-animations = { module = "io.github.raamcosta.compose-destinations:animations-core", version.ref = "core" }
 css-gg = { module = "br.com.devsrsouza.compose.icons:css-gg", version.ref = "fontAwesome" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 eva-icons = { module = "br.com.devsrsouza.compose.icons:eva-icons", version.ref = "fontAwesome" }

@@ -2,19 +2,24 @@ package com.example.appcsn.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.example.appcsn.data.model.HinhAnh
 import com.example.appcsn.data.model.dacsan.DacSan
 import com.example.appcsn.data.model.dacsan.LuotDanhGiaDacSan
 import com.example.appcsn.data.repository.DacSanRepository
+import com.example.appcsn.data.repository.HinhAnhRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class TrangChiTietDacSanViewModel @Inject constructor(
-    private val dacSanRepository: DacSanRepository
+    private val dacSanRepository: DacSanRepository,
+    private val hinhAnhRepository: HinhAnhRepository
 ) : BaseViewModel() {
     var dacSan: DacSan? = null
+    var dsHinhAnh = mutableStateListOf<HinhAnh>()
     var luotDanhGiaDacSan by mutableStateOf<LuotDanhGiaDacSan?>(null)
     var diemDanhGia by mutableIntStateOf(0)
     var noiDung by mutableStateOf("")
@@ -31,6 +36,15 @@ class TrangChiTietDacSanViewModel @Inject constructor(
         }
 
         return luotDanhGiaDacSan
+    }
+
+    suspend fun docHinhAnh() {
+        try {
+            val kq = hinhAnhRepository.docTheoDacSan(dacSan!!.id)
+            dsHinhAnh.clear()
+            dsHinhAnh.addAll(kq.getOrNull() ?: emptyList())
+        } catch (_: Exception) {
+        }
     }
 
     suspend fun danhGia(): Boolean {

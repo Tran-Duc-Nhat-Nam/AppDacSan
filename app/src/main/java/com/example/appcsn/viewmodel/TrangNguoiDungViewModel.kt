@@ -83,23 +83,27 @@ class TrangNguoiDungViewModel @Inject constructor(
         tinhThanh.value = null
     }
 
+    private fun fill() {
+        ten.value = nguoiDung!!.ten
+        sdt.value = nguoiDung!!.so_dien_thoai
+        date.value = nguoiDung!!.ngay_sinh.toInstant()
+            .atZone(
+                ZoneId.systemDefault()
+            ).toLocalDate()
+        soNha.value = nguoiDung!!.dia_chi.so_nha
+        tenDuong.value = nguoiDung!!.dia_chi.ten_duong
+        phuongXa.value = nguoiDung!!.dia_chi.phuong_xa
+    }
+
     suspend fun docNguoiDungFirebase() {
         loading.value = true
         val user = Firebase.auth.currentUser
         if (user != null) {
             val job = viewModelScope.launch {
-                nguoiDung = nguoiDungRepository.docTheoID(user.uid).getOrNull()
+                nguoiDung = nguoiDungRepository.doc(user.uid).getOrNull()
             }
             job.join()
-            ten.value = nguoiDung!!.ten
-            sdt.value = nguoiDung!!.so_dien_thoai
-            date.value = nguoiDung!!.ngay_sinh.toInstant()
-                .atZone(
-                    ZoneId.systemDefault()
-                ).toLocalDate()
-            soNha.value = nguoiDung!!.dia_chi.so_nha
-            tenDuong.value = nguoiDung!!.dia_chi.ten_duong
-            phuongXa.value = nguoiDung!!.dia_chi.phuong_xa
+            fill()
         }
         loading.value = false
     }
@@ -142,9 +146,10 @@ class TrangNguoiDungViewModel @Inject constructor(
                 if (task.isSuccessful) {
                     Toast.makeText(context, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
                     viewModelScope.launch {
-                        val kq = nguoiDungRepository.docTheoID(task.result.user!!.uid)
+                        val kq = nguoiDungRepository.doc(task.result.user!!.uid)
                         if (kq.getOrNull() != null) {
                             nguoiDung = kq.getOrNull()!!
+                            fill()
                         } else {
                             Toast.makeText(context, "Lấy thông tin thất bại", Toast.LENGTH_SHORT)
                                 .show()
@@ -217,6 +222,7 @@ class TrangNguoiDungViewModel @Inject constructor(
                         val kq = nguoiDungRepository.them(nd)
                         if (kq.getOrNull() != null) {
                             nguoiDung = kq.getOrNull()
+                            fill()
                         } else {
                             Toast.makeText(
                                 context,

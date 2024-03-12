@@ -16,6 +16,13 @@ interface NguoiDungAPI {
     @GET("/nguoidung/{id}")
     suspend fun doc(@Path("id") id: String): Response<NguoiDung>
 
+    @GET("/nguoidung/ten={ten}/size={size}/index={index}")
+    suspend fun timKiem(
+        @Path("ten") ten: String,
+        @Path("size") size: Int,
+        @Path("index") index: Int
+    ): Response<List<NguoiDung>>
+
     @POST("/nguoidung")
     suspend fun them(@Body nguoiDung: NguoiDung): Response<NguoiDung>
 

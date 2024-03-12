@@ -10,7 +10,7 @@ class DacSanRepository(
     private val api: DacSanAPI
 ) {
     suspend fun doc(): Result<List<DacSan>> {
-        val kq = api.doc()
+        val kq = api.timKiem()
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
         } else {
@@ -24,28 +24,31 @@ class DacSanRepository(
         pageSize: Int,
         pageIndex: Int
     ): Result<List<DacSan>> {
-        val kq: Response<List<DacSan>> =
-            if (tuKhoa.dsVungMien.isNotEmpty() && tuKhoa.dsMuaDacSan.isNotEmpty()) {
-                api.timKiemTheoMuaVaVungMien(ten, pageSize, pageIndex, tuKhoa)
-            } else if (tuKhoa.dsVungMien.isNotEmpty()) {
-                api.timKiemTheoVungMien(ten, pageSize, pageIndex, tuKhoa)
-            } else if (tuKhoa.dsMuaDacSan.isNotEmpty()) {
-                api.timKiemTheoMua(ten, pageSize, pageIndex, tuKhoa)
-            } else if (ten.isNotEmpty()) {
-                api.doc(ten, pageSize, pageIndex)
-            } else {
-                return Result.failure(Throwable(message = "Từ khóa tìm kiếm không hợp lệ"))
-            }
+        val coTen = ten.isNotBlank()
+        val coVungMien = tuKhoa.dsVungMien.isNotEmpty()
+        val coMua = tuKhoa.dsMuaDacSan.isNotEmpty()
+        val coNguyenLieu = tuKhoa.dsNguyenLieu.isNotEmpty()
 
-        return if (kq.body() == null) {
-            Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
+        val kq: Response<List<DacSan>> = if (coVungMien && coMua && coNguyenLieu) {
+            api.timKiemTheoDieuKien(ten, pageSize, pageIndex, tuKhoa)
+        } else if (coVungMien && coMua) {
+            api.timKiemTheoMuaVungMien(ten, pageSize, pageIndex, tuKhoa)
+        } else if (coVungMien && coNguyenLieu) {
+            api.timKiemTheoNguyenLieuVungMien(ten, pageSize, pageIndex, tuKhoa)
+        } else if (coMua && coNguyenLieu) {
+            api.timKiemTheoNguyenLieuMua(ten, pageSize, pageIndex, tuKhoa)
+        } else if (coVungMien) {
+            api.timKiemTheoVungMien(ten, pageSize, pageIndex, tuKhoa)
+        } else if (coMua) {
+            api.timKiemTheoMua(ten, pageSize, pageIndex, tuKhoa)
+        } else if (coNguyenLieu) {
+            api.timKiemTheoNguyenLieu(ten, pageSize, pageIndex, tuKhoa)
+        } else if (coTen) {
+            api.timKiem(ten, pageSize, pageIndex)
         } else {
-            Result.success(kq.body()!!)
+            return Result.failure(Throwable(message = "Từ khóa tìm kiếm không hợp lệ"))
         }
-    }
 
-    suspend fun docTheoTrang(pageSize: Int, pageIndex: Int): Result<List<DacSan>> {
-        val kq = api.doc(pageSize, pageIndex)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
         } else {

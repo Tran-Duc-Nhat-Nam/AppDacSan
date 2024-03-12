@@ -18,7 +18,7 @@ fun CircleProgressIndicator() {
     ) {
         CircularProgressIndicator(
             strokeWidth = 5.dp,
-            modifier = Modifier.size(75.dp)
+            modifier = Modifier.size(50.dp)
         )
     }
 }
