@@ -1,6 +1,5 @@
 package com.example.appcsn.screen
 
-import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -52,14 +51,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.appcsn.data.model.NguoiDung
-import com.example.appcsn.ui.PageHeader
-import com.example.appcsn.ui.TransparentTextField
+import com.example.appcsn.ui.navgraph.SettingGraph
+import com.example.appcsn.ui.widget.PageHeader
+import com.example.appcsn.ui.widget.TransparentTextField
 import com.example.appcsn.viewmodel.BaseViewModel
 import com.example.appcsn.viewmodel.BaseViewModel.Companion.toLocalDate
 import com.example.appcsn.viewmodel.TrangNguoiDungViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Eye
@@ -72,7 +71,7 @@ import java.time.format.DateTimeFormatter
     ExperimentalMaterial3Api::class,
     ExperimentalAnimationApi::class
 )
-@Destination<RootGraph>()
+@Destination<SettingGraph>()
 @Composable
 fun TrangNguoiDung(
     navigator: DestinationsNavigator,
@@ -82,7 +81,8 @@ fun TrangNguoiDung(
     val context = LocalContext.current
 
     BackHandler {
-        (context as Activity).finish()
+        BaseViewModel.dsNavItem[2].backStack.removeLast()
+        navigator.navigate(BaseViewModel.dsNavItem[2].backStack.last())
     }
 
     var isDangKy by remember {

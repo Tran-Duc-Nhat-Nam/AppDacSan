@@ -1,5 +1,6 @@
 package com.example.appcsn
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,9 +60,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.compose.rememberNavController
-import com.example.appcsn.ui.CircleProgressIndicator
 import com.example.appcsn.ui.theme.AppTheme
+import com.example.appcsn.ui.widget.CircleProgressIndicator
 import com.example.appcsn.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.viewmodel.MainViewModel
 import com.example.appcsn.viewmodel.TrangChuDacSanViewModel
@@ -68,6 +74,8 @@ import com.example.appcsn.viewmodel.TrangChuNoiBanViewModel
 import com.example.appcsn.viewmodel.TrangNguoiDungViewModel
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.TrangBaoLoiDestination
+import com.ramcosta.composedestinations.generated.destinations.TrangCaiDatGiaoDienDestination
 import com.ramcosta.composedestinations.generated.destinations.TrangChiTietDacSanDestination
 import com.ramcosta.composedestinations.generated.destinations.TrangChiTietNoiBanDestination
 import com.ramcosta.composedestinations.generated.destinations.TrangChuDacSanDestination
@@ -79,6 +87,8 @@ import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.destination
 import com.ramcosta.composedestinations.navigation.navigate
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalLayoutApi::class)
 @AndroidEntryPoint
@@ -87,6 +97,8 @@ class MainActivity : ComponentActivity() {
     private val dacSanViewModel by viewModels<TrangChuDacSanViewModel>()
     private val noiBanViewModel by viewModels<TrangChuNoiBanViewModel>()
     private val nguoiDungViewModel by viewModels<TrangNguoiDungViewModel>()
+
+    val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
     @OptIn(
         ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
@@ -97,7 +109,29 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            AppTheme {
+            val key = intPreferencesKey("brightness")
+            val brightnessFlow: Flow<Int> = dataStore.data
+                .map { preferences ->
+                    // No type safety.
+                    preferences[key] ?: 0
+                }
+            var brightness by remember {
+                mutableIntStateOf(0)
+            }
+
+            LaunchedEffect(Unit) {
+                brightnessFlow.collect {
+                    brightness = it
+                }
+            }
+
+            AppTheme(
+                useDarkTheme = when {
+                    (brightness == 1) -> false
+                    (brightness == 2) -> true
+                    else -> isSystemInDarkTheme()
+                }
+            ) {
                 var connected by remember {
                     mutableStateOf(false)
                 }
@@ -451,9 +485,12 @@ class MainActivity : ComponentActivity() {
                                 startRoute = if (connected) {
                                     NavGraphs.root.startRoute
                                 } else {
-                                    TrangNguoiDungDestination
+                                    TrangBaoLoiDestination
                                 },
                                 dependenciesContainerBuilder = {
+                                    destination(TrangBaoLoiDestination) {
+                                        dependency("Không có kết nối mạng")
+                                    }
                                     destination(TrangChuDacSanDestination) {
                                         dependency(dacSanViewModel)
                                     }
@@ -462,6 +499,9 @@ class MainActivity : ComponentActivity() {
                                     }
                                     destination(TrangNguoiDungDestination) {
                                         dependency(nguoiDungViewModel)
+                                    }
+                                    destination(TrangCaiDatGiaoDienDestination) {
+                                        dependency(dataStore)
                                     }
                                 }
                             )

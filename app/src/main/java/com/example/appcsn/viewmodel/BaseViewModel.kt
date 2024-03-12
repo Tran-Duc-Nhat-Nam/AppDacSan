@@ -14,9 +14,9 @@ import androidx.lifecycle.ViewModel
 import com.example.appcsn.data.model.NguoiDung
 import com.example.appcsn.ui.navgraph.NavItem
 import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.TrangCaiDatDestination
 import com.ramcosta.composedestinations.generated.destinations.TrangChuDacSanDestination
 import com.ramcosta.composedestinations.generated.destinations.TrangChuNoiBanDestination
-import com.ramcosta.composedestinations.generated.destinations.TrangNguoiDungDestination
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -46,10 +46,10 @@ open class BaseViewModel : ViewModel() {
                 selectedIcon = Icons.Default.LocationOn
             ),
             NavItem(
-                graph = NavGraphs.root,
-                backStack = mutableListOf(TrangNguoiDungDestination),
+                graph = NavGraphs.setting,
+                backStack = mutableListOf(TrangCaiDatDestination),
                 index = 3,
-                name = "Người dùng",
+                name = "Cài đặt",
                 icon = Icons.Outlined.Person,
                 selectedIcon = Icons.Default.Person
             )

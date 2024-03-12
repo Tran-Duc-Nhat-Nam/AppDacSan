@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.appcsn.data.model.MuaDacSan
 import com.example.appcsn.data.model.NguoiDung
 import com.example.appcsn.data.model.NguyenLieu
-import com.example.appcsn.data.model.NoiBan
 import com.example.appcsn.data.model.VungMien
 import com.example.appcsn.data.model.dacsan.DacSan
 import com.example.appcsn.data.model.dacsan.TuKhoaTimKiem
+import com.example.appcsn.data.model.noiban.NoiBan
 import com.example.appcsn.data.repository.DacSanRepository
 import com.example.appcsn.data.repository.MuaDacSanRepository
 import com.example.appcsn.data.repository.NguoiDungRepository
@@ -122,10 +122,13 @@ class MainViewModel @Inject constructor(
     }
 
     suspend fun checkConnect(): Boolean {
+        loading.value = true
         return try {
             tinhThanhRepository.docTheoID(1)
+            loading.value = false
             true
         } catch (e: Exception) {
+            loading.value = false
             false
         }
     }

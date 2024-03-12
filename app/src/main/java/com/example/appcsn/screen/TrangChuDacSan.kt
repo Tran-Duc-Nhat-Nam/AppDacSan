@@ -42,10 +42,10 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.appcsn.R
 import com.example.appcsn.data.model.dacsan.TuKhoaTimKiem
-import com.example.appcsn.ui.CircleProgressIndicator
-import com.example.appcsn.ui.PageHeader
-import com.example.appcsn.ui.StarBar
 import com.example.appcsn.ui.navgraph.FoodGraph
+import com.example.appcsn.ui.widget.CircleProgressIndicator
+import com.example.appcsn.ui.widget.PageHeader
+import com.example.appcsn.ui.widget.StarBar
 import com.example.appcsn.viewmodel.BaseViewModel
 import com.example.appcsn.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.viewmodel.TrangChuDacSanViewModel

@@ -1,6 +1,6 @@
 package com.example.appcsn.ui.screenstate
 
-import com.example.appcsn.data.model.NoiBan
+import com.example.appcsn.data.model.noiban.NoiBan
 
 data class ScreenStateNoiBan(
     val isLoading: Boolean = false,

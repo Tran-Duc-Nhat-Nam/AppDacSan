@@ -122,6 +122,9 @@ interface DacSanAPI {
         @Path("idNguoiDung") idNguoiDung: String
     ): Response<LuotDanhGiaDacSan>
 
-    @POST("/danhgia")
-    suspend fun danhGia(@Body luotDanhGiaDacSan: LuotDanhGiaDacSan): Response<Boolean>
+    @POST("/danhgia/dacsan={id}")
+    suspend fun danhGia(
+        @Path("id") id: Int,
+        @Body luotDanhGia: LuotDanhGiaDacSan
+    ): Response<Boolean>
 }

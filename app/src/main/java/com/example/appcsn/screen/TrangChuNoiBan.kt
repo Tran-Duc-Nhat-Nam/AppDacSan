@@ -19,9 +19,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.appcsn.ui.CircleProgressIndicator
-import com.example.appcsn.ui.PageHeader
 import com.example.appcsn.ui.navgraph.PlaceGraph
+import com.example.appcsn.ui.widget.CircleProgressIndicator
+import com.example.appcsn.ui.widget.PageHeader
+import com.example.appcsn.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.viewmodel.TrangChuNoiBanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.destinations.TrangChiTietNoiBanDestination
@@ -59,7 +60,8 @@ fun TrangChuNoiBan(
                         modifier = Modifier
                             .padding(10.dp)
                             .clickable {
-                                navigator.navigate(TrangChiTietNoiBanDestination(it))
+                                dsNavItem[1].backStack.add(TrangChiTietNoiBanDestination(it))
+                                navigator.navigate(dsNavItem[1].backStack.last())
                             }
                     ) {
                         Column(

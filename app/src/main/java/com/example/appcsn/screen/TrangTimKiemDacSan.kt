@@ -51,8 +51,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.appcsn.R
 import com.example.appcsn.data.model.dacsan.TuKhoaTimKiem
-import com.example.appcsn.ui.CircleProgressIndicator
 import com.example.appcsn.ui.navgraph.FoodGraph
+import com.example.appcsn.ui.widget.CircleProgressIndicator
 import com.example.appcsn.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.viewmodel.TrangTimKiemDacSanViewModel
 import com.ramcosta.composedestinations.annotation.Destination

@@ -1,4 +1,4 @@
-package com.example.appcsn.ui
+package com.example.appcsn.ui.widget
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons

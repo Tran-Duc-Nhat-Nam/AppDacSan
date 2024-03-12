@@ -3,7 +3,7 @@ package com.example.appcsn.viewmodel
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
-import com.example.appcsn.data.model.NoiBan
+import com.example.appcsn.data.model.noiban.NoiBan
 import com.example.appcsn.data.repository.NoiBanRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

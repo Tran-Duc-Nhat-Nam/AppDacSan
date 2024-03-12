@@ -84,7 +84,7 @@ class DacSanRepository(
     }
 
     suspend fun rate(luotDanhGiaDacSan: LuotDanhGiaDacSan): Result<Boolean> {
-        val kq = api.danhGia(luotDanhGiaDacSan)
+        val kq = api.danhGia(luotDanhGiaDacSan.id_dac_san, luotDanhGiaDacSan)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Đánh giá thất bại"))
         } else {
