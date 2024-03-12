@@ -507,32 +507,37 @@ fun TrangChiTietDacSan(
                             .background(Color(30, 144, 255))
                             .padding(vertical = 5.dp, horizontal = 10.dp)
                     )
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    Column(
                         modifier = Modifier
                             .padding(10.dp)
                     ) {
                         dacSan.thanh_phan.forEach { thanhPhan ->
-                            AssistChip(
-                                onClick = {
-                                    navigator.navigate(
-                                        TrangTimKiemDacSanDestination(
-                                            ten = "",
-                                            tuKhoa = TuKhoaTimKiem(
-                                                dsNguyenLieu = mutableListOf(
-                                                    thanhPhan.nguyen_lieu.id
+                            Row {
+                                Text(
+                                    text = "- ${thanhPhan.so_luong} ${thanhPhan.don_vi_tinh} ",
+                                    fontSize = 13.sp,
+                                )
+                                Text(
+                                    text = thanhPhan.nguyen_lieu.ten,
+                                    fontSize = 13.sp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.clickable {
+                                        dsNavItem[0].backStack.add(
+                                            TrangTimKiemDacSanDestination(
+                                                ten = "",
+                                                tuKhoa = TuKhoaTimKiem(
+                                                    dsNguyenLieu = mutableListOf(
+                                                        thanhPhan.nguyen_lieu.id
+                                                    )
                                                 )
                                             )
                                         )
-                                    )
-                                },
-                                shape = RoundedCornerShape(25.dp),
-                                label = {
-                                    Text(
-                                        text = thanhPhan.nguyen_lieu.ten,
-                                        fontSize = 13.sp
-                                    )
-                                })
+                                        navigator.navigate(
+                                            dsNavItem[0].backStack.last()
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
                 }
