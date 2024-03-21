@@ -1,5 +1,6 @@
 package com.example.appcsn.viewmodel
 
+import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
@@ -10,9 +11,14 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import com.example.appcsn.data.model.NguoiDung
 import com.example.appcsn.ui.navgraph.NavItem
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.TrangCaiDatDestination
 import com.ramcosta.composedestinations.generated.destinations.TrangChuDacSanDestination
@@ -27,6 +33,8 @@ open class BaseViewModel : ViewModel() {
 
     companion object {
         var nguoiDung by mutableStateOf<NguoiDung?>(null)
+
+        val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settingPrefs")
 
         val dsNavItem = listOf(
             NavItem(
@@ -67,6 +75,16 @@ open class BaseViewModel : ViewModel() {
                 .atZone(
                     ZoneId.systemDefault()
                 ).toLocalDate()
+        }
+
+        fun kiemTraNguoiDung(
+            nguoiDung: NguoiDung?,
+            yeuCauXacMinh: Boolean = true,
+        ): Boolean {
+            return if (Firebase.auth.currentUser != null && nguoiDung != null) {
+                if (yeuCauXacMinh) Firebase.auth.currentUser!!.isEmailVerified
+                else true
+            } else false
         }
     }
 }

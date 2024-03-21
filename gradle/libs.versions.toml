@@ -1,12 +1,13 @@
 [versions]
-agp = "8.3.0"
+agp = "8.3.1"
 coilCompose = "2.5.0"
 converterGson = "2.9.0"
-core = "2.1.0-alpha03"
+core = "2.1.0-alpha06"
 datastorePreferences = "1.0.0"
 desugar_jdk_libs = "2.0.4"
 firebaseBom = "32.7.4"
 fontAwesome = "1.1.0"
+generativeai = "0.2.2"
 googleServices = "4.4.1"
 hiltCompiler = "2.50"
 hiltAndroid = "2.50"
@@ -23,10 +24,14 @@ lifecycleRuntimeKtx = "2.7.0"
 activityCompose = "1.8.2"
 composeBom = "2024.02.02"
 material = "1.6.3"
+material3 = "1.2.1"
+playServicesAuth = "21.0.0"
 retrofit = "2.9.0"
 navigationCompose = "2.7.7"
 firebase-auth = "22.3.1"
 appcompat = "1.6.1"
+secretsGradlePlugin = "2.0.1"
+roomCommon = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -43,6 +48,7 @@ eva-icons = { module = "br.com.devsrsouza.compose.icons:eva-icons", version.ref 
 feather = { module = "br.com.devsrsouza.compose.icons:feather", version.ref = "fontAwesome" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 font-awesome = { module = "br.com.devsrsouza.compose.icons:font-awesome", version.ref = "fontAwesome" }
+generativeai = { module = "com.google.ai.client.generativeai:generativeai", version.ref = "generativeai" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltCompiler" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
@@ -65,13 +71,17 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "core" }
 line-awesome = { module = "br.com.devsrsouza.compose.icons:line-awesome", version.ref = "fontAwesome" }
 linea = { module = "br.com.devsrsouza.compose.icons:linea", version.ref = "fontAwesome" }
+material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 octicons = { module = "br.com.devsrsouza.compose.icons:octicons", version.ref = "fontAwesome" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebase-auth" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 simple-icons = { module = "br.com.devsrsouza.compose.icons:simple-icons", version.ref = "fontAwesome" }
 tabler-icons = { module = "br.com.devsrsouza.compose.icons:tabler-icons", version.ref = "fontAwesome" }
+androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

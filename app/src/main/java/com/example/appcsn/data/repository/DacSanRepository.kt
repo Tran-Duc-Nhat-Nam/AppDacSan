@@ -18,6 +18,33 @@ class DacSanRepository(
         }
     }
 
+    suspend fun doc(id: Int): Result<DacSan> {
+        val kq = api.timKiem(id)
+        return if (kq.body() == null) {
+            Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
+        } else {
+            Result.success(kq.body()!!)
+        }
+    }
+
+    suspend fun xem(idDacSan: Int): Result<DacSan> {
+        val kq = api.xem(idDacSan)
+        return if (kq.body() == null) {
+            Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
+        } else {
+            Result.success(kq.body()!!)
+        }
+    }
+
+    suspend fun xem(idDacSan: Int, idNguoiDung: String): Result<DacSan> {
+        val kq = api.xem(idDacSan, idNguoiDung)
+        return if (kq.body() == null) {
+            Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
+        } else {
+            Result.success(kq.body()!!)
+        }
+    }
+
     suspend fun timKiem(
         ten: String,
         tuKhoa: TuKhoaTimKiem,
@@ -29,24 +56,42 @@ class DacSanRepository(
         val coMua = tuKhoa.dsMuaDacSan.isNotEmpty()
         val coNguyenLieu = tuKhoa.dsNguyenLieu.isNotEmpty()
 
-        val kq: Response<List<DacSan>> = if (coVungMien && coMua && coNguyenLieu) {
-            api.timKiemTheoDieuKien(ten, pageSize, pageIndex, tuKhoa)
-        } else if (coVungMien && coMua) {
-            api.timKiemTheoMuaVungMien(ten, pageSize, pageIndex, tuKhoa)
-        } else if (coVungMien && coNguyenLieu) {
-            api.timKiemTheoNguyenLieuVungMien(ten, pageSize, pageIndex, tuKhoa)
-        } else if (coMua && coNguyenLieu) {
-            api.timKiemTheoNguyenLieuMua(ten, pageSize, pageIndex, tuKhoa)
-        } else if (coVungMien) {
-            api.timKiemTheoVungMien(ten, pageSize, pageIndex, tuKhoa)
-        } else if (coMua) {
-            api.timKiemTheoMua(ten, pageSize, pageIndex, tuKhoa)
-        } else if (coNguyenLieu) {
-            api.timKiemTheoNguyenLieu(ten, pageSize, pageIndex, tuKhoa)
-        } else if (coTen) {
-            api.timKiem(ten, pageSize, pageIndex)
-        } else {
-            return Result.failure(Throwable(message = "Từ khóa tìm kiếm không hợp lệ"))
+        val kq: Response<List<DacSan>> = when {
+            coVungMien && coMua && coNguyenLieu -> {
+                api.timKiemTheoDieuKien(ten, pageSize, pageIndex, tuKhoa)
+            }
+
+            coVungMien && coMua -> {
+                api.timKiemTheoMuaVungMien(ten, pageSize, pageIndex, tuKhoa)
+            }
+
+            coVungMien && coNguyenLieu -> {
+                api.timKiemTheoNguyenLieuVungMien(ten, pageSize, pageIndex, tuKhoa)
+            }
+
+            coMua && coNguyenLieu -> {
+                api.timKiemTheoNguyenLieuMua(ten, pageSize, pageIndex, tuKhoa)
+            }
+
+            coVungMien -> {
+                api.timKiemTheoVungMien(ten, pageSize, pageIndex, tuKhoa)
+            }
+
+            coMua -> {
+                api.timKiemTheoMua(ten, pageSize, pageIndex, tuKhoa)
+            }
+
+            coNguyenLieu -> {
+                api.timKiemTheoNguyenLieu(ten, pageSize, pageIndex, tuKhoa)
+            }
+
+            coTen -> {
+                api.timKiem(ten, pageSize, pageIndex)
+            }
+
+            else -> {
+                return Result.failure(Throwable(message = "Từ khóa tìm kiếm không hợp lệ"))
+            }
         }
 
         return if (kq.body() == null) {
@@ -94,6 +139,15 @@ class DacSanRepository(
 
     suspend fun checkRate(idDacSan: Int, idNguoiDung: String): Result<LuotDanhGiaDacSan> {
         val kq = api.docDanhGia(idDacSan, idNguoiDung)
+        return if (kq.body() == null) {
+            Result.failure(Throwable(message = "Kiểm tra đánh giá thất bại"))
+        } else {
+            Result.success(kq.body()!!)
+        }
+    }
+
+    suspend fun checkRate(idDacSan: Int): Result<List<LuotDanhGiaDacSan>> {
+        val kq = api.docDanhGia(idDacSan)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Kiểm tra đánh giá thất bại"))
         } else {

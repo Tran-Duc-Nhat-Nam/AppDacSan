@@ -2,6 +2,7 @@ package com.example.appcsn.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
+import com.example.appcsn.BuildConfig
 import com.example.appcsn.data.model.MuaDacSan
 import com.example.appcsn.data.model.NguoiDung
 import com.example.appcsn.data.model.NguyenLieu
@@ -16,6 +17,7 @@ import com.example.appcsn.data.repository.NguyenLieuRepository
 import com.example.appcsn.data.repository.NoiBanRepository
 import com.example.appcsn.data.repository.TinhThanhRepository
 import com.example.appcsn.data.repository.VungMienRepository
+import com.google.ai.client.generativeai.GenerativeModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -39,6 +41,13 @@ class MainViewModel @Inject constructor(
     var dsChonVungMien = mutableStateListOf<Boolean>()
     var dsChonMuaDacSan = mutableStateListOf<Boolean>()
     var dsNguyenLieuDaChon = mutableStateListOf<NguyenLieu>()
+
+    private val generativeModel = GenerativeModel(
+        modelName = "gemini-pro",
+        apiKey = BuildConfig.apiKey
+    )
+    val chatInputs = mutableStateListOf<String>()
+    val chatOutputs = mutableStateListOf<String>()
 
     fun initAuth() {
         docDuLieu()
@@ -131,5 +140,23 @@ class MainViewModel @Inject constructor(
             loading.value = false
             false
         }
+    }
+
+    suspend fun chat() {
+        try {
+
+            chatOutputs.add(
+                generativeModel.generateContent(
+                    chatInputs.last()
+                ).text ?: "Không có phản hồi"
+            )
+
+        } catch (e: Exception) {
+            chatOutputs.add(
+                e.localizedMessage
+                    ?: "Đã xảy ra lỗi. Vui lòng thử lại."
+            )
+        }
+
     }
 }

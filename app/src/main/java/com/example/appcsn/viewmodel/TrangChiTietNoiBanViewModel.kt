@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.appcsn.data.model.noiban.LuotDanhGiaNoiBan
 import com.example.appcsn.data.model.noiban.NoiBan
-import com.example.appcsn.data.repository.HinhAnhRepository
 import com.example.appcsn.data.repository.NoiBanRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -14,7 +13,6 @@ import javax.inject.Inject
 @HiltViewModel
 class TrangChiTietNoiBanViewModel @Inject constructor(
     private val noiBanRepository: NoiBanRepository,
-    private val hinhAnhRepository: HinhAnhRepository
 ) : BaseViewModel() {
     var noiBan: NoiBan? = null
     var luotDanhGia by mutableStateOf<LuotDanhGiaNoiBan?>(null)

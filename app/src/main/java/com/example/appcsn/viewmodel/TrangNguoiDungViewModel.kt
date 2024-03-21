@@ -1,6 +1,5 @@
 package com.example.appcsn.viewmodel
 
-import android.app.Activity
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
@@ -15,6 +14,10 @@ import com.example.appcsn.data.repository.PhuongXaRepository
 import com.example.appcsn.data.repository.QuanHuyenRepository
 import com.example.appcsn.data.repository.TinhThanhRepository
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.auth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -30,7 +33,7 @@ class TrangNguoiDungViewModel @Inject constructor(
     private val phuongXaRepository: PhuongXaRepository,
     private val nguoiDungRepository: NguoiDungRepository
 ) : BaseViewModel() {
-    val auth = Firebase.auth
+    var daDangNhap = mutableStateOf(false)
     var email =
         mutableStateOf("")
     var matKhau =
@@ -43,7 +46,7 @@ class TrangNguoiDungViewModel @Inject constructor(
         mutableStateOf("")
     var isNam =
         mutableStateOf(true)
-    var date =
+    var ngaySinh =
         mutableStateOf(LocalDate.now())
     var tenDuong =
         mutableStateOf("")
@@ -77,16 +80,18 @@ class TrangNguoiDungViewModel @Inject constructor(
         ten.value = ""
         sdt.value = ""
         isNam.value = true
-        date.value = LocalDate.now()
+        ngaySinh.value = LocalDate.now()
         tenDuong.value = ""
         soNha.value = ""
         tinhThanh.value = null
+        quanHuyen.value = null
+        phuongXa.value = null
     }
 
     private fun fill() {
         ten.value = nguoiDung!!.ten
         sdt.value = nguoiDung!!.so_dien_thoai
-        date.value = nguoiDung!!.ngay_sinh.toInstant()
+        ngaySinh.value = nguoiDung!!.ngay_sinh.toInstant()
             .atZone(
                 ZoneId.systemDefault()
             ).toLocalDate()
@@ -98,7 +103,8 @@ class TrangNguoiDungViewModel @Inject constructor(
     suspend fun docNguoiDungFirebase() {
         loading.value = true
         val user = Firebase.auth.currentUser
-        if (user != null) {
+        daDangNhap.value = user != null
+        if (user != null && user.isEmailVerified) {
             val job = viewModelScope.launch {
                 nguoiDung = nguoiDungRepository.doc(user.uid).getOrNull()
             }
@@ -137,108 +143,154 @@ class TrangNguoiDungViewModel @Inject constructor(
     }
 
     fun dangNhap(context: Context) {
-        if (email.value.isBlank() || matKhau.value.isBlank()) {
-            return
-        }
-        loading.value = true
-        auth.signInWithEmailAndPassword(email.value, matKhau.value)
-            .addOnCompleteListener(context as Activity) { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(context, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
-                    viewModelScope.launch {
-                        val kq = nguoiDungRepository.doc(task.result.user!!.uid)
-                        if (kq.getOrNull() != null) {
-                            nguoiDung = kq.getOrNull()!!
-                            fill()
-                        } else {
-                            Toast.makeText(context, "Lấy thông tin thất bại", Toast.LENGTH_SHORT)
+        when {
+            email.value.isBlank() -> Toast.makeText(
+                context,
+                "Email không được trống",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            matKhau.value.isBlank() -> Toast.makeText(
+                context,
+                "Mật khẩu không được trống",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            else -> {
+                Firebase.auth.signInWithEmailAndPassword(email.value, matKhau.value)
+                    .addOnSuccessListener {
+                        viewModelScope.launch {
+                            docNguoiDungFirebase()
+                            Toast.makeText(context, "Đăng nhập thành công", Toast.LENGTH_SHORT)
                                 .show()
                         }
                     }
-                } else {
-                    Toast.makeText(
-                        context,
-                        "Đăng nhập thất bại. ${task.exception}",
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                }
-                loading.value = false
-            }
-    }
-
-    fun dangKy(context: Context) {
-        if (
-            email.value.isBlank() || matKhau.value.isBlank()
-            || xacNhanMatKhau.value.isBlank() || ten.value.isBlank()
-            || sdt.value.isBlank() || soNha.value.isBlank()
-            || tenDuong.value.isBlank()
-        ) {
-            Toast.makeText(
-                context,
-                "Vui lòng nhập đầy đủ thông tin",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-        if (matKhau.value != xacNhanMatKhau.value) {
-            Toast.makeText(
-                context,
-                "Mật khẩu xác nhận không trùng khớp",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-        if (phuongXa.value == null) {
-            Toast.makeText(
-                context,
-                "Vui lòng chọn phường xã",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-        auth.createUserWithEmailAndPassword(
-            email.value,
-            matKhau.value
-        )
-            .addOnCompleteListener(context as Activity) { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(
-                        context,
-                        "Đăng ký thành công",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    val nd = NguoiDung(
-                        id = task.result.user!!.uid,
-                        email = email.value,
-                        so_dien_thoai = sdt.value,
-                        ten = ten.value,
-                        is_nam = isNam.value,
-                        ngay_sinh = Date.from(
-                            date.value.atStartOfDay(ZoneId.systemDefault()).toInstant()
-                        ),
-                        dia_chi = DiaChi(-1, soNha.value, ten.value, phuongXa.value!!)
-                    )
-                    viewModelScope.launch {
-                        val kq = nguoiDungRepository.them(nd)
-                        if (kq.getOrNull() != null) {
-                            nguoiDung = kq.getOrNull()
-                            fill()
-                        } else {
-                            Toast.makeText(
+                    .addOnFailureListener { exception ->
+                        when (exception::class.java) {
+                            FirebaseAuthInvalidUserException::class.java -> Toast.makeText(
                                 context,
-                                "Thêm người dùng thất bại",
+                                "Email không chính xác",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            FirebaseAuthInvalidCredentialsException::class.java -> Toast.makeText(
+                                context,
+                                "Mật khẩu không chính xác",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
                     }
-                } else {
-                    Toast.makeText(
-                        context,
-                        "Đăng ký thất bại. ${task.exception}",
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                }
             }
+        }
+    }
+
+    fun dangKy(context: Context) {
+        when {
+            email.value.isBlank() -> Toast.makeText(
+                context,
+                "Email không được trống",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            matKhau.value.isBlank() -> Toast.makeText(
+                context,
+                "Mật khẩu không được trống",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            xacNhanMatKhau.value.isBlank() -> Toast.makeText(
+                context,
+                "Mật khẩu xác nhận không được trống",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            ten.value.isBlank() -> Toast.makeText(
+                context,
+                "Tên tài khoản không được trống",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            sdt.value.isBlank() -> Toast.makeText(
+                context,
+                "Số điện thoại không được trống",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            soNha.value.isBlank() -> Toast.makeText(
+                context,
+                "Số nhà không được trống",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            tenDuong.value.isBlank() -> Toast.makeText(
+                context,
+                "Tên đường không được trống",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            matKhau.value != xacNhanMatKhau.value -> Toast.makeText(
+                context,
+                "Mật khẩu xác nhận không trùng khớp",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            phuongXa.value == null -> Toast.makeText(
+                context,
+                "Hãy chọn phường xã nơi bạn ở",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            else -> {
+                Firebase.auth.createUserWithEmailAndPassword(email.value, matKhau.value)
+                    .addOnSuccessListener { task ->
+                        val nd = NguoiDung(
+                            id = task.user!!.uid,
+                            email = email.value,
+                            so_dien_thoai = sdt.value,
+                            ten = ten.value,
+                            is_nam = isNam.value,
+                            ngay_sinh = Date.from(
+                                ngaySinh.value.atStartOfDay(ZoneId.systemDefault()).toInstant()
+                            ),
+                            dia_chi = DiaChi(-1, soNha.value, ten.value, phuongXa.value!!)
+                        )
+                        task.user!!.sendEmailVerification()
+                        viewModelScope.launch {
+                            val kq = nguoiDungRepository.them(nd)
+                            if (kq.getOrNull() != null) {
+                                docNguoiDungFirebase()
+                                Toast.makeText(
+                                    context,
+                                    "Đăng nhập thành công",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        when (exception::class.java) {
+                            FirebaseAuthWeakPasswordException::class.java -> Toast.makeText(
+                                context,
+                                "Mật khẩu yếu",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            FirebaseAuthInvalidCredentialsException::class.java -> Toast.makeText(
+                                context,
+                                "Mật khẩu không phù hợp",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            FirebaseAuthUserCollisionException::class.java -> Toast.makeText(
+                                context,
+                                "Email đã tồn tại",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                    }
+            }
+        }
     }
 
     suspend fun capNhatNguoiDung(): Boolean {
@@ -249,7 +301,7 @@ class TrangNguoiDungViewModel @Inject constructor(
             ten = ten.value,
             is_nam = isNam.value,
             ngay_sinh = Date.from(
-                date.value.atStartOfDay(ZoneId.systemDefault()).toInstant()
+                ngaySinh.value.atStartOfDay(ZoneId.systemDefault()).toInstant()
             ),
             dia_chi = DiaChi(nguoiDung!!.dia_chi.id, soNha.value, ten.value, phuongXa.value!!)
         )

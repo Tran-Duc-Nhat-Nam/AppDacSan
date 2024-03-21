@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -46,7 +47,6 @@ fun TrangCaiDatGiaoDien(
     navigator: DestinationsNavigator,
     dataStore: DataStore<Preferences>
 ) {
-
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -57,7 +57,7 @@ fun TrangCaiDatGiaoDien(
             preferences[key] ?: 0
         }
     var brightness by remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
 
     var isChonMode by remember {

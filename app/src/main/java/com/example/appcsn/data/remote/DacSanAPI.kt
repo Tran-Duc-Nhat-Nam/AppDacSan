@@ -23,7 +23,12 @@ interface DacSanAPI {
     @GET("/dacsan/{id}")
     suspend fun timKiem(@Path("id") id: Int): Response<DacSan>
 
-    @GET("/dacsan/{id}/xem")
+    @GET("/dacsan/{id}/chitiet")
+    suspend fun xem(
+        @Path("id") id: Int,
+    ): Response<DacSan>
+
+    @GET("/dacsan/{id}/nguoidung={idNguoiDung}")
     suspend fun xem(
         @Path("id") id: Int,
         @Path("idNguoiDung") idNguoiDung: String
@@ -92,12 +97,6 @@ interface DacSanAPI {
         @Body tuKhoaTimKiem: TuKhoaTimKiem
     ): Response<List<DacSan>>
 
-    @GET("/dacsan/mota={mota}")
-    suspend fun docTheoMoTa(@Path("mota") moTa: String): Response<List<DacSan>>
-
-    @GET("/dacsan/cachchebien={cachchebien}")
-    suspend fun docTheoCachCheBien(@Path("cachchebien") cachCheBien: String): Response<List<DacSan>>
-
     @GET("/yeuthich/dacsan={idDacSan}/nguoidung={idNguoiDung}")
     suspend fun checkLike(
         @Path("idDacSan") idDacSan: Int,
@@ -115,6 +114,11 @@ interface DacSanAPI {
         @Path("idDacSan") idDacSan: Int,
         @Path("idNguoiDung") idNguoiDung: String
     ): Response<Boolean>
+
+    @GET("/danhgia/dacsan={idDacSan}")
+    suspend fun docDanhGia(
+        @Path("idDacSan") idDacSan: Int,
+    ): Response<List<LuotDanhGiaDacSan>>
 
     @GET("/danhgia/dacsan={idDacSan}/nguoidung={idNguoiDung}")
     suspend fun docDanhGia(

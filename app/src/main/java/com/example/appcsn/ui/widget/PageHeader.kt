@@ -19,8 +19,6 @@ fun PageHeader(
 ) {
     Surface(
         shadowElevation = 1.dp,
-        modifier = Modifier
-            .padding(top = 15.dp)
     ) {
         Text(
             text = text,

@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,6 +22,7 @@ import com.example.appcsn.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.destinations.TrangCaiDatGiaoDienDestination
 import com.ramcosta.composedestinations.generated.destinations.TrangNguoiDungDestination
+import com.ramcosta.composedestinations.generated.destinations.TrangXemWebDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Destination<SettingGraph>(start = true)
@@ -29,6 +31,7 @@ fun TrangCaiDat(
     navigator: DestinationsNavigator,
 ) {
     val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
 
     BackHandler {
         (context as Activity).finish()
@@ -65,6 +68,10 @@ fun TrangCaiDat(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(15.dp)
+                .clickable {
+                    dsNavItem[2].backStack.add(TrangXemWebDestination)
+                    navigator.navigate(dsNavItem[2].backStack.last())
+                }
         )
     }
 }

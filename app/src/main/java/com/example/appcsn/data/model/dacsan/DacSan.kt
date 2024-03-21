@@ -1,6 +1,8 @@
 package com.example.appcsn.data.model.dacsan
 
 import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.example.appcsn.data.model.HinhAnh
 import com.example.appcsn.data.model.MuaDacSan
 import com.example.appcsn.data.model.ThanhPhan
@@ -8,8 +10,9 @@ import com.example.appcsn.data.model.VungMien
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
+@Entity(tableName = "dac_san")
 data class DacSan(
-    val id: Int,
+    @PrimaryKey val id: Int,
     val ten: String,
     val mo_ta: String?,
     val cach_che_bien: String?,

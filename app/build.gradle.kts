@@ -6,6 +6,7 @@ plugins {
     id("com.google.gms.google-services")
     kotlin("jvm") apply false
     id("com.google.dagger.hilt.android") version "2.50" apply true
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -45,6 +46,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.10"
@@ -67,9 +69,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.firebase.auth)
-    implementation(platform(libs.firebase.bom))
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.room.common)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -77,31 +78,40 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.material3)
     implementation(libs.javapoet)
     implementation(libs.androidx.datastore.preferences)
 
-    // retrofit
+    // Firebase
+    implementation(libs.firebase.auth)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.play.services.auth)
+
+    // Retrofit
     implementation(libs.retrofit)
 
     // GSON
     implementation(libs.converter.gson)
 
-    // coroutine
+    // Coroutine
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
 
+    // Coil (Async image)
     implementation(libs.coil.compose)
 
+    // Destination compose
     implementation(libs.core)
-    implementation(("androidx.compose.material3:material3:1.2.0-beta02"))
     implementation(libs.androidx.material)
     ksp(libs.ksp)
 
+    // DaggerHilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.fragment)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    // Icon
     implementation(libs.font.awesome)
     implementation(libs.simple.icons)
     implementation(libs.feather)
@@ -113,4 +123,9 @@ dependencies {
     implementation(libs.line.awesome)
 
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    // Gemini API
+    implementation(libs.generativeai)
+
+    implementation("io.github.kevinnzou:compose-webview:0.33.4")
 }

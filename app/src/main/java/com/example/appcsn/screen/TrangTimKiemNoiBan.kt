@@ -1,11 +1,11 @@
 package com.example.appcsn.screen
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +24,6 @@ import androidx.compose.material.icons.twotone.Star
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
@@ -93,7 +92,6 @@ fun TrangTimKiemNoiBan(
                 items(items = state.ds) {
                     if (it == state.ds.last() && !state.isEnd && !state.isLoading) {
                         viewModel.loadNext()
-                        Log.d("Paging", "Load next")
                     }
                     Surface(
                         shadowElevation = 2.dp,
@@ -190,11 +188,11 @@ fun TrangTimKiemNoiBan(
                                 .fillMaxWidth(),
                             contentAlignment = Alignment.Center
                         ) {
-                            CircularProgressIndicator(
+                            CircleProgressIndicator(
                                 strokeWidth = 3.dp,
-                                modifier = Modifier
-                                    .size(35.dp)
-                                    .padding(5.dp)
+                                size = 35.dp,
+                                innerPadding = PaddingValues(5.dp),
+                                outerPadding = PaddingValues(10.dp),
                             )
                         }
                     }
