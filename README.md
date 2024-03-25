@@ -57,7 +57,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Application introducing Vietnamese specialties
+An application introducing Vietnamese specialties
 
 <img src="screenshot_dark.jpg" width="400">
 
@@ -80,7 +80,6 @@ Application introducing Vietnamese specialties
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
 * A phone with Android 7.1 or above
 
 ### Installation
