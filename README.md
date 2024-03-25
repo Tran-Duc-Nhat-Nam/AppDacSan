@@ -68,7 +68,8 @@ Application introducing Vietnamese specialties
 ### Built With
 
 [![Kotlin][Kotlin-logo]][Kotlin-url]
-[![Android][Android-logo]][Android-url]
+
+[![JetpackCompose][Jetpack-compose-logo]][Jetpack-compose-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -166,5 +167,7 @@ Project Link: [https://github.com/Tran-Duc-Nhat-Nam/AppDacSan](https://github.co
 [Web-url]: https://github.com/Tran-Duc-Nhat-Nam/App_Quan_Ly_Dac_San
 [Go-logo]: https://img.shields.io/badge/api-000000?style=for-the-badge&logo=go&logoColor=deepskyblue
 [API-url]: https://github.com/Tran-Duc-Nhat-Nam/DacSanAPI
+[Jetpack-compose-logo]: https://img.shields.io/badge/jetpack%20compose-000000?style=for-the-badge&logo=jetpackcompose&logoColor=royalblue
+[Jetpack-compose-url]: https://developer.android.com/courses/jetpack-compose/course
 [Kotlin-logo]: https://img.shields.io/badge/kotlin-000000?style=for-the-badge&logo=kotlin&logoColor=deepviolet
 [Kotlin-url]: https://kotlinlang.org/
