@@ -23,8 +23,8 @@
   <h4 align="center">VinaFood project</h3>
 
   [![Android][Android-logo]][Android-url]
-  [![Web][Flutter-logo]][Web-url]
-  [![API][Go-logo]][API-url]
+  [![Web][Web-logo]][Web-url]
+  [![API][API-logo]][API-url]
 </p>
 </div>
 
@@ -163,9 +163,9 @@ Project Link: [https://github.com/Tran-Duc-Nhat-Nam/AppDacSan](https://github.co
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [Android-logo]: https://img.shields.io/badge/android-000000?style=for-the-badge&logo=android&logoColor=lime
 [Android-url]: https://github.com/Tran-Duc-Nhat-Nam/AppDacSan
-[Flutter-logo]: https://img.shields.io/badge/web-000000?style=for-the-badge&logo=flutter&logoColor=dodgerblue 
+[Web-logo]: https://img.shields.io/badge/web-000000?style=for-the-badge&logo=flutter&logoColor=dodgerblue 
 [Web-url]: https://github.com/Tran-Duc-Nhat-Nam/App_Quan_Ly_Dac_San
-[Go-logo]: https://img.shields.io/badge/api-000000?style=for-the-badge&logo=go&logoColor=deepskyblue
+[API-logo]: https://img.shields.io/badge/api-000000?style=for-the-badge&logo=go&logoColor=deepskyblue
 [API-url]: https://github.com/Tran-Duc-Nhat-Nam/DacSanAPI
 [Jetpack-compose-logo]: https://img.shields.io/badge/jetpack%20compose-000000?style=for-the-badge&logo=jetpackcompose&logoColor=royalblue
 [Jetpack-compose-url]: https://developer.android.com/courses/jetpack-compose/course
