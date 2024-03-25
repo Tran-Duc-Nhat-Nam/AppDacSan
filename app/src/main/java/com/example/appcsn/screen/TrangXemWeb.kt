@@ -5,7 +5,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import com.example.appcsn.ui.navgraph.SettingGraph
-import com.example.appcsn.ui.widget.PageHeader
 import com.example.appcsn.viewmodel.BaseViewModel
 import com.kevinnzou.web.WebView
 import com.kevinnzou.web.rememberWebViewState
@@ -25,7 +24,6 @@ fun TrangXemWeb(
     }
 
     Column {
-        PageHeader("Web")
         WebView(
             state = state,
             onCreated = {

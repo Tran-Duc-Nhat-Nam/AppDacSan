@@ -1,5 +1,6 @@
 package com.example.appcsn.di
 
+import android.app.Application
 import com.example.appcsn.data.remote.DacSanAPI
 import com.example.appcsn.data.remote.HinhAnhAPI
 import com.example.appcsn.data.remote.MuaDacSanAPI
@@ -20,6 +21,8 @@ import com.example.appcsn.data.repository.PhuongXaRepository
 import com.example.appcsn.data.repository.QuanHuyenRepository
 import com.example.appcsn.data.repository.TinhThanhRepository
 import com.example.appcsn.data.repository.VungMienRepository
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
@@ -165,5 +168,12 @@ object AppModule {
     @Singleton
     fun provideNguoiDungRepository(api: NguoiDungAPI): NguoiDungRepository {
         return NguoiDungRepository(api)
+    }
+
+    @Provides
+    @Singleton
+    fun initPlaceClient(app: Application): PlacesClient {
+        Places.initializeWithNewPlacesApiEnabled(app, "MAPS_API_KEY")
+        return Places.createClient(app)
     }
 }

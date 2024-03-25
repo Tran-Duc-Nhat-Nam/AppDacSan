@@ -127,5 +127,10 @@ dependencies {
     // Gemini API
     implementation(libs.generativeai)
 
-    implementation("io.github.kevinnzou:compose-webview:0.33.4")
+    // WebView
+    implementation(libs.compose.webview)
+
+    // Google Map
+    implementation(libs.maps.compose)
+    implementation(libs.places)
 }

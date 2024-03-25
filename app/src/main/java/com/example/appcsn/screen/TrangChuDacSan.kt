@@ -92,17 +92,14 @@ fun TrangChuDacSan(
                                 Column(
                                     modifier = Modifier
                                         .padding(8.dp)
-                                        .clip(
-                                            shape = RoundedCornerShape(10.dp)
-                                        )
-
+                                        .clip(RoundedCornerShape(10.dp))
                                 ) {
                                     ThanhTieuDe(dsDacSan, navigator)
                                     LazyRow(
                                         modifier = Modifier
                                             .fillMaxSize()
                                             .background(MaterialTheme.colorScheme.primaryContainer)
-                                            .padding(vertical = 4.dp, horizontal = 4.dp),
+                                            .padding(4.dp),
                                     ) {
                                         items(dsDacSan.value)
                                         { dacSan ->

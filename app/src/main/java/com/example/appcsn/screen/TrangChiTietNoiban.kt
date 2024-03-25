@@ -98,7 +98,6 @@ fun TrangChiTietNoiBan(
             shadowElevation = 1.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 15.dp)
         ) {
             ThanhTieuDe(noiBan, viewModel, coroutineScope, context)
         }
@@ -268,6 +267,7 @@ private fun ThanhTieuDe(
         IconYeuThich(viewModel, coroutineScope, noiBan, context)
     }
 }
+
 
 @Composable
 private fun IconYeuThich(
