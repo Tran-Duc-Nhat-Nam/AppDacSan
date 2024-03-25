@@ -11,6 +11,7 @@
   </a>
 
 <h3 align="center">VinaFood Android App</h3>
+
 <p align="center">
   <a href="https://github.com/Tran-Duc-Nhat-Nam/AppDacSan/releases">APK file</a>
   |
@@ -20,15 +21,14 @@
   <br />
   <p>-------------------------------------------------------------------------------</p>
   <h4 align="center">VinaFood project</h3>
-  <a href="https://github.com/Tran-Duc-Nhat-Nam/AppDacSan"><strong>Android app for user</strong></a>
-  |
-  <a href="https://github.com/Tran-Duc-Nhat-Nam/App_Quan_Ly_Dac_San"><strong>Web app for admin</strong></a>
-  |
-  <a href="https://github.com/Tran-Duc-Nhat-Nam/DacSanAPI"><strong>API</strong></a>
-  <br />
-</p>
 
+  [![Android][Android-logo]][Android-url]
+  [![Web][Flutter-logo]][Web-url]
+  [![API][Go-logo]][API-url]
+</p>
 </div>
+
+
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -67,7 +67,8 @@ Application introducing Vietnamese specialties
 
 ### Built With
 
-[![Kotlin][Kotlin.js]][Kotlin-url]
+[![Kotlin][Kotlin-logo]][Kotlin-url]
+[![Android][Android-logo]][Android-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -159,5 +160,11 @@ Project Link: [https://github.com/Tran-Duc-Nhat-Nam/AppDacSan](https://github.co
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[Kotlin.js]: https://img.shields.io/badge/kotlin-000000?style=for-the-badge&logo=kotlin&logoColor=deepviolet
+[Android-logo]: https://img.shields.io/badge/android-000000?style=for-the-badge&logo=android&logoColor=lime
+[Android-url]: https://github.com/Tran-Duc-Nhat-Nam/AppDacSan
+[Flutter-logo]: https://img.shields.io/badge/web-000000?style=for-the-badge&logo=flutter&logoColor=dodgerblue 
+[Web-url]: https://github.com/Tran-Duc-Nhat-Nam/App_Quan_Ly_Dac_San
+[Go-logo]: https://img.shields.io/badge/api-000000?style=for-the-badge&logo=go&logoColor=deepskyblue
+[API-url]: https://github.com/Tran-Duc-Nhat-Nam/DacSanAPI
+[Kotlin-logo]: https://img.shields.io/badge/kotlin-000000?style=for-the-badge&logo=kotlin&logoColor=deepviolet
 [Kotlin-url]: https://kotlinlang.org/
