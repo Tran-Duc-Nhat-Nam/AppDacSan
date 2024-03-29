@@ -53,9 +53,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.appcsn.data.model.noiban.LuotDanhGiaNoiBan
-import com.example.appcsn.data.model.noiban.NoiBan
 import com.example.appcsn.ui.navgraph.PlaceGraph
-import com.example.appcsn.viewmodel.BaseViewModel
+import com.example.appcsn.ui.widget.CircleProgressIndicator
 import com.example.appcsn.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.viewmodel.BaseViewModel.Companion.nguoiDung
 import com.example.appcsn.viewmodel.TrangChiTietNoiBanViewModel
@@ -68,10 +67,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun TrangChiTietNoiBan(
     navigator: DestinationsNavigator,
-    noiBan: NoiBan,
+    id: Int,
 ) {
     val viewModel = hiltViewModel<TrangChiTietNoiBanViewModel>()
-    viewModel.noiBan = noiBan
 
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -84,8 +82,7 @@ fun TrangChiTietNoiBan(
     }
 
     LaunchedEffect(true) {
-        viewModel.checkLike(noiBan.id)
-        viewModel.docDanhGia()
+        viewModel.docDuLieu(id)
     }
 
     BackHandler {
@@ -93,35 +90,41 @@ fun TrangChiTietNoiBan(
         navigator.navigate(dsNavItem[1].backStack.last())
     }
 
-    Column {
-        Surface(
-            shadowElevation = 1.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            ThanhTieuDe(noiBan, viewModel, coroutineScope, context)
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-        LazyColumn(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 10.dp)
-        ) {
-            item {
-                ThanhThongKeTuongTac(noiBan)
-                Spacer(modifier = Modifier.height(15.dp))
-                ThanhMoTa(noiBan, maxLineMT, isExpandableMT)
-                Spacer(modifier = Modifier.height(15.dp))
-                ThanhDiaChi(noiBan)
-                Spacer(modifier = Modifier.height(15.dp))
-                if (nguoiDung != null) {
-                    if (viewModel.luotDanhGia == null) {
-                        ThanhDanhGia(viewModel, coroutineScope)
-                    } else {
-                        DanhGia(viewModel.luotDanhGia!!)
-                    }
+    if (viewModel.loading.value) {
+        CircleProgressIndicator()
+    } else if (viewModel.noiBan.value == null) {
+        TrangBaoLoi("Không tìm được thông tin chi tiết của đặc sản")
+    } else {
+        Column {
+            Surface(
+                shadowElevation = 1.dp,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                ThanhTieuDe(viewModel, coroutineScope, context)
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            LazyColumn(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 10.dp)
+            ) {
+                item {
+                    ThanhThongKeTuongTac(viewModel)
                     Spacer(modifier = Modifier.height(15.dp))
+                    ThanhMoTa(viewModel, maxLineMT, isExpandableMT)
+                    Spacer(modifier = Modifier.height(15.dp))
+                    ThanhDiaChi(viewModel)
+                    Spacer(modifier = Modifier.height(15.dp))
+                    if (nguoiDung != null) {
+                        if (viewModel.luotDanhGia == null) {
+                            ThanhDanhGia(viewModel, coroutineScope)
+                        } else {
+                            DanhGia(viewModel.luotDanhGia!!)
+                        }
+                        Spacer(modifier = Modifier.height(15.dp))
+                    }
                 }
             }
         }
@@ -240,7 +243,6 @@ private fun ThanhDanhGia(
 
 @Composable
 private fun ThanhTieuDe(
-    noiBan: NoiBan,
     viewModel: TrangChiTietNoiBanViewModel,
     coroutineScope: CoroutineScope,
     context: Context
@@ -258,13 +260,13 @@ private fun ThanhTieuDe(
             contentDescription = "Chưa yêu thích",
         )
         Text(
-            text = noiBan.ten,
+            text = viewModel.noiBan.value!!.ten,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.SemiBold,
             fontSize = 20.sp,
             maxLines = 1,
         )
-        IconYeuThich(viewModel, coroutineScope, noiBan, context)
+        IconYeuThich(viewModel, coroutineScope, context)
     }
 }
 
@@ -273,31 +275,30 @@ private fun ThanhTieuDe(
 private fun IconYeuThich(
     viewModel: TrangChiTietNoiBanViewModel,
     coroutineScope: CoroutineScope,
-    noiBan: NoiBan,
     context: Context
 ) {
     IconToggleButton(
         checked = viewModel.yeuThich ?: false,
         onCheckedChange = { isChecked ->
-            if (BaseViewModel.nguoiDung != null) {
+            if (nguoiDung != null) {
                 coroutineScope.launch {
                     if (isChecked) {
                         val kq =
-                            viewModel.like(noiBan.id)
+                            viewModel.like(viewModel.noiBan.value!!.id)
                         if (kq) {
                             Toast.makeText(
                                 context,
-                                "Đã yêu thích ${noiBan.ten}.",
+                                "Đã yêu thích ${viewModel.noiBan.value!!.ten}.",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
                     } else {
                         val kq =
-                            viewModel.unlike(noiBan.id)
+                            viewModel.unlike(viewModel.noiBan.value!!.id)
                         if (kq) {
                             Toast.makeText(
                                 context,
-                                "Đã hủy yêu thích ${noiBan.ten}.",
+                                "Đã hủy yêu thích ${viewModel.noiBan.value!!.ten}.",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -328,7 +329,7 @@ private fun IconYeuThich(
 }
 
 @Composable
-private fun ThanhThongKeTuongTac(noiBan: NoiBan) {
+private fun ThanhThongKeTuongTac(viewModel: TrangChiTietNoiBanViewModel) {
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically,
@@ -340,7 +341,7 @@ private fun ThanhThongKeTuongTac(noiBan: NoiBan) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = noiBan.luot_xem.toString(),
+                text = viewModel.noiBan.value!!.luot_xem.toString(),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -348,7 +349,7 @@ private fun ThanhThongKeTuongTac(noiBan: NoiBan) {
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = noiBan.luot_danh_gia.toString(),
+                text = viewModel.noiBan.value!!.luot_danh_gia.toString(),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -356,7 +357,7 @@ private fun ThanhThongKeTuongTac(noiBan: NoiBan) {
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = noiBan.diem_danh_gia.toString(),
+                text = viewModel.noiBan.value!!.diem_danh_gia.toString(),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -367,7 +368,7 @@ private fun ThanhThongKeTuongTac(noiBan: NoiBan) {
 
 @Composable
 private fun ThanhMoTa(
-    noiBan: NoiBan,
+    viewModel: TrangChiTietNoiBanViewModel,
     maxLineMT: MutableIntState,
     isExpandableMT: MutableState<Boolean>
 ) {
@@ -393,7 +394,7 @@ private fun ThanhMoTa(
                 .padding(vertical = 5.dp, horizontal = 10.dp)
         )
         Text(
-            text = noiBan.mo_ta ?: "Chưa có thông tin",
+            text = viewModel.noiBan.value!!.mo_ta ?: "Chưa có thông tin",
             fontSize = 13.sp,
             maxLines = maxLineMT.intValue,
             overflow = TextOverflow.Ellipsis,
@@ -426,7 +427,7 @@ private fun ThanhMoTa(
 }
 
 @Composable
-private fun ThanhDiaChi(noiBan: NoiBan) {
+private fun ThanhDiaChi(viewModel: TrangChiTietNoiBanViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -449,7 +450,7 @@ private fun ThanhDiaChi(noiBan: NoiBan) {
                 .padding(vertical = 5.dp, horizontal = 10.dp)
         )
         Text(
-            text = noiBan.dia_chi.toString(),
+            text = viewModel.noiBan.value!!.dia_chi.toString(),
             fontSize = 13.sp,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier

@@ -106,7 +106,7 @@ fun TrangTimKiemNoiBan(
                                 .padding(5.dp)
                                 .clickable {
                                     BaseViewModel.dsNavItem[0].backStack.add(
-                                        TrangChiTietNoiBanDestination(it)
+                                        TrangChiTietNoiBanDestination(it.id)
                                     )
                                     navigator.navigate(BaseViewModel.dsNavItem[0].backStack.last())
                                 },

@@ -20,6 +20,17 @@ interface NoiBanAPI {
     @GET("/noiban/{id}/dacsan")
     suspend fun docDacSan(@Path("id") id: Int): Response<List<DacSan>>
 
+    @GET("/noiban/{id}/chitiet")
+    suspend fun xem(
+        @Path("id") id: Int,
+    ): Response<NoiBan>
+
+    @GET("/noiban/{id}/nguoidung={idNguoiDung}")
+    suspend fun xem(
+        @Path("id") id: Int,
+        @Path("idNguoiDung") idNguoiDung: String
+    ): Response<NoiBan>
+
     @GET("/noiban/ten={ten}/size={size}/index={index}")
     suspend fun timKiem(
         @Path("ten") ten: String,

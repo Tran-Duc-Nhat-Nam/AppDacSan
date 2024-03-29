@@ -42,7 +42,6 @@ import com.example.appcsn.viewmodel.BaseViewModel.Companion.nguoiDung
 import com.example.appcsn.viewmodel.TrangChuNoiBanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.destinations.TrangChiTietNoiBanDestination
-import com.ramcosta.composedestinations.generated.destinations.TrangGoogleMapDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
@@ -81,7 +80,7 @@ fun TrangChuNoiBan(
                             .padding(10.dp)
                             .clip(RoundedCornerShape(10.dp))
                             .clickable {
-                                dsNavItem[1].backStack.add(TrangChiTietNoiBanDestination(noiBan))
+                                dsNavItem[1].backStack.add(TrangChiTietNoiBanDestination(noiBan.id))
                                 navigator.navigate(dsNavItem[1].backStack.last())
                             }
                     ) {
@@ -103,11 +102,11 @@ fun TrangChuNoiBan(
                                 fontSize = 13.sp,
                                 color = Color.White,
                                 maxLines = 2,
-                                modifier = Modifier
-                                    .clickable {
-                                        dsNavItem[1].backStack.add(TrangGoogleMapDestination)
-                                        navigator.navigate(dsNavItem[1].backStack.last())
-                                    }
+//                                modifier = Modifier
+//                                    .clickable {
+//                                        dsNavItem[1].backStack.add(TrangGoogleMapDestination)
+//                                        navigator.navigate(dsNavItem[1].backStack.last())
+//                                    }
                             )
                             Row(
                                 verticalAlignment = Alignment.CenterVertically

@@ -420,7 +420,7 @@ class MainActivity : ComponentActivity() {
                             text = noiBan.ten,
                             modifier = Modifier.clickable {
                                 dsNavItem[1].backStack.add(
-                                    TrangChiTietNoiBanDestination(noiBan)
+                                    TrangChiTietNoiBanDestination(noiBan.id)
                                 )
                                 navController.navigate(
                                     dsNavItem[1].backStack.last()

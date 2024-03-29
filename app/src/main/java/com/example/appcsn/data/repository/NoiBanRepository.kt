@@ -25,6 +25,24 @@ class NoiBanRepository(
         }
     }
 
+    suspend fun xem(idNoiBan: Int): Result<NoiBan> {
+        val kq = api.xem(idNoiBan)
+        return if (kq.body() == null) {
+            Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
+        } else {
+            Result.success(kq.body()!!)
+        }
+    }
+
+    suspend fun xem(idNoiBan: Int, idNguoiDung: String): Result<NoiBan> {
+        val kq = api.xem(idNoiBan, idNguoiDung)
+        return if (kq.body() == null) {
+            Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
+        } else {
+            Result.success(kq.body()!!)
+        }
+    }
+
     suspend fun like(idDacSan: Int, idNguoiDung: String): Result<Boolean> {
         val kq = api.like(idDacSan, idNguoiDung)
         return if (kq.body() == null) {
