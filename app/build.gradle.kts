@@ -133,4 +133,6 @@ dependencies {
     // Google Map
     implementation(libs.maps.compose)
     implementation(libs.places)
+
+    implementation(libs.accompanist.systemuicontroller)
 }

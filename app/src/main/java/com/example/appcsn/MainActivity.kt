@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.appcsn
 
 import android.os.Bundle
@@ -30,6 +32,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -55,6 +58,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -78,15 +82,21 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.appcsn.core.ui.backPress
+import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.currentGraph
+import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.dataStore
+import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.dsNavItem
+import com.example.appcsn.core.ui.viewmodel.MainViewModel
+import com.example.appcsn.core.ui.widget.CircleProgressIndicator
+import com.example.appcsn.features.dacsan.ui.viewmodel.TrangChiTietDacSanViewModel
+import com.example.appcsn.features.dacsan.ui.viewmodel.TrangChuDacSanViewModel
+import com.example.appcsn.features.nguoidung.ui.viewmodel.TrangDanhSachYeuThichViewModel
+import com.example.appcsn.features.nguoidung.ui.viewmodel.TrangLichSuXemViewModel
+import com.example.appcsn.features.nguoidung.ui.viewmodel.TrangNguoiDungViewModel
+import com.example.appcsn.features.noiban.ui.viewmodel.TrangChiTietNoiBanViewModel
+import com.example.appcsn.features.noiban.ui.viewmodel.TrangChuNoiBanViewModel
 import com.example.appcsn.ui.theme.AppTheme
-import com.example.appcsn.ui.widget.CircleProgressIndicator
-import com.example.appcsn.viewmodel.BaseViewModel.Companion.dataStore
-import com.example.appcsn.viewmodel.BaseViewModel.Companion.dsNavItem
-import com.example.appcsn.viewmodel.MainViewModel
-import com.example.appcsn.viewmodel.TrangChiTietDacSanViewModel
-import com.example.appcsn.viewmodel.TrangChuDacSanViewModel
-import com.example.appcsn.viewmodel.TrangChuNoiBanViewModel
-import com.example.appcsn.viewmodel.TrangNguoiDungViewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.TrangBaoLoiDestination
@@ -95,6 +105,8 @@ import com.ramcosta.composedestinations.generated.destinations.TrangChiTietDacSa
 import com.ramcosta.composedestinations.generated.destinations.TrangChiTietNoiBanDestination
 import com.ramcosta.composedestinations.generated.destinations.TrangChuDacSanDestination
 import com.ramcosta.composedestinations.generated.destinations.TrangChuNoiBanDestination
+import com.ramcosta.composedestinations.generated.destinations.TrangDanhSachYeuThichDestination
+import com.ramcosta.composedestinations.generated.destinations.TrangLichSuXemDestination
 import com.ramcosta.composedestinations.generated.destinations.TrangNguoiDungDestination
 import com.ramcosta.composedestinations.generated.destinations.TrangTimKiemDacSanDestination
 import com.ramcosta.composedestinations.generated.destinations.TrangTimKiemNoiBanDestination
@@ -116,7 +128,10 @@ class MainActivity : ComponentActivity() {
     private val dacSanViewModel by viewModels<TrangChuDacSanViewModel>()
     private val noiBanViewModel by viewModels<TrangChuNoiBanViewModel>()
     private val nguoiDungViewModel by viewModels<TrangNguoiDungViewModel>()
+    private val yeuThichDacSanViewModel by viewModels<TrangDanhSachYeuThichViewModel>()
+    private val xemDacSanViewModel by viewModels<TrangLichSuXemViewModel>()
     private val chiTietDacSanViewModel by viewModels<TrangChiTietDacSanViewModel>()
+    private val chiTietNoiBanViewModel by viewModels<TrangChiTietNoiBanViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,7 +146,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val coroutine = rememberCoroutineScope()
+            val systemUiController = rememberSystemUiController()
             val context = LocalContext.current
+            val systemDark = isSystemInDarkTheme()
 
             var brightness by remember {
                 mutableIntStateOf(0)
@@ -141,6 +158,17 @@ class MainActivity : ComponentActivity() {
                 brightnessFlow.collect {
                     brightness = it
                 }
+            }
+
+            SideEffect {
+                systemUiController.setSystemBarsColor(
+                    color = Color.Transparent,
+                    darkIcons = when {
+                        (brightness == 1) -> true
+                        (brightness == 2) -> false
+                        else -> !systemDark
+                    }
+                )
             }
 
             AppTheme(
@@ -251,7 +279,6 @@ class MainActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surfaceContainer)
         ) {
             SearchBar(
                 query = tenTimKiem.value,
@@ -277,7 +304,7 @@ class MainActivity : ComponentActivity() {
                     )
                 },
                 leadingIcon = {
-                    IconDauThanhTimKiem(active)
+                    IconDauThanhTimKiem(active, navController)
                 },
                 trailingIcon = {
                     IconCuoiThanhTimKiem(active, filter, chatBot)
@@ -285,7 +312,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 ManHinhTimKiem(pos, navController, active)
             }
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(10.dp))
         }
     }
 
@@ -315,13 +342,22 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun IconDauThanhTimKiem(active: MutableState<Boolean>) {
+    private fun IconDauThanhTimKiem(
+        active: MutableState<Boolean>,
+        navController: NavHostController,
+    ) {
         if (active.value) {
             IconButton(onClick = { active.value = false }) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = null,
                 )
+            }
+        } else if (dsNavItem[currentGraph].backStack.size > 1) {
+            IconButton(onClick = {
+                backPress(navController, currentGraph)
+            }) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Quay lại")
             }
         } else {
             Icon(
@@ -402,11 +438,11 @@ class MainActivity : ComponentActivity() {
                         Text(
                             text = dacSan.ten,
                             modifier = Modifier.clickable {
-                                dsNavItem[0].backStack.add(
-                                    TrangChiTietDacSanDestination(dacSan.id)
+                                dsNavItem[currentGraph].backStack.add(
+                                    TrangChiTietDacSanDestination(dacSan.id, currentGraph)
                                 )
                                 navController.navigate(
-                                    dsNavItem[0].backStack.last()
+                                    dsNavItem[currentGraph].backStack.last()
                                 )
                                 active.value = false
                             }
@@ -765,11 +801,20 @@ class MainActivity : ComponentActivity() {
                 destination(TrangNguoiDungDestination) {
                     dependency(nguoiDungViewModel)
                 }
+                destination(TrangDanhSachYeuThichDestination) {
+                    dependency(yeuThichDacSanViewModel)
+                }
+                destination(TrangLichSuXemDestination) {
+                    dependency(xemDacSanViewModel)
+                }
                 destination(TrangCaiDatGiaoDienDestination) {
                     dependency(dataStore)
                 }
                 destination(TrangChiTietDacSanDestination) {
                     dependency(chiTietDacSanViewModel)
+                }
+                destination(TrangChiTietNoiBanDestination) {
+                    dependency(chiTietNoiBanViewModel)
                 }
             }
         )
@@ -786,6 +831,7 @@ class MainActivity : ComponentActivity() {
                             launchSingleTop = true
                         }
                         pos.intValue = navItem.index
+                        currentGraph = navItem.index
                     },
                     icon = {
                         Icon(
