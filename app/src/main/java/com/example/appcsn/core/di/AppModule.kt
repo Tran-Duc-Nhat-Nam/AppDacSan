@@ -44,8 +44,8 @@ object AppModule {
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit {
-//        return Retrofit.Builder().baseUrl("https://dacsanimage-b5os5eg63q-de.a.run.app/")
-        return Retrofit.Builder().baseUrl("http://192.168.1.50:8080/")
+        return Retrofit.Builder().baseUrl("https://dacsanimage-b5os5eg63q-de.a.run.app/")
+//        return Retrofit.Builder().baseUrl("http://192.168.1.50:8080/")
             .addConverterFactory(
                 GsonConverterFactory.create(
                     GsonBuilder()
