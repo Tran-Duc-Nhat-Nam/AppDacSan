@@ -114,6 +114,9 @@ fun TrangChiTietDacSan(
     val isExpandableDG = remember {
         mutableStateOf(false)
     }
+    val isEdit = remember {
+        mutableStateOf(false)
+    }
     LaunchedEffect(true) {
         viewModel.docDuLieu(id)
     }
@@ -162,7 +165,7 @@ fun TrangChiTietDacSan(
                     Spacer(modifier = Modifier.height(15.dp))
                     ThanhNguyenLieu(viewModel, navigator)
                     Spacer(modifier = Modifier.height(15.dp))
-                    KhuVucDanhGia(viewModel, coroutineScope, isExpandableDG)
+                    KhuVucDanhGia(viewModel, coroutineScope, isEdit, isExpandableDG)
                 }
             }
         }
@@ -173,17 +176,24 @@ fun TrangChiTietDacSan(
 private fun KhuVucDanhGia(
     viewModel: TrangChiTietDacSanViewModel,
     coroutineScope: CoroutineScope,
+    isEdit: MutableState<Boolean>,
     isExpandableDG: MutableState<Boolean>
 ) {
-    if (nguoiDung != null) {
-        if (viewModel.luotDanhGiaDacSan == null) {
-            ThanhDanhGia(viewModel, coroutineScope)
+    if (nguoiDung != null || isEdit.value) {
+        if (viewModel.luotDanhGiaDacSan == null || isEdit.value) {
+            ThanhDanhGia(viewModel, coroutineScope, isEdit)
         } else {
-            DanhGia(viewModel.luotDanhGiaDacSan!!)
+            DanhGia(
+                viewModel,
+                coroutineScope,
+                viewModel.luotDanhGiaDacSan!!,
+                nguoiDung!!.ten,
+                isEdit
+            )
         }
     }
     Spacer(modifier = Modifier.height(10.dp))
-    DanhSachDanhGia(coroutineScope, viewModel, isExpandableDG)
+    DanhSachDanhGia(coroutineScope, viewModel, isExpandableDG, isEdit)
     Spacer(modifier = Modifier.height(15.dp))
 }
 
@@ -402,7 +412,8 @@ private fun ThanhNguyenLieu(
 @Composable
 private fun ThanhDanhGia(
     viewModel: TrangChiTietDacSanViewModel,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    isEdit: MutableState<Boolean>
 ) {
     Column(
         modifier = Modifier
@@ -441,10 +452,22 @@ private fun ThanhDanhGia(
             }
             Button(onClick = {
                 coroutineScope.launch {
-                    viewModel.danhGia()
+                    if (isEdit.value) {
+                        viewModel.capNhatDanhGia()
+                        isEdit.value = !isEdit.value
+                    } else {
+                        viewModel.danhGia()
+                    }
                 }
             }) {
                 Text(text = "Đánh giá", fontSize = 13.sp)
+            }
+            if (isEdit.value) {
+                Button(onClick = {
+                    isEdit.value = !isEdit.value
+                }) {
+                    Text(text = "Hủy", fontSize = 13.sp)
+                }
             }
         }
         OutlinedTextField(
@@ -498,7 +521,7 @@ private fun yeuThich(
         coroutineScope.launch {
             if (isChecked) {
                 val kq =
-                    viewModel.like(viewModel.dacSan.value!!.id)
+                    viewModel.yeuThich(viewModel.dacSan.value!!.id)
                 if (kq) {
                     Toast.makeText(
                         context,
@@ -508,7 +531,7 @@ private fun yeuThich(
                 }
             } else {
                 val kq =
-                    viewModel.unlike(viewModel.dacSan.value!!.id)
+                    viewModel.huyYeuThich(viewModel.dacSan.value!!.id)
                 if (kq) {
                     Toast.makeText(
                         context,
@@ -736,40 +759,44 @@ private fun DanhSachHinhAnh(
 private fun DanhSachDanhGia(
     coroutineScope: CoroutineScope,
     viewModel: TrangChiTietDacSanViewModel,
-    isExpandableDG: MutableState<Boolean>
+    isExpandDG: MutableState<Boolean>,
+    isEdit: MutableState<Boolean>,
 ) {
     TextButton(onClick = {
-        coroutineScope.launch {
-            viewModel.docDanhSachDanhGia()
-            isExpandableDG.value = !isExpandableDG.value
+        if (isExpandDG.value) {
+            isExpandDG.value = false
+        } else {
+            coroutineScope.launch {
+                viewModel.docDanhSachDanhGia()
+                isExpandDG.value = true
+            }
         }
     }) {
         Text(text = "Xem nhật xét của người dùng khác")
     }
-    if (isExpandableDG.value) {
-        viewModel.dsDanhGiaDacSan.forEach { cmt ->
-            if (cmt.id_nguoi_dung != (nguoiDung?.id ?: "null")) {
-                Spacer(modifier = Modifier.height(10.dp))
-                DanhGia(cmt)
-            }
-        }
-        if (viewModel.dsDanhGiaDacSan.isEmpty()) {
-            if (viewModel.dsDanhGiaDacSan.size == 1
-                && viewModel.dsDanhGiaDacSan.first().id_nguoi_dung != (nguoiDung?.id ?: "null")
-            ) {
-                Spacer(modifier = Modifier.height(10.dp))
-            } else {
-                Text(text = "Chưa có đánh giá nào khác", Modifier.padding(vertical = 10.dp))
+    if (isExpandDG.value) {
+        if (viewModel.dsDanhGiaDacSan.isNotEmpty()) {
+            viewModel.dsDanhGiaDacSan.forEach { cmt ->
+                if (cmt.key.id_nguoi_dung != (nguoiDung?.id ?: "null")) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    DanhGia(viewModel, coroutineScope, cmt.key, cmt.value, isEdit)
+                }
             }
         } else {
-            Text(text = "Chưa có đánh giá nào", Modifier.padding(vertical = 10.dp))
+            Text(text = "Chưa có đánh giá nào khác", Modifier.padding(vertical = 10.dp))
         }
     }
 }
 
 @Composable
-private fun DanhGia(luotDanhGia: LuotDanhGiaDacSan) {
-    val isEdit = remember {
+private fun DanhGia(
+    viewModel: TrangChiTietDacSanViewModel,
+    coroutineScope: CoroutineScope,
+    luotDanhGia: LuotDanhGiaDacSan,
+    ten: String,
+    isEdit: MutableState<Boolean>,
+) {
+    val isExpand = remember {
         mutableStateOf(false)
     }
     Row(
@@ -781,11 +808,16 @@ private fun DanhGia(luotDanhGia: LuotDanhGiaDacSan) {
     ) {
         Column(modifier = Modifier.weight(1F)) {
             Text(
-                text = luotDanhGia.id_nguoi_dung,
+                text = if (luotDanhGia.id_nguoi_dung == (nguoiDung?.id
+                        ?: "null")
+                ) "Đánh giá của bạn"
+                else "Người dùng $ten",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(5.dp)
             )
+
+
             Text(
                 text = luotDanhGia.noi_dung!!,
                 modifier = Modifier.padding(5.dp)
@@ -804,6 +836,7 @@ private fun DanhGia(luotDanhGia: LuotDanhGiaDacSan) {
                 Icon(
                     imageVector = Icons.Default.Star,
                     contentDescription = "Đánh giá",
+                    tint = Color.Yellow,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -817,17 +850,23 @@ private fun DanhGia(luotDanhGia: LuotDanhGiaDacSan) {
                 )
             }
             DropdownMenu(
-                expanded = isEdit.value,
+                expanded = isExpand.value,
                 onDismissRequest = { isEdit.value = false }
             ) {
-                if (luotDanhGia.id_nguoi_dung != (nguoiDung?.id ?: "null")) {
+                if (luotDanhGia.id_nguoi_dung == (nguoiDung?.id ?: "null")) {
                     DropdownMenuItem(
                         text = { Text("Chỉnh sửa") },
-                        onClick = { }
+                        onClick = {
+                            isEdit.value = !isEdit.value
+                        }
                     )
                     DropdownMenuItem(
                         text = { Text("Xóa") },
-                        onClick = { }
+                        onClick = {
+                            coroutineScope.launch {
+                                viewModel.huyDanhGia()
+                            }
+                        }
                     )
                 } else {
                     DropdownMenuItem(

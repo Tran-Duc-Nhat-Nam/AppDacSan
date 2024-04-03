@@ -6,7 +6,7 @@ import com.example.appcsn.features.dacsan.domain.api.DanhGiaDacSanAPI
 class DanhGiaDacSanRepository(
     private val api: DanhGiaDacSanAPI
 ) {
-    suspend fun rate(luotDanhGiaDacSan: LuotDanhGiaDacSan): Result<Boolean> {
+    suspend fun danhGia(luotDanhGiaDacSan: LuotDanhGiaDacSan): Result<Boolean> {
         val kq = api.danhGia(luotDanhGiaDacSan.id_dac_san, luotDanhGiaDacSan)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Đánh giá thất bại"))
@@ -15,7 +15,25 @@ class DanhGiaDacSanRepository(
         }
     }
 
-    suspend fun checkRate(idDacSan: Int, idNguoiDung: String): Result<LuotDanhGiaDacSan> {
+    suspend fun capNhatDanhGia(luotDanhGiaDacSan: LuotDanhGiaDacSan): Result<Boolean> {
+        val kq = api.capNhatDanhGia(luotDanhGiaDacSan.id_dac_san, luotDanhGiaDacSan)
+        return if (kq.body() == null) {
+            Result.failure(Throwable(message = "Đánh giá thất bại"))
+        } else {
+            Result.success(kq.body()!!)
+        }
+    }
+
+    suspend fun huyDanhGia(idDacSan: Int, idNguoiDung: String): Result<Boolean> {
+        val kq = api.huyDanhGia(idDacSan, idNguoiDung)
+        return if (kq.body() == null) {
+            Result.failure(Throwable(message = "Đánh giá thất bại"))
+        } else {
+            Result.success(kq.body()!!)
+        }
+    }
+
+    suspend fun doc(idDacSan: Int, idNguoiDung: String): Result<LuotDanhGiaDacSan> {
         val kq = api.docDanhGia(idDacSan, idNguoiDung)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Kiểm tra đánh giá thất bại"))
@@ -24,7 +42,7 @@ class DanhGiaDacSanRepository(
         }
     }
 
-    suspend fun checkRate(idDacSan: Int): Result<List<LuotDanhGiaDacSan>> {
+    suspend fun doc(idDacSan: Int): Result<List<LuotDanhGiaDacSan>> {
         val kq = api.docDanhGia(idDacSan)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Kiểm tra đánh giá thất bại"))
