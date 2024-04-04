@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.appcsn.R
-import com.example.appcsn.core.ui.navgraph.FoodGraph
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.core.ui.widget.CircleProgressIndicator
 import com.example.appcsn.core.ui.widget.PageHeader
@@ -42,6 +41,7 @@ import com.example.appcsn.core.ui.widget.StarBar
 import com.example.appcsn.features.dacsan.data.DacSan
 import com.example.appcsn.features.dacsan.data.TuKhoaTimKiem
 import com.example.appcsn.features.dacsan.data.VungMien
+import com.example.appcsn.features.dacsan.ui.nav.FoodGraph
 import com.example.appcsn.features.dacsan.ui.viewmodel.TrangChuDacSanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.destinations.TrangChiTietDacSanDestination

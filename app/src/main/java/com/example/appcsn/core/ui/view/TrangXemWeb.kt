@@ -4,7 +4,7 @@ import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
-import com.example.appcsn.core.ui.navgraph.SettingGraph
+import com.example.appcsn.core.ui.nav.SettingGraph
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel
 import com.kevinnzou.web.WebView
 import com.kevinnzou.web.rememberWebViewState

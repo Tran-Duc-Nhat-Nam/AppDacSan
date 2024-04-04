@@ -3,6 +3,7 @@ package com.example.appcsn.features.nguoidung.ui.view
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,14 +14,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.twotone.Star
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -32,8 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.appcsn.R
-import com.example.appcsn.core.ui.navgraph.SettingGraph
-import com.example.appcsn.core.ui.viewmodel.BaseViewModel
+import com.example.appcsn.core.ui.back
+import com.example.appcsn.core.ui.go
+import com.example.appcsn.core.ui.nav.SettingGraph
 import com.example.appcsn.core.ui.widget.CircleProgressIndicator
 import com.example.appcsn.core.ui.widget.PageHeader
 import com.example.appcsn.features.nguoidung.ui.viewmodel.TrangLichSuXemViewModel
@@ -42,6 +51,7 @@ import com.ramcosta.composedestinations.generated.destinations.TrangChiTietDacSa
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlin.math.ceil
 
+@OptIn(ExperimentalMaterialApi::class)
 @Destination<SettingGraph>
 @Composable
 fun TrangLichSuXem(
@@ -49,13 +59,17 @@ fun TrangLichSuXem(
     viewModel: TrangLichSuXemViewModel
 ) {
     BackHandler {
-        BaseViewModel.dsNavItem[2].backStack.removeLast()
-        navigator.navigate(BaseViewModel.dsNavItem[2].backStack.last())
+        back(navigator, 2)
     }
+    val isRefreshing by remember {
+        mutableStateOf(false)
+    }
+    val refreshState =
+        rememberPullRefreshState(refreshing = isRefreshing, onRefresh = { viewModel.reset() })
 
-    if (viewModel.loading.value) {
-        CircleProgressIndicator()
-    } else {
+    Box(
+        modifier = Modifier.pullRefresh(refreshState)
+    ) {
         Column {
             PageHeader(text = "Danh sách đặc sản yêu thích")
             LazyColumn(
@@ -63,8 +77,11 @@ fun TrangLichSuXem(
                     .fillMaxSize()
                     .padding(8.dp)
             ) {
-                items(items = viewModel.dsDacSan)
+                items(items = viewModel.state.itemList)
                 {
+                    if (it == viewModel.state.itemList.last() && !viewModel.state.isEnd && !viewModel.state.isLoading) {
+                        viewModel.loadNext()
+                    }
                     Surface(
                         shadowElevation = 2.dp,
                         shape = RoundedCornerShape(10.dp),
@@ -76,13 +93,7 @@ fun TrangLichSuXem(
                                 .clip(shape = RoundedCornerShape(10.dp))
                                 .background(MaterialTheme.colorScheme.primaryContainer)
                                 .clickable {
-                                    BaseViewModel.dsNavItem[0].backStack.add(
-                                        TrangChiTietDacSanDestination(
-                                            it.id,
-                                            0
-                                        )
-                                    )
-                                    navigator.navigate(BaseViewModel.dsNavItem[0].backStack.last())
+                                    go(navigator, TrangChiTietDacSanDestination(it.id, 2), 2)
                                 },
                         ) {
                             AsyncImage(
@@ -130,6 +141,21 @@ fun TrangLichSuXem(
                                     overflow = TextOverflow.Ellipsis,
                                 )
                             }
+                        }
+                    }
+                }
+                item {
+                    if (viewModel.state.isLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircleProgressIndicator(
+                                strokeWidth = 4.dp,
+                                size = 35.dp,
+                                backgroundColor = MaterialTheme.colorScheme.surface
+                            )
                         }
                     }
                 }

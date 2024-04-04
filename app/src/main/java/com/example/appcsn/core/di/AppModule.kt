@@ -25,8 +25,14 @@ import com.example.appcsn.features.dacsan.domain.repository.XemDacSanRepository
 import com.example.appcsn.features.dacsan.domain.repository.YeuThichDacSanRepository
 import com.example.appcsn.features.nguoidung.domain.api.NguoiDungAPI
 import com.example.appcsn.features.nguoidung.domain.repository.NguoiDungRepository
+import com.example.appcsn.features.noiban.domain.api.DanhGiaNoiBanAPI
 import com.example.appcsn.features.noiban.domain.api.NoiBanAPI
+import com.example.appcsn.features.noiban.domain.api.XemNoiBanAPI
+import com.example.appcsn.features.noiban.domain.api.YeuThichNoiBanAPI
+import com.example.appcsn.features.noiban.domain.repository.DanhGiaNoiBanRepository
 import com.example.appcsn.features.noiban.domain.repository.NoiBanRepository
+import com.example.appcsn.features.noiban.domain.repository.XemNoiBanRepository
+import com.example.appcsn.features.noiban.domain.repository.YeuThichNoiBanRepository
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.gson.GsonBuilder
@@ -44,8 +50,8 @@ object AppModule {
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit {
-//        return Retrofit.Builder().baseUrl("https://dacsanimage-b5os5eg63q-de.a.run.app/")
-        return Retrofit.Builder().baseUrl("http://192.168.1.50:8080/")
+        return Retrofit.Builder().baseUrl("https://dacsanimage-b5os5eg63q-de.a.run.app/")
+//        return Retrofit.Builder().baseUrl("http://192.168.1.50:8080/")
             .addConverterFactory(
                 GsonConverterFactory.create(
                     GsonBuilder()
@@ -88,8 +94,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideXemDacSanRepository(api: XemDacSanAPI): XemDacSanRepository {
-        return XemDacSanRepository(api)
+    fun provideYeuThichDacSanRepository(api: YeuThichDacSanAPI): YeuThichDacSanRepository {
+        return YeuThichDacSanRepository(api)
     }
 
     @Provides
@@ -100,8 +106,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideYeuThichDacSanRepository(api: YeuThichDacSanAPI): YeuThichDacSanRepository {
-        return YeuThichDacSanRepository(api)
+    fun provideXemDacSanRepository(api: XemDacSanAPI): XemDacSanRepository {
+        return XemDacSanRepository(api)
     }
 
     @Provides
@@ -162,6 +168,42 @@ object AppModule {
     @Singleton
     fun provideNoiBanRepository(api: NoiBanAPI): NoiBanRepository {
         return NoiBanRepository(api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDanhGiaNoiBanAPI(retrofit: Retrofit): DanhGiaNoiBanAPI {
+        return retrofit.create(DanhGiaNoiBanAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDanhGiaNoiBanRepository(api: DanhGiaNoiBanAPI): DanhGiaNoiBanRepository {
+        return DanhGiaNoiBanRepository(api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideYeuThichNoiBanAPI(retrofit: Retrofit): YeuThichNoiBanAPI {
+        return retrofit.create(YeuThichNoiBanAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideYeuThichNoiBanRepository(api: YeuThichNoiBanAPI): YeuThichNoiBanRepository {
+        return YeuThichNoiBanRepository(api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideXemNoiBanAPI(retrofit: Retrofit): XemNoiBanAPI {
+        return retrofit.create(XemNoiBanAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideXemNoiBanRepository(api: XemNoiBanAPI): XemNoiBanRepository {
+        return XemNoiBanRepository(api)
     }
 
     @Provides

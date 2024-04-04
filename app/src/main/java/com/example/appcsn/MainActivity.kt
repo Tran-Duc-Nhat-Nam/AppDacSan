@@ -82,7 +82,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.appcsn.core.ui.backPress
+import com.example.appcsn.core.ui.back
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.currentGraph
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.dataStore
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.dsNavItem
@@ -355,7 +355,7 @@ class MainActivity : ComponentActivity() {
             }
         } else if (dsNavItem[currentGraph].backStack.size > 1) {
             IconButton(onClick = {
-                backPress(navController, currentGraph)
+                back(navController, currentGraph)
             }) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Quay lại")
             }

@@ -1,4 +1,4 @@
-package com.example.appcsn.core.ui.navgraph
+package com.example.appcsn.core.ui.nav
 
 
 import androidx.compose.ui.graphics.vector.ImageVector

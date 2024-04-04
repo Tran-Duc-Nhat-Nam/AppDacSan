@@ -16,7 +16,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
-import com.example.appcsn.core.ui.navgraph.NavItem
+import com.example.appcsn.core.ui.nav.NavItem
 import com.example.appcsn.features.nguoidung.data.NguoiDung
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth

@@ -24,12 +24,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.appcsn.core.ui.navgraph.PlaceGraph
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.core.ui.widget.CircleProgressIndicator
 import com.example.appcsn.core.ui.widget.PageHeader
 import com.example.appcsn.core.ui.widget.StarBar
 import com.example.appcsn.features.noiban.data.NoiBan
+import com.example.appcsn.features.noiban.ui.nav.PlaceGraph
 import com.example.appcsn.features.noiban.ui.viewmodel.TrangChuNoiBanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.destinations.TrangChiTietNoiBanDestination

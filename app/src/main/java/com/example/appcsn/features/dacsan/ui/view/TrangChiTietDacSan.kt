@@ -68,7 +68,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.example.appcsn.R
-import com.example.appcsn.core.ui.navgraph.FoodGraph
 import com.example.appcsn.core.ui.view.TrangBaoLoi
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.kiemTraNguoiDung
@@ -76,6 +75,7 @@ import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.nguoiDung
 import com.example.appcsn.core.ui.widget.CircleProgressIndicator
 import com.example.appcsn.features.dacsan.data.LuotDanhGiaDacSan
 import com.example.appcsn.features.dacsan.data.TuKhoaTimKiem
+import com.example.appcsn.features.dacsan.ui.nav.FoodGraph
 import com.example.appcsn.features.dacsan.ui.viewmodel.TrangChiTietDacSanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.destinations.TrangTimKiemDacSanDestination

@@ -53,7 +53,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.example.appcsn.core.ui.navgraph.SettingGraph
+import com.example.appcsn.core.ui.nav.SettingGraph
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.nguoiDung
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.toLocalDate

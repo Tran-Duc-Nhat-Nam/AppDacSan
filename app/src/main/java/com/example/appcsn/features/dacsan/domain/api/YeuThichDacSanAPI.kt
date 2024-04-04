@@ -13,6 +13,13 @@ interface YeuThichDacSanAPI {
         @Path("idNguoiDung") idNguoiDung: String
     ): Response<List<DacSan>>
 
+    @GET("/yeuthich/dacsan/nguoidung={idNguoiDung}/size={size}/index={index}")
+    suspend fun docDanhSachYeuThich(
+        @Path("idNguoiDung") idNguoiDung: String,
+        @Path("size") size: Int,
+        @Path("index") index: Int
+    ): Response<List<DacSan>>
+
     @GET("/yeuthich/dacsan={idDacSan}/nguoidung={idNguoiDung}")
     suspend fun kiemTraYeuThich(
         @Path("idDacSan") idDacSan: Int,

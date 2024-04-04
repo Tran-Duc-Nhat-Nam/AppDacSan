@@ -32,11 +32,10 @@ fun CircleProgressIndicator(
         CircularProgressIndicator(
             strokeWidth = strokeWidth,
             modifier = Modifier
-                .size(size)
-                .padding(outerPadding)
+                .padding(10.dp)
+                .size(size + 20.dp)
                 .clip(CircleShape)
                 .background(backgroundColor)
-                .padding(innerPadding)
         )
     }
 }

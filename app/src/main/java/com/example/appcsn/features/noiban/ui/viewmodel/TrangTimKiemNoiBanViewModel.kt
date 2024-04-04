@@ -6,9 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.example.appcsn.core.domain.repository.BasePaginationRepository
-import com.example.appcsn.core.ui.screenstate.ScreenStateNoiBan
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel
 import com.example.appcsn.features.noiban.domain.repository.NoiBanRepository
+import com.example.appcsn.features.noiban.ui.state.NoiBanScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,7 +17,7 @@ import javax.inject.Inject
 class TrangTimKiemNoiBanViewModel @Inject constructor(
     private val repository: NoiBanRepository
 ) : BaseViewModel() {
-    var state by mutableStateOf(ScreenStateNoiBan())
+    var state by mutableStateOf(NoiBanScreenState())
     private val paginator = BasePaginationRepository(
         initKey = state.pageIndex,
         onLoading = {

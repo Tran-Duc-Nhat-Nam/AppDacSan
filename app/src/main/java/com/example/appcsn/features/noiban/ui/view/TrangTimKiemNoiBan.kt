@@ -34,15 +34,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.appcsn.core.ui.navgraph.PlaceGraph
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel
 import com.example.appcsn.core.ui.widget.CircleProgressIndicator
+import com.example.appcsn.features.noiban.ui.nav.PlaceGraph
 import com.example.appcsn.features.noiban.ui.viewmodel.TrangTimKiemNoiBanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.destinations.TrangChiTietNoiBanDestination
@@ -106,7 +105,6 @@ fun TrangTimKiemNoiBan(
                                     navigator.navigate(BaseViewModel.dsNavItem[0].backStack.last())
                                 },
                         ) {
-                            val context = LocalContext.current
                             Text(
                                 text = it.ten,
                                 fontWeight = FontWeight.Bold,

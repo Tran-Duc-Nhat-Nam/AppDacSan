@@ -1,7 +1,7 @@
-package com.example.appcsn.core.ui.navgraph
+package com.example.appcsn.features.noiban.ui.nav
 
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootGraph
 
-@NavGraph<RootGraph>(start = true)
-annotation class FoodGraph
+@NavGraph<RootGraph>()
+annotation class PlaceGraph

@@ -21,4 +21,11 @@ interface XemDacSanAPI {
     suspend fun docLichSuXem(
         @Path("id") id: String
     ): Response<List<DacSan>>
+
+    @GET("/lichsu/dacsan/nguoidung={id}/size={size}/index={index}")
+    suspend fun docLichSuXem(
+        @Path("id") id: String,
+        @Path("size") size: Int,
+        @Path("index") index: Int
+    ): Response<List<DacSan>>
 }

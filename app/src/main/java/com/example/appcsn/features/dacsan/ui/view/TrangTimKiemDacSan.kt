@@ -1,6 +1,5 @@
 package com.example.appcsn.features.dacsan.ui.view
 
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -51,10 +50,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.appcsn.R
-import com.example.appcsn.core.ui.navgraph.FoodGraph
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.core.ui.widget.CircleProgressIndicator
 import com.example.appcsn.features.dacsan.data.TuKhoaTimKiem
+import com.example.appcsn.features.dacsan.ui.nav.FoodGraph
 import com.example.appcsn.features.dacsan.ui.viewmodel.TrangTimKiemDacSanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.destinations.TrangChiTietDacSanDestination
@@ -91,146 +90,141 @@ fun TrangTimKiemDacSan(
         viewModel.loadNext()
     }
 
-    if (viewModel.loading.value) {
-        CircleProgressIndicator()
-    } else {
-        Box(
-            Modifier
-                .pullRefresh(refreshState),
+    Box(
+        Modifier
+            .pullRefresh(refreshState),
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp)
-            ) {
-                items(items = state.ds)
-                {
-                    if (it == state.ds.last() && !state.isEnd && !state.isLoading) {
-                        viewModel.loadNext()
-                        Log.d("Paging", "Load next")
-                    }
-                    Surface(
-                        shadowElevation = 2.dp,
-                        shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier.padding(6.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(shape = RoundedCornerShape(10.dp))
-                                .background(MaterialTheme.colorScheme.primaryContainer)
-                                .clickable {
-                                    dsNavItem[0].backStack.add(
-                                        TrangChiTietDacSanDestination(
-                                            it.id,
-                                            0
-                                        )
+            items(items = state.itemList)
+            {
+                if (it == state.itemList.last() && !state.isEnd && !state.isLoading) {
+                    viewModel.loadNext()
+                }
+                Surface(
+                    shadowElevation = 2.dp,
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.padding(6.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(shape = RoundedCornerShape(10.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .clickable {
+                                dsNavItem[0].backStack.add(
+                                    TrangChiTietDacSanDestination(
+                                        it.id,
+                                        0
                                     )
-                                    navigator.navigate(dsNavItem[0].backStack.last())
-                                },
-                        ) {
-                            var checked by remember {
-                                mutableStateOf(false)
-                            }
-                            val context = LocalContext.current
-                            AsyncImage(
-                                contentScale = ContentScale.Crop,
-                                model = it.hinh_dai_dien.url,
-                                contentDescription = it.ten,
-                                error = painterResource(id = R.drawable.image_not_found_128),
-                                modifier = Modifier.size(115.dp)
+                                )
+                                navigator.navigate(dsNavItem[0].backStack.last())
+                            },
+                    ) {
+                        var checked by remember {
+                            mutableStateOf(false)
+                        }
+                        val context = LocalContext.current
+                        AsyncImage(
+                            contentScale = ContentScale.Crop,
+                            model = it.hinh_dai_dien.url,
+                            contentDescription = it.ten,
+                            error = painterResource(id = R.drawable.image_not_found_128),
+                            modifier = Modifier.size(115.dp)
+                        )
+                        Column(
+                            modifier = Modifier.padding(
+                                horizontal = 8.dp,
+                                vertical = 4.dp
                             )
-                            Column(
-                                modifier = Modifier.padding(
-                                    horizontal = 8.dp,
-                                    vertical = 4.dp
-                                )
-                            ) {
-                                Text(
-                                    text = it.ten,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 14.sp,
-                                    maxLines = 1
-                                )
-                                Row(Modifier.padding(vertical = 8.dp)) {
-                                    for (index in 1..5) {
-                                        if (ceil(it.diem_danh_gia) >= index) {
-                                            Icon(
-                                                imageVector = Icons.Default.Star,
-                                                contentDescription = null,
-                                                tint = Color.Yellow,
-                                                modifier = Modifier.size(13.dp)
-                                            )
-                                        } else {
-                                            Icon(
-                                                imageVector = Icons.TwoTone.Star,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(13.dp)
-                                            )
-                                        }
-                                    }
-                                    Spacer(modifier = Modifier.weight(1F))
-                                    IconToggleButton(
-                                        checked = checked,
-                                        onCheckedChange = { isChecked ->
-                                            if (isChecked) {
-                                                Toast.makeText(
-                                                    context,
-                                                    "Đã yêu thích ${it.ten}.",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            } else {
-                                                Toast.makeText(
-                                                    context,
-                                                    "Đã hủy yêu thích ${it.ten}.",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            }
-                                            checked = isChecked
-                                        }, modifier = Modifier.size(16.dp)
-                                    ) {
-                                        if (checked) {
-                                            Icon(
-                                                imageVector = Icons.Default.Favorite,
-                                                contentDescription = "Đã yêu thích",
-                                                tint = Color(255, 105, 180)
-                                            )
-                                        } else {
-                                            Icon(
-                                                imageVector = Icons.Default.FavoriteBorder,
-                                                contentDescription = "Chưa yêu thích",
-                                            )
-                                        }
+                        ) {
+                            Text(
+                                text = it.ten,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp,
+                                maxLines = 1
+                            )
+                            Row(Modifier.padding(vertical = 8.dp)) {
+                                for (index in 1..5) {
+                                    if (ceil(it.diem_danh_gia) >= index) {
+                                        Icon(
+                                            imageVector = Icons.Default.Star,
+                                            contentDescription = null,
+                                            tint = Color.Yellow,
+                                            modifier = Modifier.size(13.dp)
+                                        )
+                                    } else {
+                                        Icon(
+                                            imageVector = Icons.TwoTone.Star,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(13.dp)
+                                        )
                                     }
                                 }
-                                Text(
-                                    text = it.mo_ta ?: "Chưa có thông tin",
-                                    fontSize = 12.sp,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
+                                Spacer(modifier = Modifier.weight(1F))
+                                IconToggleButton(
+                                    checked = checked,
+                                    onCheckedChange = { isChecked ->
+                                        if (isChecked) {
+                                            Toast.makeText(
+                                                context,
+                                                "Đã yêu thích ${it.ten}.",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        } else {
+                                            Toast.makeText(
+                                                context,
+                                                "Đã hủy yêu thích ${it.ten}.",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                        checked = isChecked
+                                    }, modifier = Modifier.size(16.dp)
+                                ) {
+                                    if (checked) {
+                                        Icon(
+                                            imageVector = Icons.Default.Favorite,
+                                            contentDescription = "Đã yêu thích",
+                                            tint = Color(255, 105, 180)
+                                        )
+                                    } else {
+                                        Icon(
+                                            imageVector = Icons.Default.FavoriteBorder,
+                                            contentDescription = "Chưa yêu thích",
+                                        )
+                                    }
+                                }
                             }
-                        }
-                    }
-                }
-                item {
-                    if (state.isLoading) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircleProgressIndicator(
-                                strokeWidth = 3.dp,
-                                size = 35.dp,
-                                innerPadding = PaddingValues(5.dp),
-                                outerPadding = PaddingValues(10.dp),
+                            Text(
+                                text = it.mo_ta ?: "Chưa có thông tin",
+                                fontSize = 12.sp,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
                             )
                         }
                     }
                 }
             }
-            PullRefreshIndicator(isRefreshing, refreshState, Modifier.align(Alignment.TopCenter))
+            item {
+                if (state.isLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircleProgressIndicator(
+                            strokeWidth = 3.dp,
+                            size = 35.dp,
+                            innerPadding = PaddingValues(5.dp),
+                            outerPadding = PaddingValues(10.dp),
+                        )
+                    }
+                }
+            }
         }
+        PullRefreshIndicator(isRefreshing, refreshState, Modifier.align(Alignment.TopCenter))
     }
 }

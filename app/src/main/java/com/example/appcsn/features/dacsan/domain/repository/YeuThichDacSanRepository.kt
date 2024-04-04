@@ -41,4 +41,17 @@ class YeuThichDacSanRepository(
             Result.success(kq.body()!!)
         }
     }
+
+    suspend fun docDanhSachYeuThich(
+        idNguoiDung: String,
+        pageSize: Int,
+        pageIndex: Int
+    ): Result<List<DacSan>> {
+        val kq = api.docDanhSachYeuThich(idNguoiDung, pageSize, pageIndex)
+        return if (kq.body() == null) {
+            Result.failure(Throwable(message = "Kiểm tra đánh giá thất bại"))
+        } else {
+            Result.success(kq.body()!!)
+        }
+    }
 }

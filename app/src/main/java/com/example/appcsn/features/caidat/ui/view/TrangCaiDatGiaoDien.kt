@@ -31,7 +31,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
-import com.example.appcsn.core.ui.navgraph.SettingGraph
+import com.example.appcsn.core.ui.nav.SettingGraph
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.core.ui.widget.PageHeader
 import com.ramcosta.composedestinations.annotation.Destination

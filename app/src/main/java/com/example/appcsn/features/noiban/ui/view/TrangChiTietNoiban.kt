@@ -25,7 +25,10 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.twotone.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -51,12 +54,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.appcsn.core.ui.navgraph.PlaceGraph
 import com.example.appcsn.core.ui.view.TrangBaoLoi
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.nguoiDung
 import com.example.appcsn.core.ui.widget.CircleProgressIndicator
 import com.example.appcsn.features.noiban.data.LuotDanhGiaNoiBan
+import com.example.appcsn.features.noiban.ui.nav.PlaceGraph
 import com.example.appcsn.features.noiban.ui.viewmodel.TrangChiTietNoiBanViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -77,6 +80,12 @@ fun TrangChiTietNoiBan(
         mutableIntStateOf(4)
     }
     val isExpandableMT = remember {
+        mutableStateOf(false)
+    }
+    val isExpandableDG = remember {
+        mutableStateOf(false)
+    }
+    val isEdit = remember {
         mutableStateOf(false)
     }
 
@@ -116,14 +125,10 @@ fun TrangChiTietNoiBan(
                     Spacer(modifier = Modifier.height(15.dp))
                     ThanhDiaChi(viewModel)
                     Spacer(modifier = Modifier.height(15.dp))
-                    if (nguoiDung != null) {
-                        if (viewModel.luotDanhGia == null) {
-                            ThanhDanhGia(viewModel, coroutineScope)
-                        } else {
-                            DanhGia(viewModel.luotDanhGia!!)
-                        }
-                        Spacer(modifier = Modifier.height(15.dp))
-                    }
+                    KhuVucDanhGia(isEdit, viewModel, coroutineScope)
+                    Spacer(modifier = Modifier.height(10.dp))
+                    DanhSachDanhGia(coroutineScope, viewModel, isExpandableDG, isEdit)
+                    Spacer(modifier = Modifier.height(15.dp))
                 }
             }
         }
@@ -131,7 +136,80 @@ fun TrangChiTietNoiBan(
 }
 
 @Composable
-private fun DanhGia(luotDanhGia: LuotDanhGiaNoiBan) {
+private fun KhuVucDanhGia(
+    isEdit: MutableState<Boolean>,
+    viewModel: TrangChiTietNoiBanViewModel,
+    coroutineScope: CoroutineScope
+) {
+    if (nguoiDung != null || isEdit.value) {
+        if (viewModel.luotDanhGia == null || isEdit.value) {
+            ThanhDanhGia(
+                viewModel,
+                coroutineScope,
+                isEdit
+            )
+        } else {
+            DanhGia(
+                viewModel,
+                coroutineScope,
+                viewModel.luotDanhGia!!,
+                nguoiDung!!.ten,
+                isEdit
+            )
+        }
+    }
+}
+
+@Composable
+private fun DanhSachDanhGia(
+    coroutineScope: CoroutineScope,
+    viewModel: TrangChiTietNoiBanViewModel,
+    isExpandDG: MutableState<Boolean>,
+    isEdit: MutableState<Boolean>,
+) {
+    TextButton(onClick = {
+        if (isExpandDG.value) {
+            isExpandDG.value = false
+        } else {
+            coroutineScope.launch {
+                viewModel.docDanhSachDanhGia()
+                isExpandDG.value = true
+            }
+        }
+    }) {
+        Text(text = "Xem nhật xét của người dùng khác")
+    }
+    if (isExpandDG.value) {
+        if (viewModel.dsDanhGiaNoiBan.isNotEmpty()) {
+            viewModel.dsDanhGiaNoiBan.forEach { cmt ->
+                if (cmt.key.id_nguoi_dung != (nguoiDung?.id ?: "null")) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    DanhGia(
+                        viewModel,
+                        coroutineScope,
+                        cmt.key,
+                        cmt.value,
+                        isEdit
+                    )
+                }
+            }
+        } else {
+            Text(text = "Chưa có đánh giá nào khác", Modifier.padding(vertical = 10.dp))
+        }
+    }
+}
+
+@Composable
+private fun DanhGia(
+    viewModel: TrangChiTietNoiBanViewModel,
+    coroutineScope: CoroutineScope,
+    luotDanhGia: LuotDanhGiaNoiBan,
+    ten: String,
+    isEdit: MutableState<Boolean>,
+) {
+    val isExpand = remember {
+        mutableStateOf(false)
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -141,11 +219,16 @@ private fun DanhGia(luotDanhGia: LuotDanhGiaNoiBan) {
     ) {
         Column(modifier = Modifier.weight(1F)) {
             Text(
-                text = luotDanhGia.id_nguoi_dung,
+                text = if (luotDanhGia.id_nguoi_dung == (nguoiDung?.id
+                        ?: "null")
+                ) "Đánh giá của bạn"
+                else "Người dùng $ten",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(5.dp)
             )
+
+
             Text(
                 text = luotDanhGia.noi_dung!!,
                 modifier = Modifier.padding(5.dp)
@@ -164,16 +247,45 @@ private fun DanhGia(luotDanhGia: LuotDanhGiaNoiBan) {
                 Icon(
                     imageVector = Icons.Default.Star,
                     contentDescription = "Đánh giá",
+                    tint = Color.Yellow,
                     modifier = Modifier.size(18.dp)
                 )
             }
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = "Tùy chọn",
-                modifier = Modifier
-                    .size(36.dp)
-                    .padding(5.dp)
-            )
+            IconButton(onClick = { isEdit.value = !isEdit.value }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "Tùy chọn",
+                    modifier = Modifier
+                        .size(36.dp)
+                        .padding(5.dp)
+                )
+            }
+            DropdownMenu(
+                expanded = isExpand.value,
+                onDismissRequest = { isEdit.value = false }
+            ) {
+                if (luotDanhGia.id_nguoi_dung == (nguoiDung?.id ?: "null")) {
+                    DropdownMenuItem(
+                        text = { Text("Chỉnh sửa") },
+                        onClick = {
+                            isEdit.value = !isEdit.value
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Xóa") },
+                        onClick = {
+                            coroutineScope.launch {
+                                viewModel.huyDanhGia()
+                            }
+                        }
+                    )
+                } else {
+                    DropdownMenuItem(
+                        text = { Text("Chức năng đang được hoàn thiện") },
+                        onClick = { }
+                    )
+                }
+            }
         }
     }
 }
@@ -181,7 +293,8 @@ private fun DanhGia(luotDanhGia: LuotDanhGiaNoiBan) {
 @Composable
 private fun ThanhDanhGia(
     viewModel: TrangChiTietNoiBanViewModel,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    isEdit: MutableState<Boolean>
 ) {
     Column(
         modifier = Modifier
@@ -220,10 +333,22 @@ private fun ThanhDanhGia(
             }
             Button(onClick = {
                 coroutineScope.launch {
-                    viewModel.danhGia()
+                    if (isEdit.value) {
+                        viewModel.capNhatDanhGia()
+                        isEdit.value = !isEdit.value
+                    } else {
+                        viewModel.danhGia()
+                    }
                 }
             }) {
                 Text(text = "Đánh giá", fontSize = 13.sp)
+            }
+            if (isEdit.value) {
+                Button(onClick = {
+                    isEdit.value = !isEdit.value
+                }) {
+                    Text(text = "Hủy", fontSize = 13.sp)
+                }
             }
         }
         OutlinedTextField(
@@ -287,9 +412,9 @@ private fun IconYeuThich(
                 val kq: Boolean
                 var thongBao = "Đã yêu thích "
                 if (isChecked) {
-                    kq = viewModel.like(viewModel.noiBan.value!!.id)
+                    kq = viewModel.yeuThich(viewModel.noiBan.value!!.id)
                 } else {
-                    kq = viewModel.unlike(viewModel.noiBan.value!!.id)
+                    kq = viewModel.huyYeuThich(viewModel.noiBan.value!!.id)
                     thongBao = "Đã hủy yêu thích "
                 }
                 if (kq) {

@@ -1,10 +1,10 @@
-package com.example.appcsn.core.ui.screenstate
+package com.example.appcsn.features.dacsan.ui.state
 
 import com.example.appcsn.features.dacsan.data.DacSan
 
-data class ScreenStateDacSan(
+data class DacSanScreenState(
     val isLoading: Boolean = false,
-    val ds: List<DacSan> = emptyList(),
+    val itemList: List<DacSan> = emptyList(),
     val errorMessage: String? = null,
     val isEnd: Boolean = false,
     val pageIndex: Int = 0,

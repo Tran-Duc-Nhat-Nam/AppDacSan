@@ -16,9 +16,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.appcsn.core.ui.navgraph.PlaceGraph
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel
 import com.example.appcsn.core.ui.viewmodel.TrangGoogleMapViewModel
+import com.example.appcsn.features.noiban.ui.nav.PlaceGraph
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.libraries.places.api.model.Place.Field
 import com.google.android.libraries.places.api.net.SearchByTextRequest

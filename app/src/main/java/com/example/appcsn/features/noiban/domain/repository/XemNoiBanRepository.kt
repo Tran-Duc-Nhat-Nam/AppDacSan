@@ -1,13 +1,13 @@
 package com.example.appcsn.features.noiban.domain.repository
 
 import com.example.appcsn.features.noiban.data.NoiBan
-import com.example.appcsn.features.noiban.domain.api.NoiBanAPI
+import com.example.appcsn.features.noiban.domain.api.XemNoiBanAPI
 
-class NoiBanRepository(
-    private val api: NoiBanAPI
+class XemNoiBanRepository(
+    private val api: XemNoiBanAPI
 ) {
-    suspend fun doc(): Result<List<NoiBan>> {
-        val kq = api.doc()
+    suspend fun xem(idDacSan: Int): Result<NoiBan> {
+        val kq = api.xem(idDacSan)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
         } else {
@@ -15,8 +15,8 @@ class NoiBanRepository(
         }
     }
 
-    suspend fun timKiem(ten: String, pageSize: Int, pageIndex: Int): Result<List<NoiBan>> {
-        val kq = api.timKiem(ten, pageSize, pageIndex)
+    suspend fun xem(idDacSan: Int, idNguoiDung: String): Result<NoiBan> {
+        val kq = api.xem(idDacSan, idNguoiDung)
         return if (kq.body() == null) {
             Result.failure(Throwable(message = "Đọc dữ liệu thất bại"))
         } else {
