@@ -9,6 +9,7 @@ import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -55,6 +56,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.appcsn.core.ui.nav.SettingGraph
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel
+import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.nguoiDung
 import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.toLocalDate
 import com.example.appcsn.core.ui.widget.PageHeader
@@ -63,6 +65,8 @@ import com.example.appcsn.features.nguoidung.data.NguoiDung
 import com.example.appcsn.features.nguoidung.ui.viewmodel.TrangNguoiDungViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.generated.destinations.TrangDanhSachYeuThichDestination
+import com.ramcosta.composedestinations.generated.destinations.TrangLichSuXemDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Eye
@@ -220,6 +224,29 @@ fun TrangNguoiDung(
             )
             HorizontalDivider()
             NgaySinh(nguoiDungViewModel, isDatePicking)
+            HorizontalDivider()
+            Text(
+                text = "Danh sách yêu thích đặc sản",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(15.dp)
+                    .clickable {
+                        dsNavItem[2].backStack.add(TrangDanhSachYeuThichDestination)
+                        navigator.navigate(dsNavItem[2].backStack.last())
+                    }
+            )
+            HorizontalDivider()
+            Text(
+                text = "Lịch sử xem đặc sản",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(15.dp)
+                    .clickable {
+                        dsNavItem[2].backStack.add(TrangLichSuXemDestination)
+                        navigator.navigate(dsNavItem[2].backStack.last())
+                    }
+            )
+            HorizontalDivider()
             ButtonLuu(nguoiDungViewModel, coroutineScope)
             Spacer(modifier = Modifier.height(15.dp))
             ButtonDangXuat(nguoiDungViewModel)

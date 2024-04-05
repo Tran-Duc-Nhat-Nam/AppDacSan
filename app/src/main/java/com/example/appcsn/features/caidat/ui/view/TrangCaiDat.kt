@@ -21,8 +21,6 @@ import com.example.appcsn.core.ui.viewmodel.BaseViewModel.Companion.dsNavItem
 import com.example.appcsn.core.ui.widget.PageHeader
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.generated.destinations.TrangCaiDatGiaoDienDestination
-import com.ramcosta.composedestinations.generated.destinations.TrangDanhSachYeuThichDestination
-import com.ramcosta.composedestinations.generated.destinations.TrangLichSuXemDestination
 import com.ramcosta.composedestinations.generated.destinations.TrangNguoiDungDestination
 import com.ramcosta.composedestinations.generated.destinations.TrangXemWebDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -48,28 +46,6 @@ fun TrangCaiDat(
                 .padding(15.dp)
                 .clickable {
                     dsNavItem[2].backStack.add(TrangNguoiDungDestination)
-                    navigator.navigate(dsNavItem[2].backStack.last())
-                }
-        )
-        HorizontalDivider()
-        Text(
-            text = "Danh sách yêu thích đặc sản",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp)
-                .clickable {
-                    dsNavItem[2].backStack.add(TrangDanhSachYeuThichDestination)
-                    navigator.navigate(dsNavItem[2].backStack.last())
-                }
-        )
-        HorizontalDivider()
-        Text(
-            text = "Lịch sử xem đặc sản",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp)
-                .clickable {
-                    dsNavItem[2].backStack.add(TrangLichSuXemDestination)
                     navigator.navigate(dsNavItem[2].backStack.last())
                 }
         )
