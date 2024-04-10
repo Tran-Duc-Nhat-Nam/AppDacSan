@@ -1,6 +1,7 @@
 package com.example.appcsn.core.di
 
 import android.app.Application
+import com.example.appcsn.core.domain.api.BasicAuthInterceptor
 import com.example.appcsn.core.domain.api.HinhAnhAPI
 import com.example.appcsn.core.domain.api.PhuongXaAPI
 import com.example.appcsn.core.domain.api.QuanHuyenAPI
@@ -40,6 +41,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -50,15 +52,19 @@ object AppModule {
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit {
-        return Retrofit.Builder().baseUrl("https://dacsanimage-b5os5eg63q-de.a.run.app/")
+        val client = OkHttpClient.Builder()
+            .addInterceptor(BasicAuthInterceptor("admindacsan", "Vinafood2024"))
+            .build()
+        val gson = GsonConverterFactory.create(
+            GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                .create()
+        )
+        return Retrofit.Builder()
+            .baseUrl("https://dacsanimage-b5os5eg63q-de.a.run.app/")
 //        return Retrofit.Builder().baseUrl("http://192.168.1.50:8080/")
-            .addConverterFactory(
-                GsonConverterFactory.create(
-                    GsonBuilder()
-                        .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                        .create()
-                )
-            )
+            .client(client)
+            .addConverterFactory(gson)
             .build()
     }
 
