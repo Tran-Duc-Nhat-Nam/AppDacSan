@@ -60,9 +60,9 @@ object AppModule {
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
                 .create()
         )
-        return Retrofit.Builder()
-            .baseUrl("https://dacsanimage-b5os5eg63q-de.a.run.app/")
-//        return Retrofit.Builder().baseUrl("http://192.168.1.50:8080/")
+//        return Retrofit.Builder()
+//            .baseUrl("https://dacsanimage-b5os5eg63q-de.a.run.app/")
+        return Retrofit.Builder().baseUrl("http://10.0.2.2:8080/") // URL for android emulating machine
             .client(client)
             .addConverterFactory(gson)
             .build()
