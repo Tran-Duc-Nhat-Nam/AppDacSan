@@ -13,12 +13,7 @@
 <h3 align="center">VinaFood Android App</h3>
 
 <p align="center">
-  <a href="https://github.com/Tran-Duc-Nhat-Nam/AppDacSan/releases">APK file</a>
-  |
   <a href="https://github.com/Tran-Duc-Nhat-Nam/AppDacSan/issues">Report Bug</a>
-  |
-  <a href="https://github.com/Tran-Duc-Nhat-Nam/AppDacSan/issues">Request Feature</a>
-  <br />
   <p>-------------------------------------------------------------------------------</p>
   <h4 align="center">VinaFood project</h3>
 
@@ -36,9 +31,6 @@
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
     </li>
     <li>
       <a href="#getting-started">Getting Started</a>
@@ -57,7 +49,11 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-An application introducing Vietnamese specialties
+An Android application introducing Vietnamese specialties built with Kotlin and Jetpack Compose.
+
+[![Kotlin][Kotlin-logo]][Kotlin-url]
+
+[![JetpackCompose][Jetpack-compose-logo]][Jetpack-compose-url]
 
 <img src="screenshot_dark.jpg" width="400">
 
@@ -65,44 +61,21 @@ An application introducing Vietnamese specialties
 
 
 
-### Built With
-
-[![Kotlin][Kotlin-logo]][Kotlin-url]
-
-[![JetpackCompose][Jetpack-compose-logo]][Jetpack-compose-url]
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
 <!-- GETTING STARTED -->
-## Getting Started
-
-### Prerequisites
-
-* A phone with Android 7.1 or above
-
-### Installation
-
-#### For user:
-1. Download the APK file from the latest release from [release](https://github.com/Tran-Duc-Nhat-Nam/AppDacSan/releases)
-   
-2. Install the APK file on your phone 
-
-#### For developer:
-1. Open an IDE or code editor
-
-2. Clone the repo
+## Installation
+1. Follow the instruction [here](https://github.com/Tran-Duc-Nhat-Nam/DacSanAPI/blob/main/README.md)
+2. Open an IDE or code editor
+3. Clone the repo
    
    ```sh
    git clone https://github.com/Tran-Duc-Nhat-Nam/AppDacSan.git
    ```
 
-4. Get a Gemini API key at (https://aistudio.google.com/app/apikey)
+5. Get a Gemini API key at (https://aistudio.google.com/app/apikey)
 
-5. Get a Google Map Platform at (https://console.cloud.google.com/projectselector2/google/maps-apis/credentials)
+6. Get a Google Map Platform at (https://console.cloud.google.com/projectselector2/google/maps-apis/credentials)
 
-6. Put both keys into `local.properties`
+7. Put both keys into `local.properties`
    
    ```sh
     apiKey='GEMINI API KEY'
